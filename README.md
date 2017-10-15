@@ -5,7 +5,7 @@ You can use this as a-ready-made template or include it in your project and use 
 # Installation
 Download and include the asBase,asSvg and ocImage folders in your project.
 
-You can download the asSvg and asBase modules independently here:
+You can download the asSvg and asBase modules independently here:https://github.com/rtsamir/Allseated.git
 # Getting Started 
 
 ## Create an instance of imageDrawing and ImageSave
@@ -44,8 +44,8 @@ let aColor='#00000' //draw color`
 
 You can add a text box the image as well:
 
-aImageDrawing.onSetText();
+`aImageDrawing.onSetText();`
 
 ## Documentation
 
-Full Documentation is available here:
+Full Documentation is available in "src/doc/index.html"
