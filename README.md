@@ -34,6 +34,15 @@ Renders a rectangle to the stage
 **Shape**
 Renders a display element for drawing vector data
 
+**Circle**
+Renders a circle to the stage
+
+**Ellipse**
+Renders an ellipse to the stage
+
+**Line**
+Renders a line to the stage
+
 
 # Installation
 Download and include the asBase,asSvg and ocImage folders in your project.
@@ -44,7 +53,7 @@ You can download the asSvg and asBase modules independently here:https://github.
 
 Create a HTMLDivElement that the image will be set inside.
 
-Create an instance of the ImageDrawing and imageSaveCanavs class
+Create an instance of the ImageDrawing and ImageSaveCanvas class
 ```typescript
 let aDiv=document.createElement(div);
 documet.appendChild(aDiv);`
