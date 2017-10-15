@@ -11,8 +11,14 @@ Create a HTMLDivElement that the image will be set into
 `let aImageDrawing=new ocImage.ImageDrawing(aDiv);`
 `let aImageSave=new ocImage.ImageSave(aImageDrawing);`
 ## Set an Image
-`aImageDrawing.setPicture(<url of picture>);`
+`let aUrl="assets/img.png"; //url of image`
+`aImageDrawing.setPicture(aURL);`
 ## Rotate an Image
 `aImageDrawing.rotate(90);`
+## Download an Image
+`aImageSave.getImage()`
+## Draw on Image
+`let aColor='#00000' //draw color`
+`aImageDrawing.startDraw(aColor);`
 ## Documentation
 Full Documentation is available here:
