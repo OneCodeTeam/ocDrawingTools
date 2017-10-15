@@ -2,6 +2,31 @@
 Template for setting an image in frame, with the ability to scale,rotate, and drag while drawing on the image.
 Based on asSvg and asBase libraries.
 You can use this as a-ready-made template or include it in your project and use it appropiately.
+# asSVG
+asSVG is a library for building svg elements in HTML5
+##Simple Example 
+Draw an image on screen
+let aDiv=document.getElementById("imageDiv");
+let aSVGStage = asSvg.Stage.cretaeStage(aDiv, aDiv.clientWidth, aDivRect.clientHeight);
+let aImage=new asSvgImage("assets/railway.png");
+aSVGStage.addChild(aImage);
+##Classes
+**Display Object** 
+Abstract base class for all display elements in SVG.
+**Stage**
+The root level display container for display elements
+**TextField**
+Class that renders a single text line to the stage
+**Foreign Object**
+Renders a non-svg (html) element to the stage
+**Image**
+Renders an image to the stage
+**Rect**
+Renders a rectangle to the stage
+**Shape**
+Renders a display element for drawing vector data**
+
+
 # Installation
 Download and include the asBase,asSvg and ocImage folders in your project.
 
