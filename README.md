@@ -22,7 +22,7 @@ Create a HTMLDivElement that the image will be set into
 ## Draw on Image
 `let aColor='#00000' //draw color`
 `aImageDrawing.startDraw(aColor);`
-##Write on Image
+## Write on Image
 You can add a text box the image as well:
 aImageDrawing.onSetText();
 ## Documentation
