@@ -86,7 +86,7 @@ Pass the event, callback function,owner, or data(optional) as arguments
 asBase.events.EventManager.addEventListener("CustomEvent",()=>this.someFunc(),this);
 ```
 # Installation
-Download and include the asBase,asSvg and ocImage folders in your project.
+Download and include the asBase,asSvg and image folders in your project.
 
 You can download the asSvg and asBase modules independently here:https://github.com/rtsamir/Allseated.git
 
@@ -97,9 +97,9 @@ Create a HTMLDivElement that the image will be set inside.
 Create an instance of the ImageDrawing and ImageSaveCanvas class
 ```typescript
 let aDiv=document.createElement(div);
-documet.appendChild(aDiv);`
-let aImageDrawing=new ocImage.ImageDrawing(aDiv);
-let aImageSave=new ocImage.ImageSaveCanvas(aImageDrawing);
+document.appendChild(aDiv);`
+let aImageDrawing=new image.ImageDrawing(aDiv);
+let aImageSave=new image.ImageSaveCanvas(aImageDrawing);
 ```
 
 **Set an Image**
