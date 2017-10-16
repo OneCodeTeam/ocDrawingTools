@@ -60,30 +60,47 @@ The asBase library contains many usefull modules that you can include in your pr
 ## Classes
 **EventManager**
 Manages the dispatching and listening of events between any object.
+
 **MouseEvents**
 Contains global constants for all the mouse events
+
 **Keyboard Code**
 Contains global contstants for all keyboard codes
+
 **Point**
 Class representing a 2D Point
+
 **Math Utils**
 Contains some useful global math equations, like the distance equation,converting deg to rad etc.
+
 **Rectangle**
 Class representing a rectangle
+
 **Matrix** 
 Class representing a transform matrix
 
 ## Simple Example
 **Dispatching a custom event**
+
 Pass the event,owner and data(optional) as arguments
 ```typescript
 asBase.events.EventManager.dispatchEvent("CustomEvent",this);
 ```
 
 **Listening to a custom event**
+
 Pass the event, callback function,owner, or data(optional) as arguments
 ```typescript
 asBase.events.EventManager.addEventListener("CustomEvent",()=>this.someFunc(),this);
+```
+
+## Another exmaple
+**Calculate the distance between two 2D points**
+
+```typescript
+let point1=new asBase.Math.Point(3,-10);
+let point2=new asBase.Math.Point(-8,7);
+let aDist=asBase.Math.MathUtils.distance(point1,point2);
 ```
 # Installation
 Download and include the asBase,asSvg and image folders in your project.
