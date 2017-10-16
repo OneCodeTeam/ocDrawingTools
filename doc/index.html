@@ -65,9 +65,10 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<h1 id="ocdrawingtools">ocDrawingTools</h1>
-				<p>Template for setting an image in frame, with the ability to scale,rotate, and drag while drawing on the image.
-					Based on asSvg and asBase libraries.
-				You can use this as a ready made template or include it in your project and use it appropiately.</p>
+				<p><a href="http://onecode.co.il">OneCode</a> offers cross platform development with a specialty in 3D. As part of our deveopment for one of our projects we developed an easy to use image template editor.
+				The template is based on asSvg and asBase libraries.</p>
+				<p>You can use this as a ready made template or include it in your project and use it appropiately.</p>
+				<p>A live demo is available here:<a href="http://labs.onecode.co.il/drawingTools">http://labs.onecode.co.il/drawingTools</a></p>
 				<h1 id="assvg">asSVG</h1>
 				<p>asSVG is a library for building svg elements in HTML5</p>
 				<h2 id="simple-example">Simple Example</h2>
@@ -76,6 +77,12 @@
 <span class="hljs-keyword">let</span> aSVGStage = asSvg.Stage.cretaeStage(aDiv, aDiv.clientWidth, aDivRect.clientHeight);
 <span class="hljs-keyword">let</span> aImage=<span class="hljs-keyword">new</span> asSvgImage(<span class="hljs-string">"assets/railway.png"</span>);
 aSVGStage.addChild(aImage);
+</code></pre>
+				<h2 id="another-example-">Another example:</h2>
+				<p>The asSvg library also supports rotating,moving and scaling of an svg element.</p>
+				<pre><code class="lang-typescript">aImage.startDrag();<span class="hljs-comment">// to move the element</span>
+aImage.rotation=<span class="hljs-number">180</span>; <span class="hljs-comment">//to rotate the element 180 degrees</span>
+aImage.setScale(<span class="hljs-number">1.5</span>); <span class="hljs-comment">// to scale the element 1.5 times it's orginal size</span>
 </code></pre>
 				<h2 id="classes">Classes</h2>
 				<p><strong>Display Object</strong>
@@ -98,16 +105,48 @@ aSVGStage.addChild(aImage);
 				Renders an ellipse to the stage</p>
 				<p><strong>Line</strong>
 				Renders a line to the stage</p>
+				<h1 id="asbase">asBase</h1>
+				<p>The asBase library contains many usefull modules that you can include in your project.</p>
+				<h2 id="classes">Classes</h2>
+				<p><strong>EventManager</strong>
+				Manages the dispatching and listening of events between any object.</p>
+				<p><strong>MouseEvents</strong>
+				Contains global constants for all the mouse events</p>
+				<p><strong>Keyboard Code</strong>
+				Contains global contstants for all keyboard codes</p>
+				<p><strong>Point</strong>
+				Class representing a 2D Point</p>
+				<p><strong>Math Utils</strong>
+				Contains some useful global math equations, like the distance equation,converting deg to rad etc.</p>
+				<p><strong>Rectangle</strong>
+				Class representing a rectangle</p>
+				<p><strong>Matrix</strong>
+				Class representing a transform matrix</p>
+				<h2 id="simple-example">Simple Example</h2>
+				<p><strong>Dispatching a custom event</strong></p>
+				<p>Pass the event,owner and data(optional) as arguments</p>
+				<pre><code class="lang-typescript">asBase.events.EventManager.dispatchEvent(<span class="hljs-string">"CustomEvent"</span>,<span class="hljs-keyword">this</span>);
+</code></pre>
+				<p><strong>Listening to a custom event</strong></p>
+				<p>Pass the event, callback function,owner, or data(optional) as arguments</p>
+				<pre><code class="lang-typescript">asBase.events.EventManager.addEventListener(<span class="hljs-string">"CustomEvent"</span>,<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">this</span>.someFunc(),<span class="hljs-keyword">this</span>);
+</code></pre>
+				<h2 id="another-exmaple">Another exmaple</h2>
+				<p><strong>Calculate the distance between two 2D points</strong></p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> point1=<span class="hljs-keyword">new</span> asBase.Math.Point(<span class="hljs-number">3</span>,<span class="hljs-number">-10</span>);
+<span class="hljs-keyword">let</span> point2=<span class="hljs-keyword">new</span> asBase.Math.Point(<span class="hljs-number">-8</span>,<span class="hljs-number">7</span>);
+<span class="hljs-keyword">let</span> aDist=asBase.Math.MathUtils.distance(point1,point2);
+</code></pre>
 				<h1 id="installation">Installation</h1>
-				<p>Download and include the asBase,asSvg and ocImage folders in your project.</p>
+				<p>Download and include the asBase,asSvg and image folders in your project.</p>
 				<p>You can download the asSvg and asBase modules independently here:<a href="https://github.com/rtsamir/Allseated.git">https://github.com/rtsamir/Allseated.git</a></p>
 				<h1 id="how-to-use">How to use</h1>
 				<p>Create a HTMLDivElement that the image will be set inside.</p>
 				<p>Create an instance of the ImageDrawing and ImageSaveCanvas class</p>
 				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> aDiv=<span class="hljs-built_in">document</span>.createElement(div);
-documet.appendChild(aDiv);<span class="hljs-string">`
-let aImageDrawing=new ocImage.ImageDrawing(aDiv);
-let aImageSave=new ocImage.ImageSaveCanvas(aImageDrawing);</span>
+<span class="hljs-built_in">document</span>.appendChild(aDiv);<span class="hljs-string">`
+let aImageDrawing=new image.ImageDrawing(aDiv);
+let aImageSave=new image.ImageSaveCanvas(aImageDrawing);</span>
 </code></pre>
 				<p><strong>Set an Image</strong></p>
 				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> aUrl=<span class="hljs-string">"assets/img.png"</span>; <span class="hljs-comment">//url of image</span>
