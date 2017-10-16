@@ -2,6 +2,7 @@
 Template for setting an image in frame, with the ability to scale,rotate, and drag while drawing on the image.
 Based on asSvg and asBase libraries.
 You can use this as a ready made template or include it in your project and use it appropiately.
+A live demo is available here:http://labs.onecode.co.il/drawingTools
 # asSVG
 asSVG is a library for building svg elements in HTML5
 ## Simple Example 
