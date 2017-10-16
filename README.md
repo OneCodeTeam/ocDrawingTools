@@ -73,11 +73,17 @@ Class representing a rectangle
 **Matrix** 
 Class representing a transform matrix
 
-##Simple Example
-Dispatching and listening to a custom event bewtween two objects.
+## Simple Example
+**Dispatching a custom event**
+Pass the event,owner and data(optional) as arguments
 ```typescript
-asBase.EventManager.dispatchEvent("CustomEvent",this) //pass the event,owner and data(optional) as arguments
-asBase.EventManager.addEventListener("CustomEvent",()=>this.someFunc(),this); //pass the event, callback function,owner, or data(optional) as arguments
+asBase.events.EventManager.dispatchEvent("CustomEvent",this);
+```
+
+**Listening to a custom event**
+Pass the event, callback function,owner, or data(optional) as arguments
+```typescript
+asBase.events.EventManager.addEventListener("CustomEvent",()=>this.someFunc(),this);
 ```
 # Installation
 Download and include the asBase,asSvg and ocImage folders in your project.
