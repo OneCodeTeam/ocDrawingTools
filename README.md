@@ -1,6 +1,6 @@
 # ocDrawingTools
-Template for setting an image in frame, with the ability to scale,rotate, and drag while drawing on the image.
-Based on asSvg and asBase libraries.
+[OneCode](http://onecode.co.il) offers cross platform development with a specialty in 3D. As part of our deveopment for one of our projects we developed an easy to use image template editor.
+The template is based on asSvg and asBase libraries.
 
 You can use this as a ready made template or include it in your project and use it appropiately.
 
