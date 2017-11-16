@@ -152,6 +152,25 @@ Manages the scaling,dragging,rotation and drawing of the image
 
 **ImageSave**
 Manages the dowloading and saving of the image
+
+## Modules
+**action**
+Module for all classes that implement the IAction interfaces. 
+This module executes the redo/unod functionallity of the program.
+Each "user action" is repsented by a class
+*ActionManager*
+You can add a new action and undo/redo an action.
+```typescript
+let aActionManager=new ActionManager();
+aActionManager.addAction(action);// Instance of class that implements IAction
+aActionManager.undo(); // undo the last action
+aActionManager.redo() // redo the last action undone.
+```
+**shapes**
+Module for all classes that extend the Shape Class. 
+Contains classes for shapes drawn by the user on the image
+
+
 ## Documentation
 
 Full Documentation is available  here:http://labs.onecode.co.il/ocDrawingTools/doc
