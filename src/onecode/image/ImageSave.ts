@@ -7,18 +7,24 @@
      */
     export class ImageSave  {
         protected mStage: asSvg.DisplayObject;
-        protected mImage: HTMLImageElement;
         protected mImageDrawing: ImageDrawing;
+        
         constructor(pImageDrawing: ImageDrawing) {
-            this.mStage = pImageDrawing.mSVGStage;
             this.mImageDrawing = pImageDrawing;
+            this.mStage = this.mImageDrawing.mSVGStage;
         }
         //____________________________
         public getImage() {
            
         }
-        //________________________________________
+        //___________________________
+        public getCroppedImage(pRect) {
 
+        }
+        //________________________________________
+        protected saveCroppedImage(pRect) {
+
+        }
         protected saveImage() {
 
         }
