@@ -30,7 +30,7 @@ span {
     color: deepskyblue;
     border: 0;
     /*// padding: 10px;*/
-    box-sizing: border-box;
+    box-sizing: content-box !important;
     word-break: break-word;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;

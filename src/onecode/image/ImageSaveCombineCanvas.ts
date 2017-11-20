@@ -9,190 +9,112 @@ module image {
      * @extends {ImageSave}
      */
     export class ImageSaveCombineCanvas extends ImageSave {
+        private mPrevY: number;
+        private mPrevRotation: number;
+        private mPrevX: number;
+        private mPrevScale: number;
         private mCanvas: HTMLCanvasElement;
-        private aImage: HTMLImageElement;
+        private mImage: HTMLImageElement;
+
         constructor(pImageDrawing) {
-            super( pImageDrawing);
+            super(pImageDrawing);
         }
         //____________________________________________________
         public getImage() {
             this.mImageDrawing.convertInuptToSVG();
-            //this.mImageDrawing.resetRotationAndScale();
+           this.mPrevScale = this.mImageDrawing.mRotationPanel.scaleX;
+           this.mPrevX = this.mImageDrawing.mMovePanel.x;
+           this.mPrevY = this.mImageDrawing.mMovePanel.y;
+           this.mPrevRotation = this.mImageDrawing.mRotationPanel.rotation;
+            this.mImageDrawing.mRotationPanel.scaleX = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mRotationPanel.scaleY = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mMovePanel.x = 0;
+            this.mImageDrawing.mMovePanel.y = 0;
+            this.mImageDrawing.mRotationPanel.rotation = 0;
             this.mImage = this.mStage.getImage();
             this.mImage.onload = () => this.saveImage();
         }
         //____________________________________________________
+        public getCroppedImage(pRect: asSvg.Rect) {
+            this.mImageDrawing.convertInuptToSVG();
+            this.mPrevScale = this.mImageDrawing.mRotationPanel.scaleX;
+            this.mPrevX = this.mImageDrawing.mMovePanel.x;
+            this.mPrevY = this.mImageDrawing.mMovePanel.y;
+            this.mPrevRotation = this.mImageDrawing.mRotationPanel.rotation;
+            this.mImageDrawing.mRotationPanel.scaleX = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mRotationPanel.scaleY = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mMovePanel.x = 0;
+            this.mImageDrawing.mMovePanel.y = 0;
+            this.mImageDrawing.mRotationPanel.rotation = 0;
+            let aRectBounds = pRect.getBounds();
+            pRect.visible = false;
+            this.mImage = this.mStage.getImage();
+            this.mImage.onload = () => this.saveCroppedImage(aRectBounds);
+        }
+        //____________________________________
+        public saveCroppedImage(pRect: ClientRect) {
+            let aCanvas: HTMLCanvasElement = document.createElement("canvas");;
+            aCanvas.width = this.mImage.naturalWidth;
+            aCanvas.height = this.mImage.naturalHeight;
+            let aContext: CanvasRenderingContext2D = aCanvas.getContext("2d");
+            aContext.drawImage(this.mImage, 0, 0);
+            this.mImageDrawing.HTMLImage;
+            this.mCanvas = this.combineImageAndCanvas(this.mImageDrawing.HTMLImage, aCanvas)
+            let aRectBounds = pRect;
+            let aCropX= (pRect.left - Globals.ImageDrawing.mImage.getBounds().left) / Globals.ImageDrawing.minImgScale;
+            let aCropY = (pRect.top - Globals.ImageDrawing.mImage.getBounds().top) / Globals.ImageDrawing.minImgScale;
+            let aSaveCanvas = document.createElement("canvas");
+            aSaveCanvas.width = aRectBounds.width / Globals.ImageDrawing.minImgScale;
+            aSaveCanvas.height = aRectBounds.height /Globals.ImageDrawing.minImgScale;
+            let aSaveContext = aSaveCanvas.getContext("2d");
+            aSaveContext.drawImage(this.mCanvas, aCropX, aCropY, aRectBounds.width /Globals.ImageDrawing.minImgScale, aRectBounds.height/ Globals.ImageDrawing.minImgScale, 0, 0, aRectBounds.width / Globals.ImageDrawing.minImgScale, aRectBounds.height / Globals.ImageDrawing.minImgScale);
+            let aDataURL: string = aSaveCanvas.toDataURL();
+            this.mImageDrawing.convertSVGToInput();
+            let aAction = new action.CropAction(this.mImageDrawing.HTMLImage.src, aDataURL, (pSrc, p, d, e,g,f,h) => this.mImageDrawing.setPicture(pSrc, p, d, e,g,f,h), this.mPrevRotation, this.mPrevRotation, this.mPrevScale, this.mPrevX, this.mPrevY);
+            Globals.ActionManager.addAction(aAction);
+            Globals.cropCounter++;
+            this.mImageDrawing.setPicture(aDataURL, this.mPrevRotation,1);
+        }
+        //_____________________________________
         protected saveImage() {
-            this.aImage = document.createElement("img");
-            this.aImage.src = Globals.imgURL;
-            this.aImage.onload = () => this.onLoadImage();
-            
+            let aCanvas: HTMLCanvasElement = document.createElement("canvas");;
+            aCanvas.width = this.mImage.naturalWidth;
+            aCanvas.height = this.mImage.naturalHeight;
+            let aContext: CanvasRenderingContext2D = aCanvas.getContext("2d");
+            aContext.drawImage(this.mImage, 0, 0);
+            this.mImageDrawing.HTMLImage;
+            this.mCanvas = this.combineImageAndCanvas(this.mImageDrawing.HTMLImage, aCanvas)
+            let aDataURL: string = this.mCanvas.toDataURL();
+            this.downloadImage(aDataURL);
+            this.mImageDrawing.mRotationPanel.scaleX = this.mPrevScale;
+            this.mImageDrawing.mRotationPanel.scaleY = this.mPrevScale;
+            this.mImageDrawing.mMovePanel.x = this.mPrevX;
+            this.mImageDrawing.mMovePanel.y = this.mPrevY;
+            this.mImageDrawing.mRotationPanel.rotation = this.mPrevRotation;
         }
-        //__________________________________________
-        private onLoadImage() {
-            this.mCanvas = document.createElement("canvas");
-            this.mCanvas.width = this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX
-
-            this.mCanvas.height = this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX
-          // this.aImage.width = this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX;
-         //  this.aImage.height = this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX;
-           //let aCanvas = this.combineImageAndCanvas(this.aImage, this.mCanvas);
-          
-            let aContext: CanvasRenderingContext2D = this.mCanvas.getContext("2d");
-
-            aContext.drawImage(this.aImage,0,0, this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX, this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX);
-            //this.adjustCanvas();
-
-            aContext.drawImage(this.mImage, (this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX-this.mImage.width )/2 , this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX - this.mImage.height);
-
-           
-
-
-
-
-            //scale image to orginal size,
-
-            var aTempCanvas = document.createElement("canvas");
-           var tctx = aTempCanvas.getContext("2d");
-
-           aTempCanvas.width = this.mCanvas.width;
-           aTempCanvas.height = this.mCanvas.height;
-
-           tctx.drawImage(this.mCanvas, 0, 0);
-
-           this.mCanvas.width /= this.mImageDrawing.minImgScale;
-           this.mCanvas.height /= this.mImageDrawing.minImgScale;
-          // aContext.drawImage(aTempCanvas, 0, 0, this.mCanvas.width this.mImageDrawing.mRotationPanel.scaleX, this.mCanvas.height * this.mImageDrawing.mRotationPanel.scaleX,);
-
-
-
-
-          //  //rotate image 
-          // let aTempCanvas2 = document.createElement("canvas");
-          // aTempCanvas2.width = this.mCanvas.width;
-          // aTempCanvas2.height = this.mCanvas.height;
-          // let aCtx = aTempCanvas2.getContext("2d");
-          
-          // aCtx.translate(this.mCanvas.width / 2, this.mCanvas.height / 2);
-          // aCtx.rotate(Math.PI );
-         
-          // aCtx.drawImage(this.mCanvas, -this.mCanvas.width / 2,- this.mCanvas.height / 2);
-          // aCtx.rotate(-Math.PI );
-          //aCtx.translate(-this.mCanvas.width / 2, - this.mCanvas.height / 2);
-         
-
-           //aContext.scale(1 / this.mImageDrawing.minImgScale, 1 / this.mImageDrawing.minImgScale);
-           let aDataURL: string = this.mCanvas.toDataURL();
-           this.downloadImage(aDataURL);
-
-
-
-
-           this.mImageDrawing.convertSVGToInput();
-
-
-        }
-        //___________________________________________________________
-        private adjustCanvas() {
-           this.mImage.width = this.mImage.width / this.mImageDrawing.minImgScale;
-            this.mImage.height = this.mImage.height / this.mImageDrawing.minImgScale;
-        }
-        //_________________________________________
-        public  combineImageAndCanvas(pImage: HTMLImageElement, pDrawing: HTMLCanvasElement): HTMLCanvasElement {
+        //_____________________________________________________________
+        public combineImageAndCanvas(pImage: HTMLImageElement, pDrawing: HTMLCanvasElement): HTMLCanvasElement {
             let aCanvasToReturn: HTMLCanvasElement;
             let aAngle: number = Globals.angle;
             let aScaleFactor: number = 1;
-           
-            let aImageRect: ClientRect = pImage.getBoundingClientRect();
-            let aCanvasRect: ClientRect = pDrawing.getBoundingClientRect();
-    
 
             let aAllImageWidth: number = pImage.naturalWidth;
             let aAllImageHeight: number = pImage.naturalHeight;
 
             aCanvasToReturn = document.createElement('canvas') as HTMLCanvasElement;
+            aCanvasToReturn.width = pImage.naturalWidth;
+            aCanvasToReturn.height = pImage.naturalHeight;
             let ctxToSave: CanvasRenderingContext2D = aCanvasToReturn.getContext("2d") as CanvasRenderingContext2D;
-            ctxToSave.save();
-            let aMaxSize = 12000;
-            let aScale;
-            let aSize: number = Math.sqrt(aAllImageWidth * aAllImageWidth + aAllImageHeight * aAllImageHeight);
-            if (aAngle == 0) {
-                aScale = aImageRect.width / aAllImageWidth;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageWidth * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageHeight * aScale * aScaleFactor;
-            }
-            if (aAngle == 90) {
-                aScale = aImageRect.width / aAllImageHeight;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageHeight * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageWidth * aScale * aScaleFactor;
-                ctxToSave.rotate(aAngle * Math.PI / 180);
-                ctxToSave.translate(0, -aAllImageHeight * aScale * aScaleFactor);
-            }
-            if (aAngle == 180) {
-                aScale = aImageRect.width / aAllImageWidth;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageWidth * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageHeight * aScale * aScaleFactor;
-                ctxToSave.rotate(aAngle * Math.PI / 180);
-                ctxToSave.translate(-aAllImageWidth * aScale * aScaleFactor, -aAllImageHeight * aScale * aScaleFactor);
-            }
-            if (aAngle == 270) {
-                aScale = aImageRect.width / aAllImageHeight;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageHeight * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageWidth * aScale * aScaleFactor;
-                ctxToSave.rotate(aAngle * Math.PI / 180);
-                ctxToSave.translate(-aAllImageWidth * aScale * aScaleFactor, 0);
-            }
-            ctxToSave.scale(aScale * aScaleFactor, aScale * aScaleFactor)
             ctxToSave.drawImage(pImage, 0, 0);
-            ctxToSave.restore();
-            ctxToSave.save();
-            let aX: number = aCanvasRect.left - aImageRect.left;
-            let aY: number = aCanvasRect.top - aImageRect.top;
-
-            let aCanvasToSave2 = document.createElement('canvas');
-
-            aCanvasToSave2.width = aCanvasToReturn.width;
-            aCanvasToSave2.height = aCanvasToReturn.height;
-            let ctxToSave2 = aCanvasToSave2.getContext("2d");
-            ctxToSave2.drawImage(aCanvasToReturn, 0, 0);
-            ctxToSave2.scale(aScaleFactor, aScaleFactor);
-            ctxToSave2.drawImage(pDrawing, aX, aY);
-            aCanvasToReturn = aCanvasToSave2;
-
-            aX = (aX > 0) ? aX : 0;
-            aY = (aY > 0) ? aY : 0;
-            let aWidth = Math.min(aCanvasRect.width, aImageRect.width);
-            let aHight = Math.min(aCanvasRect.height, aImageRect.height);
-            aX *= aScaleFactor;
-            aY *= aScaleFactor;
-            aWidth *= aScaleFactor;
-            aHight *= aScaleFactor;
-            let aCanvasToSave3 = document.createElement('canvas');
-            aCanvasToSave3.width = aWidth;
-            aCanvasToSave3.height = aHight;
-            let ctxToSave3 = aCanvasToSave3.getContext("2d");
-            ctxToSave3.translate(-aX, -aY);
-
-            ctxToSave3.drawImage(aCanvasToReturn, 0, 0);
-            aCanvasToReturn = aCanvasToSave3;
-
-            ////oc.Utils.debugHTMLElement(aCanvasToReturn, 400);
-            return (aCanvasToReturn);
-
-
+            let aScale: number = 1 / this.mImageDrawing.minImgScale;
+            let aWidth: number = pDrawing.width * aScale;
+            let aHeight: number = pDrawing.height * aScale;
+            let aX = (aWidth - pImage.naturalWidth) / 2
+            let aY = (aHeight - pImage.naturalHeight) / 2
+            ctxToSave.drawImage(pDrawing, 0, 0, pDrawing.width, pDrawing.height, -aX, -aY, aWidth, aHeight);
+            return aCanvasToReturn;
         }
+     
 
     }
 }

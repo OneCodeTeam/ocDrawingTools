@@ -10,40 +10,45 @@ module image {
      * @class ImageDrawing
      */
     export class ImageDrawing {
-
+        public static zoom_timeout: number;
         public static FIX_TEXT_TO_ZOOM: boolean = true;
         public static SCALE_TO_MIN_AFTER_ROTATE: boolean = false;
         public static isZoomed: boolean = false;
         private fontSize = 25;
-        private mLineWidth = 6;
+        public static LINE_WIDTH = 4;
         public mSVGStage: asSvg.Stage;
         public mRotationPanel: asSvg.Sprite;
+        public mScalePanel: asSvg.Sprite;
         public mMovePanel: asSvg.Sprite;
         public mImageContainer: HTMLElement;
         public mImage: asSvg.Image;
+        public HTMLImage: HTMLImageElement;
         private mHeightOriginalScale: number;
         private mWidthOriginalScale: number;
         private mHeightTransformScale: number;
         private mWidthTransformScale: number;
         private mMouseDown: boolean;
         private mMousePoint;
-        private mDrawPanel: asSvg.Sprite;
+        public mDrawPanel: asSvg.Sprite;
         public mTextButton: HTMLElement;
         private msetTextPoint;
         public mDrawColor;
         private mMinOriginalScale: number;
         private mMinTransformScale: number;
         private mCurrentAngle = 0;
-        private mImgHeight: number;
-        private mImgWidth: number;
+        public mImgHeight: number;
+        public mImgWidth: number;
         private mOrginalContainerHeight;
         private mOrginalContainerWidth;
         private mHeightScale;
         private mWidthScale;
-        private mSourceImage: HTMLImageElement;
+        public mSourceImage: HTMLImageElement;
         private mDrawingController: DrawingController;
         private mOriginalAngle: number = 0;
-        private mOrginalScale:number
+        private mOrginalScale: number
+        private mImageCrop: image.ImageCrop;
+        private isRightMouseDown: boolean = false;
+        private mInputTimeout;
         constructor(pDiv: HTMLElement) {
             this.mImageContainer = pDiv;
             let aDiv = document.createElement("div") as HTMLDivElement;
@@ -60,11 +65,14 @@ module image {
             this.mRotationPanel.instanceName="Rotation Panel"
             this.mSVGStage.addChild(this.mRotationPanel);
             this.mSVGStage.activeMouseLocation();
-
+            this.mScalePanel = new asSvg.Sprite();
+            this.mScalePanel.instanceName = "Scale Panel";
+            this.mRotationPanel.addChild(this.mScalePanel);
             this.mMovePanel = new asSvg.Sprite();
+          
             this.mMovePanel.instanceName = "Move Panel";
-            
-            this.mRotationPanel.addChild(this.mMovePanel);
+
+            this.mScalePanel.addChild(this.mMovePanel);
             (this.mSVGStage.element as any).onmousewheel = (pEvent) => this.onMouseWheel(pEvent);
 
             this.mDrawPanel = new asSvg.Sprite();
@@ -77,12 +85,14 @@ module image {
             window.onmouseup = (pEvent) => this.onMouseUp(pEvent);
 
             this.mDrawingController = new DrawingController();
-            
-         
+
+        
+
+            document.getElementById("cropButton").addEventListener("click", () => this.onCrop());
         }
         //___________________________________________________
         /**
-         * 
+         * Removes image from frame
          * 
          * 
          * @memberOf ImageDrawing
@@ -97,6 +107,15 @@ module image {
                 this.mDrawPanel.destruct();
                 this.mDrawPanel.removeChildren();
             }
+            Globals.mCircles = new Array<shapes.Shape>();
+            Globals.mTextArray = new Array<asSvg.ForeignObject>();
+            Globals.currentShapeDragAction = null;
+            Globals.currentDragAction = null;
+            Globals.currentZoomAction = null;
+            Globals.currentEditTextAction = null;
+            Globals.currentTextDragAction = null;
+            this.mDrawPanel.visible = true;
+          
             this.mMovePanel.removeChildren();
             this.mRotationPanel.removeChildren();
             this.mRotationPanel.rotation = 0;
@@ -104,6 +123,11 @@ module image {
             this.mMovePanel = new asSvg.Sprite();
             this.mMovePanel.instanceName = "Move Panel";
             this.mRotationPanel.addChild(this.mMovePanel);
+            Globals.currentShapeDragAction = null;
+            Globals.currentDragAction = null;
+            Globals.currentZoomAction = null;
+            Globals.currentEditTextAction = null;
+            Globals.currentTextDragAction = null;
      
         }
         //__________________________________________
@@ -116,20 +140,19 @@ module image {
          * 
          * @memberOf ImageDrawing
          */
-        public setPicture(pURL: string, pAngle: number=0,pScale:number=1) {
+        public setPicture(pURL: string, pAngle: number = 0, pScale: number = 1, pDrawingObjects: Array<shapes.Shape> = null,pTextArray: Array<asSvg.ForeignObject>=null,pX:number = 0, pY: number = 0) {
             this.removeImage();
-            if (Globals.isTest) {
-                this.setPictureTest(pURL, pAngle,pScale);
-
+            if (Globals.isUseBase64) {
+                this.setPictureCanvas(pURL, pAngle, pScale, pDrawingObjects,pTextArray,pX,pY);
             }
             else {
-                this.setPictureCanvas(pURL, pAngle,pScale);
+                this.setPictureTest(pURL, pAngle, pScale, pDrawingObjects,pTextArray,pX,pY);
             }
         }
      
         //_______________________________________
-        private setPictureTest(pURL: string, pAngle = 0, pScale: number=1) {
-            this.mImage = new asSvg.Image(pURL, (pData) => this.onImageLoadTest(pAngle,pScale));
+        private setPictureTest(pURL: string, pAngle = 0, pScale: number = 1, pDrawingObjects = null,pTextArray=null, pX: number = 0,pY: number=0) {
+            this.mImage = new asSvg.Image(pURL, (pData) => this.onImageLoadTest(pAngle, pScale, pDrawingObjects,pX,pY));
         }
         //_________________________________________________
         /**
@@ -140,7 +163,9 @@ module image {
          * 
          * @memberOf ImageDrawing
          */
-        public onImageLoadTest(pAngle: number = 0, pScale: number = 1) {
+        private onImageLoadTest(pAngle: number = 0, pScale: number = 1, pDrawingObjects: Array<shapes.Shape> = null,pTextArray=null, pX: number=0,pY:number=0) {
+            this.HTMLImage = document.createElement("img");
+            this.HTMLImage.src = this.mImage.getPath();
             this.mOriginalAngle = pAngle;
             this.mCurrentAngle = pAngle;
             this.mOrginalScale = pScale;
@@ -169,20 +194,55 @@ module image {
                 this.rotate(pAngle);
             }
             if (this.mOrginalScale != 1) {
-                this.scale(this.mOrginalScale);
+                this.scale(this.mOrginalScale - this.minImgScale);
             }
+
+            if (pX != 0 || pY != 0) {
+                this.mMovePanel.x = pX;
+                this.mMovePanel.y = pY;
+                this.setImageInBound();
+            }
+
+            // add shapes after crop
+            asBase.events.EventManager.dispatchEvent(Globals.ADD_SHAPES_AFTER_CROP, this);
+            this.mImageCrop = new ImageCrop(this.mMovePanel);
+            if (pDrawingObjects) {
+                for (let i = 0; i < pDrawingObjects.length; i++) {
+                    pDrawingObjects[i].addToSprite(this.mDrawPanel);
+                    Globals.mCircles.push(pDrawingObjects[i]);
+                }
+
+            }
+
+            if (pTextArray) {
+                for (let i = 0; i < pTextArray.length; i++) {
+                   
+                    pTextArray[i].element.appendChild(pTextArray[i].mInputElement);
+                    this.mDrawPanel.addChild(pTextArray[i]);
+                
+                    Globals.mTextArray.push(pTextArray[i]);
+
+                    $(pTextArray[i].mInputElement).on("focusin", (pEvent, pTextElement) => this.onSelectText(pEvent, pTextArray[i]));
+                    pTextArray[i].mInputElement.addEventListener("input", (pTextElement) => this.onInputText(pTextArray[i]));
+                    pTextArray[i].mInputElement.oninput = (pInput) => this.expandTextBox(pTextArray[i].mInputElement);
+                    pTextArray[i].element.style.display = "block";
+                }
+            }
+
         }
         //__________________________________________
-        private setPictureCanvas(pURL:string,pAngle=0,pScale:number=1) {
+        private setPictureCanvas(pURL: string, pAngle = 0, pScale: number = 1, pDrawingObjects=null,pTextArray=null, pX: number=0,pY:number=0) {
             this.mSourceImage = document.createElement("img");
             this.mSourceImage.src = pURL;
-            this.mSourceImage.onload = (pData) => this.onImageLoadCanvas(pAngle, pScale);
+            this.mSourceImage.onload = (pData) => this.onImageLoadCanvas(pAngle, pScale, pDrawingObjects,pTextArray,pX,pY);
         }
         //______________________________________________
-        private onImageLoadCanvas(pAngle :number= 0,pScale:number=1) {
+        private onImageLoadCanvas(pAngle: number = 0, pScale: number = 1, pDrawingObjects: Array<shapes.Shape>=null,pTextArray=null ,pX: number = 0,pY: number=0) {
+
             this.mOriginalAngle = pAngle;
             this.mCurrentAngle = pAngle;
             this.mOrginalScale = pScale;
+
             let aCanvas: HTMLCanvasElement = document.createElement("canvas");;
             aCanvas.width = this.mSourceImage.naturalWidth;
             aCanvas.height = this.mSourceImage.naturalHeight;
@@ -217,12 +277,42 @@ module image {
             this.mMovePanel.addChild(this.mDrawPanel);
 
 
-            if (pAngle!=0) {
+            if (pAngle != 0) {
                 this.rotate(pAngle);
             }
             if (this.mOrginalScale != 1) {
-                this.scale(this.mOrginalScale);
+                this.scale(this.mOrginalScale - this.minImgScale);
             }
+
+            if (pX != 0 && pY != 0) {
+                this.mMovePanel.x = pX;
+                this.mMovePanel.y = pY;
+            }
+            // add shapes after crop
+            asBase.events.EventManager.dispatchEvent(Globals.ADD_SHAPES_AFTER_CROP, this);
+            this.mImageCrop = new ImageCrop(this.mMovePanel);
+            if (pDrawingObjects) {
+                for (let i = 0; i < pDrawingObjects.length; i++) {
+                    pDrawingObjects[i].addToSprite(this.mDrawPanel);
+                      Globals.mCircles.push(pDrawingObjects[i]);
+                    }
+                  
+            }
+            if (pTextArray) {
+                for (let i = 0; i < pTextArray.length; i++) {
+                   
+                    pTextArray[i].element.appendChild(pTextArray[i].mInputElement);
+                    this.mDrawPanel.addChild(pTextArray[i]);
+                    
+                    Globals.mTextArray.push(pTextArray[i]);
+
+                    $(pTextArray[i].mInputElement).on("focusin", (pEvent, pTextElement) => this.onSelectText(pEvent, pTextArray[i]));
+                    pTextArray[i].mInputElement.addEventListener("input", (pTextElement) => this.onInputText(pTextArray[i]));
+                    pTextArray[i].mInputElement.oninput = (pInput) => this.expandTextBox(pTextArray[i].mInputElement);
+                }
+            }
+            
+
         }
         //_____________________________________
         private getMinScale() {
@@ -255,10 +345,10 @@ module image {
         }
         //_________________________________
         /**
-         * 
+         * Rotates the sprite
          * 
          * @param {number} pAngle -angle to rotate image
-         * 
+         * im
          * @memberOf ImageDrawing
          */
         public rotate(pAngle: number) {
@@ -276,10 +366,14 @@ module image {
             }
             this.adjustTextPanelAfterRotation();
             this.setImageInBound();
-         }
+        }
+        //_________________________
+        private onCrop() {
+            Globals.isCropMode = true;
+        }
         //_____________________________________
         /**
-         * 
+         * Starts sribbling on the image
          * 
          * @param {string} pColor -drawing color( in hex)
          * 
@@ -304,21 +398,23 @@ module image {
         }
         //_____________________________________
         /**
-         * 
+         * Clears all shapes and text from the image
          * 
          * 
          * @memberOf ImageDrawing
          */
-        public clearAll() :void{
+        public clearAll(): void{
+            let aAction = new action.ClearAllAction(this.mDrawPanel);
+            Globals.ActionManager.addAction(aAction);
             this.mDrawPanel.removeChildren();
-            Globals.mDrawingShapes = new Array<asSvg.Shape>();
+            Globals.mCircles = new Array<shapes.Shape>();
             Globals.mTextArray = new Array<asSvg.ForeignObject>();
         }
         //____________________________
         /**
+         * Changes the draw color
          * 
-         * 
-         * @param {string} pColor 
+         * @param {string} pColor -Color to change to
          * 
          * @memberOf ImageDrawing
          */
@@ -328,7 +424,7 @@ module image {
         //_____________________________________
         /**
          * 
-         * 
+         * Sets the mode to text mode
          * 
          * @memberOf ImageDrawing
          */
@@ -356,19 +452,21 @@ module image {
                 
                 aTextElement.setLineStyle(6 / this.mRotationPanel.scaleX);
            
-                this.mDrawPanel.addChild(aTextElement)
+                this.mDrawPanel.addChild(aTextElement);
 
                 let aForeignObject: asSvg.ForeignObject = new asSvg.ForeignObject();
                 aForeignObject.x = this.msetTextPoint.x;
                 aForeignObject.y = this.msetTextPoint.y;
-                aForeignObject.setWidth(100);
-                aForeignObject.setHeight(50);
+                aForeignObject.setWidth(10);
+                aForeignObject.setHeight(10);
 
                 this.mDrawPanel.addChild(aForeignObject);
                 aForeignObject.mInputElement = document.createElement("input");
                 aForeignObject.mInputElement.size = 1;
                 //  $(aForeignObject.mInputElement).on("focusout", (pForeign) => this.onFocusOutText(aForeignObject, aForeignObject.mInputElement));
-                $(aForeignObject.mInputElement).on("focusin", (pEvent,pTextElement) => this.onSelectText(pEvent,aForeignObject));
+                $(aForeignObject.mInputElement).on("focusin", (pEvent, pTextElement) => this.onSelectText(pEvent, aForeignObject));
+                aForeignObject.mInputElement.addEventListener("input", (pTextElement) => this.onInputText(aForeignObject));
+              
                 aForeignObject.mInputElement.oninput = (pInput) => this.expandTextBox(aForeignObject.mInputElement);
                 aForeignObject.mInputElement.type = "text";
                 aForeignObject.mInputElement.className = "imageTextBox";
@@ -377,7 +475,7 @@ module image {
 
                 aForeignObject.textField = aTextElement;
                 aForeignObject.textField.textElement.style.display = "none";
-                aForeignObject.rotation = -this.mRotationPanel.rotation;
+               // aForeignObject.rotation = -this.mRotationPanel.rotation;
                 // aForeignObject.mInputElement.setAttribute("outline","dashed black")
 
 
@@ -385,12 +483,18 @@ module image {
                 aForeignObject.mInputElement.focus();
 
                 Globals.mTextArray.push(aForeignObject);
-                
+
+                //add action to action array
+                let aAction = new action.TextAction(this.mDrawPanel, aForeignObject);
+                Globals.ActionManager.addAction(aAction);
             
         }
         //___________________________
         private createSVGText(pForeignObject: asSvg.ForeignObject, pInput: HTMLInputElement) {
+            this.mDrawPanel.addChild(pForeignObject.textField);
             pForeignObject.textField.textElement.style.display = "block";
+
+            pForeignObject.textField.element.appendChild(pForeignObject.textField.textElement);
             pForeignObject.textField.x = pForeignObject.x ;
             pForeignObject.textField.y = pForeignObject.y ;
             pForeignObject.textField.rotation = pForeignObject.rotation;
@@ -398,6 +502,8 @@ module image {
             pForeignObject.textField.fontSize = this.fontSize / this.mRotationPanel.scaleX;
             pForeignObject.textField.textElement.setAttribute("fill", pForeignObject.mInputElement.style.color);
             pForeignObject.textField.textElement.setAttribute("font-family", "Arial");
+    
+
      
             
         }
@@ -408,27 +514,62 @@ module image {
             pInput.size = pInput.value.length + 1;
         }
         //___________________________________________
-        private onMouseDown(pMouseEvent) {
-            this.mMouseDown = true;
-
-            if (Globals.isDragMode) {
-                this.mMovePanel.startDrag(false,()=> this.setImageInBound());
+        private onMouseDown(pMouseEvent: MouseEvent) {
+            if (pMouseEvent.which != 1) {
+                this.onRightMouseDown();
                 return;
             }
-            let aShape: asSvg.Shape = new asSvg.Shape();
-            if (Globals.mDrawingShapes == null) {
-                Globals.mDrawingShapes = new Array<asSvg.Shape>();
+            this.mMouseDown = true;
+          
+            //crop mode
+            if (Globals.isCropMode) {
+                this.mImageCrop.onMousedown(pMouseEvent);
+                return;
             }
-            Globals.mDrawingShapes.push(aShape);
-            this.mDrawPanel.addChild(aShape);
-            aShape.setFill(null);
-            aShape.setLineStyle(this.mLineWidth / this.mRotationPanel.scaleX, parseInt(this.mDrawColor));
-            aShape.addEventListener("click", (pShape) => this.onSelectShape(aShape),this);
-            aShape.moveTo(this.mMovePanel.mouseX, this.mMovePanel.mouseY)
+            //draw a circle
+            if (Globals.isCircleMode) {
+                let aCircle = new shapes.Circle(this.mDrawPanel, this.mDrawColor);
+                Globals.mCircles.push(aCircle);
+                aCircle.onMouseDown(pMouseEvent);
+                let aAction = new action.DrawAction(this.mDrawPanel, aCircle);
+                Globals.ActionManager.addAction(aAction);
+                return;
+            }
+            // draw an arrow
+            if (Globals.isArrowMode) {
+                let aArrow = new shapes.Arrow(this.mDrawPanel, this.mDrawColor);
+                Globals.mCircles.push(aArrow);
+                aArrow.onMouseDown(pMouseEvent);
+                let aAction = new action.DrawAction(this.mDrawPanel, aArrow);
+                Globals.ActionManager.addAction(aAction);
+                return;
+            }
+            //draw a scribble
+            if (Globals.isDrawMode) {
+                //scribble mode
+                let aShape: shapes.Scribble = new shapes.Scribble(this.mDrawPanel, this.mDrawColor, ImageDrawing.LINE_WIDTH);
+                Globals.mCircles.push(aShape);
+                Globals.mCircles[Globals.mCircles.length - 1].onMouseDown(pMouseEvent);
+                let aAction = new action.DrawAction(this.mDrawPanel, aShape);
+                Globals.ActionManager.addAction(aAction);
+            }
+
+            
+
+
         }
         //__________________________________________
-        private setTextPoint(pMouseEvent) {
-            if (Globals.isTextMode) {
+        private onRightMouseDown() {
+            this.isRightMouseDown = true;
+            Globals.isDragMode = true;
+            this.mMovePanel.startDrag(false, () => this.setImageInBound());
+            let aPoint = new asBase.math.Point(this.mMovePanel.x, this.mMovePanel.y);
+            Globals.currentDragAction = new action.DragAction(aPoint, this.mMovePanel, () => this.setImageInBound());
+        }
+        //__________________________________________
+        private setTextPoint(pMouseEvent: MouseEvent) {
+            console.log("client x :" + pMouseEvent.clientX + "   client y :" + pMouseEvent.clientY);
+            if (Globals.isTextMode && this.isMouseInBound(pMouseEvent)) {
                 this.msetTextPoint = {};
                 this.msetTextPoint.x = this.mMovePanel.mouseX;
                 this.msetTextPoint.y = this.mMovePanel.mouseY;
@@ -439,17 +580,75 @@ module image {
             }
         }
         //_____________________________________
-        private onMouseMove(pMouseEvent) {
-            if (!this.mMouseDown) {
+        private onMouseMove(pMouseEvent: MouseEvent) {
+           if (!this.mMouseDown || pMouseEvent.which != 1) {
                 return;
             }
-            if (!Globals.isDragMode && Globals.isDrawMode) {
-                let aCurrentShape: asSvg.Shape = Globals.mDrawingShapes[Globals.mDrawingShapes.length - 1];
-                aCurrentShape.element.setAttribute("stroke", this.mDrawColor);
-                aCurrentShape.setLineStyle(this.mLineWidth / this.mRotationPanel.scaleX);
-                aCurrentShape.lineTo(this.mMovePanel.mouseX, this.mMovePanel.mouseY);
+            //crop mode
+            if (Globals.isCropMode) {
+                this.mImageCrop.onMouseMove(pMouseEvent);
+                return;
             }
+            //draw a circle
+            if (Globals.isCircleMode)
+            {
+             Globals.mCircles[Globals.mCircles.length - 1].onMouseMove(pMouseEvent);
+            }
+            // draw an arrow
+            if (Globals.isArrowMode) {
+             Globals.mCircles[Globals.mCircles.length - 1].onMouseMove(pMouseEvent);
+
+            }
+            //scribble
+            if (!Globals.isDragMode && Globals.isDrawMode) {
+            let aCurrentShape = Globals.mCircles[Globals.mCircles.length - 1];
+            aCurrentShape.onMouseMove(pMouseEvent);
+                }
+        }
+        //______________________________
+        private isTextInBound(pText: asSvg.ForeignObject) {
+  
+            let image = document.getElementById("image");
+            let aImageRect = image.getBoundingClientRect();
+            let aTextRect = pText.mInputElement.getBoundingClientRect();
+           
+            if ((aTextRect.left < aImageRect.left || aTextRect.right > aImageRect.right || aTextRect.top < aImageRect.top || aTextRect.bottom > aImageRect.bottom) && Globals.isDrawInBound) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        //______________________________
+     
+        //______________________________
+        private onInputText(pText: asSvg.ForeignObject) {
+            if (!this.isTextInBound(pText))
+            {
+               // pText.mInputElement.value = pText.mInputElement.value.slice(0, pText.mInputElement.value.length - 1);
+                console.log("text out of bounds");
+                return;
+            }
+
+//            pText.oldValue = pText.mInputElement.value;
+            if (this.mInputTimeout) {
+                clearTimeout(this.mInputTimeout);
+            }
+            else {
+                Globals.currentEditTextAction = new action.editTextAction(pText, pText.mInputElement.value);
+            }
+            this.mInputTimeout = setTimeout((aText) => this.addEditTextAction(pText), 1000);
+        }
             
+        //_________________________________________
+        private addEditTextAction(pText: asSvg.ForeignObject) {
+            this.mInputTimeout = null;
+          
+            if (Globals.currentEditTextAction && !Globals.currentEditTextAction.isAdded) {
+              
+                Globals.currentEditTextAction.newValue = pText.mInputElement.value;
+                Globals.ActionManager.addAction(Globals.currentEditTextAction);
+            }
         }
         //_____________________________________
         private setImageInBound() {
@@ -465,8 +664,7 @@ module image {
         //_____________________
         private setImageInBoundOriginal() {
             
-         var aX = this.mMovePanel.x;
-         var aY = this.mMovePanel.y;
+    
          var aImageRect = this.mMovePanel.getBounds();
          var aConRect = this.mImageContainer.getBoundingClientRect();
            
@@ -475,7 +673,7 @@ module image {
             } else {
                 let aPanelWidth: number = this.mImgWidth * this.mRotationPanel.scaleX;
                 let aMaxX = (aPanelWidth / 2 - aConRect.width / 2) / this.mRotationPanel.scaleX;
-                console.log("aPanelWidth = " + aPanelWidth + " --- " + aImageRect.width)
+                
                 if (this.mMovePanel.x > aMaxX) {
                     this.mMovePanel.x = aMaxX
                 }
@@ -488,7 +686,7 @@ module image {
             } else {
                 let aPanelHight: number = this.mImgHeight * this.mRotationPanel.scaleX;
                 let aMaxY = (aPanelHight / 2 - aConRect.height / 2) / this.mRotationPanel.scaleX
-                console.log("aPanelWidth = " + aPanelHight + " --- " + aImageRect.height)
+            
                 if (this.mMovePanel.y > aMaxY) {
                     this.mMovePanel.y = aMaxY
                 }
@@ -512,7 +710,7 @@ module image {
             else {
                 let aPanelWidth: number = this.mImgHeight * this.mRotationPanel.scaleX;
                 let aMaxX = (aPanelWidth / 2 - aConRect.width / 2) / this.mRotationPanel.scaleX;
-                console.log("aPanelWidth = " + aPanelWidth + " --- " + aImageRect.width)
+          
                 if (this.mMovePanel.y > aMaxX) {
                     this.mMovePanel.y = aMaxX
                 }
@@ -526,7 +724,7 @@ module image {
             else {
                 let aPanelHight: number = this.mImgWidth * this.mRotationPanel.scaleX;
                 let aMaxY = (aPanelHight / 2 - aConRect.height / 2) / this.mRotationPanel.scaleX
-                console.log("aPanelWidth = " + aPanelHight + " --- " + aImageRect.height)
+                
                 if (this.mMovePanel.x > aMaxY) {
                     this.mMovePanel.x = aMaxY
                 }
@@ -535,15 +733,92 @@ module image {
                 }
             }
         }
+       
+    
+        
+        
+
+        //________________________________
+        public clearImgSrc() {
+            if (this.mSourceImage) {
+                this.mSourceImage.onload = () => { };
+            }
+            if (this.HTMLImage) {
+                this.HTMLImage.onload = () => { };
+            }
+        }
+        //___________________________________________
+        private isMouseInBound(pMousEvent: MouseEvent): boolean {
+            let image = document.getElementById("image");
+            let aImageRect = image.getBoundingClientRect();
+            if ((pMousEvent.clientX < aImageRect.left || pMousEvent.clientX > aImageRect.right || pMousEvent.clientY < aImageRect.top || pMousEvent.clientY > aImageRect.bottom) && Globals.isDrawInBound) {
+                return false;
+            }
+            else {
+                return true;
+            }
+
+        }
         //_____________________________________
-        private onMouseUp(pMouseEvent) {
+        public onMouseUp(pMouseEvent: MouseEvent) {
+            if (pMouseEvent.which != 1)
+            {
+                this.onRightMouseUp();
+            }
             this.mMouseDown = false;
             this.mMousePoint = null;
+       
+
+            //crop mode
+            if (Globals.isCropMode) {
+                this.mImageCrop.onMouseUp();
+                return;
+            }
+            //draw a circle
+            if (Globals.isCircleMode){
+                Globals.mCircles[Globals.mCircles.length - 1].onMouseUp();
+                return;
+            }
+            //draw an arrow
+            if (Globals.isArrowMode) {
+                Globals.mCircles[Globals.mCircles.length - 1].onMouseUp();
+                return;
+            }
+            if (Globals.isDrawMode) {
+                //draw a shape
+                Globals.mCircles[Globals.mCircles.length - 1].onMouseUp();
+                return;
+            }
+           
+        }
+        //_____________________________________
+        private onRightMouseUp() {
+            this.isRightMouseDown = false;
+            Globals.isDragMode = false;
             this.mMovePanel.stopDrag();
+            //add drag action
+            if (Globals.currentDragAction && !Globals.currentDragAction.isAdded) {
+                let aNewPosition = new asBase.math.Point(this.mMovePanel.x, this.mMovePanel.y);
+                Globals.currentDragAction.newPosition = aNewPosition;
+                Globals.ActionManager.addAction(Globals.currentDragAction);
+            }
+
         }
         //________________________________________
         private onMouseWheel(e: any) {
             ImageDrawing.isZoomed = true;
+            let aNewScale = e.wheelDelta / 10000 * this.mRotationPanel.scaleX;
+            let aOldScale = -aNewScale;
+
+            if (ImageDrawing.zoom_timeout && Globals.currentZoomAction) {
+                clearTimeout(ImageDrawing.zoom_timeout);
+                Globals.currentZoomAction.scale = aNewScale;
+            }
+            else {
+                Globals.currentZoomAction = new action.ZoomAction(aOldScale, aNewScale, (pScale) => this.scale(pScale));
+                console.log("add zoom action");
+            }
+            ImageDrawing.zoom_timeout = setTimeout((pAction) => this.addZoomAction(Globals.currentZoomAction), 500);
             this.scale(e.wheelDelta / 10000 * this.mRotationPanel.scaleX);
         }
         //__________________________________
@@ -555,13 +830,23 @@ module image {
                 ImageDrawing.isZoomed = false;
                 this.mRotationPanel.setScale(this.minImgScale);
             }
+
             this.setImageInBound();
             this.adjustDrawPanelAfterScale();
+            
         }
+
+        //__________________________________
+        private addZoomAction(pZoomAction: action.ZoomAction) {
+            Globals.ActionManager.addAction(pZoomAction);
+            ImageDrawing.zoom_timeout = null;
+            Globals.currentZoomAction = null;
+        }
+      
         //___________________________________________
         private adjustDrawPanelAfterScale() {
-            for (let i = 0; i < Globals.mDrawingShapes.length; i++) {
-                Globals.mDrawingShapes[i].setLineStyle(this.mLineWidth / this.mRotationPanel.scaleX);
+            for (let i = 0; i < Globals.mCircles.length; i++) {
+                Globals.mCircles[i].setLineWidth(ImageDrawing.LINE_WIDTH / this.mRotationPanel.scaleX);
             }
             if (ImageDrawing.FIX_TEXT_TO_ZOOM){
                 for (let i = 0; i < Globals.mTextArray.length; i++) {
@@ -604,47 +889,35 @@ module image {
             else
                 Globals.isSelectMode = false;
         }
-        //__________________________________________
-        private onSelectShape(pShape: asSvg.Shape) {
-            if (Globals.isSelectMode && !Globals.isItemSelected) {
-                for (let i = 0; i < Globals.mDrawingShapes.length; i++) {
-                    if (Globals.mDrawingShapes[i] != pShape) {
-                        Globals.mDrawingShapes[i].alpha = 0.5;
-                    }
-
-                }
-                for (let i = 0; i < Globals.mTextArray.length; i++) {
-                        Globals.mTextArray[i].alpha = 0.5;   
-                }
-                pShape.parent.addChild(pShape);
-                Globals.isItemSelected = true;
-                this.mDrawingController.onSelectShape(pShape);
-            }
-        }
+      
+      
         //____________________________________________
         private onSelectText(pEvent,pText: asSvg.ForeignObject)
         {
-            if (Globals.isSelectMode && !Globals.isItemSelected) {
-                for (let i = 0; i < Globals.mDrawingShapes.length; i++) {
-                        Globals.mDrawingShapes[i].alpha = 0.5;
-                }
-                for (let i = 0; i < Globals.mTextArray.length; i++) {
-                    if (Globals.mTextArray[i] != pText) {
-                        Globals.mTextArray[i].alpha = 0.5;
-                    }
-                }
+            if (!Globals.isItemSelected) {
+              
                 Globals.isItemSelected = true;
-               // pText.parent.addChild(pText);
+               
                 this.mDrawingController.onSelectText(pText);
             }
             else if (!Globals.isTextMode){
                 pEvent.preventDefault();
                 pEvent.stopPropagation();
                 $(pText.mInputElement).blur();
+                Globals.currentEditTextAction = new action.editTextAction(pText, pText.mInputElement.value)
                 
-            };
+            }
         }
-        //___________________________________________
+
+        //____________________________
+        public onSelectShape(pShape: shapes.Shape) {
+            this.mDrawingController.onSelectShape(pShape);
+        }
+        //__________________________________________
+        public drawShapes(pShapes: Array<asSvg.DisplayObject>, pScale: number) {
+           
+        }
+        //___________________________________
         /**
          * 
          * 
@@ -686,6 +959,7 @@ module image {
                 // this.onFocusOutText()
                 (Globals.mTextArray[i].element as HTMLInputElement).style.display = "none";
                 this.createSVGText(Globals.mTextArray[i], Globals.mTextArray[i].mInputElement);
+
             }
         }
         //_______________________________________
@@ -700,12 +974,13 @@ module image {
                 
                 (Globals.mTextArray[i].element as HTMLInputElement).style.display = "block";
                 Globals.mTextArray[i].textField.text = "";
+            
                
             }
         }
         //_______________________________________
         /**
-         * 
+         * Expands the frame to full screem
          * 
          * @param {boolean} pIsFullScreen-true:minimize,false:maximize 
          * 
@@ -726,10 +1001,10 @@ module image {
      
 
         /**
+         * Resizes the SVG stage
          * 
-         * 
-         * @param {number} pWidth 
-         * @param {number} pHeight 
+         * @param {number} pWidth -width to resize to
+         * @param {number} pHeight -heigth to resize to
          * 
          * @memberOf ImageDrawing
          */
@@ -767,9 +1042,17 @@ module image {
             this.adjustDrawPanelAfterScale();
         }
         //_______________________________________
+        public getCroppedBound() {
+            let aRectBounds = this.mImageCrop.getCropBounds();
+            return aRectBounds;
+        }
+        //____________________________________
+        public getCroppedRect() {
+            return this.mImageCrop.rect;
+        }
         /**
          * 
-         * 
+         * Sets the font size of text objects
          * 
          * @memberOf ImageDrawing
          */
@@ -779,12 +1062,12 @@ module image {
         //__________________________________
         /**
          * 
-         * 
+         * Sets the line width of shapes
          * 
          * @memberOf ImageDrawing
          */
-        public set lineWidth(pLineWidth:number) {
-            this.mLineWidth = pLineWidth;
+        public set lineWidth(pLineWidth: number) {
+            ImageDrawing.LINE_WIDTH = pLineWidth;
         }
         //_____________________________
         /**

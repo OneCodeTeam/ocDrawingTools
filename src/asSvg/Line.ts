@@ -65,6 +65,7 @@ module asSvg {
                 this.mElement.setAttribute("y1", pY1.toString());
             }
             if (pX2 != null) {
+            
                 this.mElement.setAttribute("x2", pX2.toString());
             }
             if (pY2 != null) {

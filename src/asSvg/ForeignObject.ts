@@ -10,6 +10,7 @@
     export class ForeignObject extends DisplayObject{
         private mTextField: asSvg.TextField;
         public mInputElement: HTMLInputElement;
+        private mOldValue: string="";
         /**
          * Creates an instance of ForeignObject.
          * 
@@ -60,7 +61,26 @@
             //  this.mFontSize = pFont;
             this.mInputElement.setAttribute("font-size", pFont.toString());
         }
-
-      
+        //_____________________
+        public clone(): ForeignObject {
+            let aRet: ForeignObject = new ForeignObject();
+            aRet.mElement = this.mElement.cloneNode() as Element
+            aRet.mInputElement = this.mInputElement.cloneNode() as HTMLInputElement;
+            aRet.textField = this.mTextField.clone() as asSvg.TextField;
+            aRet.x = this.x;
+            aRet.y = this.y;
+            aRet.rotation = this.rotation;
+            aRet.scaleX = this.scaleX;
+            aRet.scaleY = this.scaleY;
+            return aRet;
+        }
+        //________________________
+        public get oldValue() {
+            return this.mOldValue;
+        }
+        //_______________________
+        public set oldValue(pVal) {
+            this.mOldValue = pVal;
+        }
     }
 }

@@ -88,6 +88,18 @@ module asSvg {
             }
 
         }
+        //_______________________
+        public clone(): TextField {
+            let aRet: TextField = new TextField();
+            aRet.mElement = this.mElement.cloneNode(true) as Element;
+            aRet.mTextElement = this.mTextElement.cloneNode() as SVGTextElement;
+            aRet.x = this.x;
+            aRet.y = this.y;
+            aRet.rotation = this.rotation;
+            aRet.scaleX = this.scaleX;
+            aRet.scaleY = this.scaleY;
+            return aRet;
+        }
         //________________________________________________________________________
 
         /**
