@@ -158,10 +158,13 @@ Manages cropping of the image
 
 ## Modules
 **action**
+
 Module for all classes that implement the IAction interfaces. 
 This module executes the redo/unod functionallity of the program.
 Each "user action" is repsented by a class
-*ActionManager*
+
+**Example**
+
 You can add a new action and undo/redo an action.
 ```typescript
 Add a clear all shapes from the image action
@@ -175,14 +178,17 @@ aActionManager.redo() // redo the last action undone.
 
 Module for all classes that extend the Shape Class. 
 Contains classes for shapes drawn by the user on the image
+
 *Arrow*
 An arrow object drawn by the user
+
 *Circle*
 A circle object drawn by the user
+
 *Scribble*
 A scribble object drawn by the user
 
-# Example
+**Example**
 
 Drawing a new shape:
 
@@ -193,17 +199,24 @@ let aCircle=new shapes.Circle(aSprite ,"#fffff");  // sprite to draw circle on, 
 ```
 
 **Globals**
+
 Class for constant variales used by all the other classes
-# Important Globals
+
+**Important Globals**
+
 *image.Globals.isDrawInBound*
 Determines whether shapes can be drawn only in the image's bounds.
 (true-only in bound, false,anywhere in the frame)
+
 *image.Globals.isFullScreen*
 Determines when the frame is on the full screen or not
+
 *image.Globals.mTextArray*
 Array of all text objects in the frame
+
 *image.Globals.mCircles*
 Array of all shape objects in the frame
+
 *image.Globals.isArrowMode*
 Determines whether the user is drawing an arrow or not
 ## Documentation
