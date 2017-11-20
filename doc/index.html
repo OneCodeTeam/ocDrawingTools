@@ -171,6 +171,51 @@ aImageDrawing.startDraw(aColor);
 				Manages the scaling,dragging,rotation and drawing of the image</p>
 				<p><strong>ImageSave</strong>
 				Manages the dowloading and saving of the image</p>
+				<p><strong>ImageCrop</strong>
+				Manages cropping of the image</p>
+				<h2 id="modules">Modules</h2>
+				<p><strong>action</strong></p>
+				<p>Module for all classes that implement the IAction interfaces.
+					This module executes the redo/unod functionallity of the program.
+				Each &quot;user action&quot; is repsented by a class</p>
+				<p><strong>Example</strong></p>
+				<p>You can add a new action and undo/redo an action.</p>
+				<pre><code class="lang-typescript">Add a clear all shapes <span class="hljs-keyword">from</span> the image action
+<span class="hljs-keyword">let</span> aActionManager=<span class="hljs-keyword">new</span> ActionManager();
+<span class="hljs-keyword">let</span> aAction=<span class="hljs-keyword">new</span> action.ClearAllAction(sprite);<span class="hljs-comment">//instance of asSVG.Sprite that the shapes were cleared from</span>
+aActionManager.addAction(aAction);<span class="hljs-comment">// Instance of class that implements IAction</span>
+aActionManager.undo(); <span class="hljs-comment">// undo the last action</span>
+aActionManager.redo() <span class="hljs-comment">// redo the last action undone.</span>
+</code></pre>
+				<p><strong>shapes</strong></p>
+				<p>Module for all classes that extend the Shape Class.
+				Contains classes for shapes drawn by the user on the image</p>
+				<p><em>Arrow</em>
+				An arrow object drawn by the user</p>
+				<p><em>Circle</em>
+				A circle object drawn by the user</p>
+				<p><em>Scribble</em>
+				A scribble object drawn by the user</p>
+				<p><strong>Example</strong></p>
+				<p>Drawing a new shape:</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> aSprite=<span class="hljs-keyword">new</span> asSvg.Sprite(); <span class="hljs-comment">//create a new sprite or use a existing one to draw the shape on</span>
+aStage.addChild(aSprite); <span class="hljs-comment">// add the sprite to the stage you created earlier on</span>
+<span class="hljs-keyword">let</span> aCircle=<span class="hljs-keyword">new</span> shapes.Circle(aSprite ,<span class="hljs-string">"#fffff"</span>);  <span class="hljs-comment">// sprite to draw circle on, color to draw circle</span>
+</code></pre>
+				<p><strong>Globals</strong></p>
+				<p>Class for constant variales used by all the other classes</p>
+				<p><strong>Important Globals</strong></p>
+				<p><em>image.Globals.isDrawInBound</em>
+					Determines whether shapes can be drawn only in the image&#39;s bounds.
+				(true-only in bound, false,anywhere in the frame)</p>
+				<p><em>image.Globals.isFullScreen</em>
+				Determines when the frame is on the full screen or not</p>
+				<p><em>image.Globals.mTextArray</em>
+				Array of all text objects in the frame</p>
+				<p><em>image.Globals.mCircles</em>
+				Array of all shape objects in the frame</p>
+				<p><em>image.Globals.isArrowMode</em>
+				Determines whether the user is drawing an arrow or not</p>
 				<h2 id="documentation">Documentation</h2>
 				<p>Full Documentation is available  here:<a href="http://labs.onecode.co.il/ocDrawingTools/doc">http://labs.onecode.co.il/ocDrawingTools/doc</a></p>
 			</div>
@@ -188,10 +233,58 @@ aImageDrawing.startDraw(aColor);
 						<a href="modules/_main_.html">"<wbr>Main"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_actionmanager_.html">"onecode/action/<wbr>Action<wbr>Manager"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_clearallaction_.html">"onecode/action/<wbr>Clear<wbr>All<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_coloraction_.html">"onecode/action/<wbr>Color<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_colortextaction_.html">"onecode/action/<wbr>Color<wbr>Text<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_cropaction_.html">"onecode/action/<wbr>Crop<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_deleteaction_.html">"onecode/action/<wbr>Delete<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_deletetextaction_.html">"onecode/action/<wbr>Delete<wbr>Text<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_dragaction_.html">"onecode/action/<wbr>Drag<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_dragshapeaction_.html">"onecode/action/<wbr>Drag<wbr>Shape<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_dragtextaction_.html">"onecode/action/<wbr>Drag<wbr>Text<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_drawaction_.html">"onecode/action/<wbr>Draw<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_iaction_.html">"onecode/action/IAction"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_textaction_.html">"onecode/action/<wbr>Text<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_zoomaction_.html">"onecode/action/<wbr>Zoom<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_action_edittextaction_.html">"onecode/action/edit<wbr>Text<wbr>Action"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="modules/_onecode_image_drawingcontroller_.html">"onecode/image/<wbr>Drawing<wbr>Controller"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_onecode_image_globals_.html">"onecode/image/<wbr>Globals"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_image_imagecrop_.html">"onecode/image/<wbr>Image<wbr>Crop"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_onecode_image_imagedrawing_.html">"onecode/image/<wbr>Image<wbr>Drawing"</a>
@@ -204,6 +297,15 @@ aImageDrawing.startDraw(aColor);
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_onecode_image_imagesavecombinecanvas_.html">"onecode/image/<wbr>Image<wbr>Save<wbr>Combine<wbr>Canvas"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_shapes_arrow_.html">"onecode/shapes/<wbr>Arrow"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_shapes_circle_.html">"onecode/shapes/<wbr>Circle"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_onecode_shapes_scribble_.html">"onecode/shapes/<wbr>Scribble"</a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Externals</span>
@@ -276,6 +378,12 @@ aImageDrawing.startDraw(aColor);
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="modules/_assvg_displayobject_.html">"as<wbr>Svg/displayobject"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_onecode_action_rotateaction_.html">"onecode/action/rotateaction"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_onecode_shapes_shape_.html">"onecode/shapes/shape"</a>
 					</li>
 				</ul>
 			</nav>

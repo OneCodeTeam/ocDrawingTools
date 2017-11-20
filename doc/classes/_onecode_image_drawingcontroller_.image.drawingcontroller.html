@@ -75,7 +75,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Class that controls each drawing item(text/scribble)</p>
+						<p>Class that controls each drawing item(text/shape)</p>
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>export</dt>
@@ -109,6 +109,8 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mcurrentshape" class="tsd-kind-icon">m<wbr>Current<wbr>Shape</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mcurrenttext" class="tsd-kind-icon">m<wbr>Current<wbr>Text</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mlastgoodtextx" class="tsd-kind-icon">m<wbr>Last<wbr>Good<wbr>TextX</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mlastgoodtexty" class="tsd-kind-icon">m<wbr>Last<wbr>Good<wbr>TextY</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mtimeout" class="tsd-kind-icon">m<wbr>Time<wbr>Out</a></li>
 							</ul>
 						</section>
@@ -119,7 +121,6 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#changetextcolor" class="tsd-kind-icon">change<wbr>Text<wbr>Color</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#deleteshape" class="tsd-kind-icon">delete<wbr>Shape</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#deletetext" class="tsd-kind-icon">delete<wbr>Text</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#ondeselect" class="tsd-kind-icon">on<wbr>Deselect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#ondeselectshape" class="tsd-kind-icon">on<wbr>Deselect<wbr>Shape</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#ondeselecttext" class="tsd-kind-icon">on<wbr>Deselect<wbr>Text</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#onmousedownshape" class="tsd-kind-icon">on<wbr>Mouse<wbr>Down<wbr>Shape</a></li>
@@ -128,6 +129,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#onmouseuptext" class="tsd-kind-icon">on<wbr>Mouse<wbr>UpText</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#onselectshape" class="tsd-kind-icon">on<wbr>Select<wbr>Shape</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#onselecttext" class="tsd-kind-icon">on<wbr>Select<wbr>Text</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#settextinbound" class="tsd-kind-icon">set<wbr>Text<wbr>InBound</a></li>
 							</ul>
 						</section>
 					</div>
@@ -145,7 +147,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:11</li>
+									<li>Defined in onecode/image/DrawingController.ts:13</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -168,10 +170,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="mcurrentshape" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> m<wbr>Current<wbr>Shape</h3>
-					<div class="tsd-signature tsd-kind-icon">m<wbr>Current<wbr>Shape<span class="tsd-signature-symbol">:</span> <a href="_assvg_shape_.assvg.shape.html" class="tsd-signature-type">Shape</a></div>
+					<div class="tsd-signature tsd-kind-icon">m<wbr>Current<wbr>Shape<span class="tsd-signature-symbol">:</span> <a href="_onecode_shapes_shape_.shapes.shape.html" class="tsd-signature-type">Shape</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in onecode/image/DrawingController.ts:9</li>
+							<li>Defined in onecode/image/DrawingController.ts:10</li>
 						</ul>
 					</aside>
 				</section>
@@ -181,7 +183,27 @@
 					<div class="tsd-signature tsd-kind-icon">m<wbr>Current<wbr>Text<span class="tsd-signature-symbol">:</span> <a href="_assvg_foreignobject_.assvg.foreignobject.html" class="tsd-signature-type">ForeignObject</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in onecode/image/DrawingController.ts:10</li>
+							<li>Defined in onecode/image/DrawingController.ts:9</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="mlastgoodtextx" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> m<wbr>Last<wbr>Good<wbr>TextX</h3>
+					<div class="tsd-signature tsd-kind-icon">m<wbr>Last<wbr>Good<wbr>TextX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in onecode/image/DrawingController.ts:12</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="mlastgoodtexty" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> m<wbr>Last<wbr>Good<wbr>TextY</h3>
+					<div class="tsd-signature tsd-kind-icon">m<wbr>Last<wbr>Good<wbr>TextY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in onecode/image/DrawingController.ts:13</li>
 						</ul>
 					</aside>
 				</section>
@@ -208,7 +230,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:44</li>
+									<li>Defined in onecode/image/DrawingController.ts:56</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -225,7 +247,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:49</li>
+									<li>Defined in onecode/image/DrawingController.ts:66</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -242,7 +264,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:29</li>
+									<li>Defined in onecode/image/DrawingController.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -259,24 +281,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:37</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="ondeselect" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> on<wbr>Deselect</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">on<wbr>Deselect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:97</li>
+									<li>Defined in onecode/image/DrawingController.ts:45</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -293,7 +298,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:87</li>
+									<li>Defined in onecode/image/DrawingController.ts:109</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -310,7 +315,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:110</li>
+									<li>Defined in onecode/image/DrawingController.ts:119</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -327,7 +332,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:120</li>
+									<li>Defined in onecode/image/DrawingController.ts:142</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -350,7 +355,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:126</li>
+									<li>Defined in onecode/image/DrawingController.ts:134</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -367,15 +372,21 @@
 					<a name="onmouseupshape" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> on<wbr>Mouse<wbr>UpShape</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">on<wbr>Mouse<wbr>UpShape<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Mouse<wbr>UpShape<span class="tsd-signature-symbol">(</span>pEvent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:137</li>
+									<li>Defined in onecode/image/DrawingController.ts:164</li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pEvent: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -390,7 +401,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:132</li>
+									<li>Defined in onecode/image/DrawingController.ts:152</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -401,13 +412,13 @@
 					<a name="onselectshape" class="tsd-anchor"></a>
 					<h3>on<wbr>Select<wbr>Shape</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">on<wbr>Select<wbr>Shape<span class="tsd-signature-symbol">(</span>pShape<span class="tsd-signature-symbol">: </span><a href="_assvg_shape_.assvg.shape.html" class="tsd-signature-type">Shape</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Select<wbr>Shape<span class="tsd-signature-symbol">(</span>pShape<span class="tsd-signature-symbol">: </span><a href="_onecode_shapes_shape_.shapes.shape.html" class="tsd-signature-type">Shape</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:62</li>
+									<li>Defined in onecode/image/DrawingController.ts:82</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -420,7 +431,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>pShape: <a href="_assvg_shape_.assvg.shape.html" class="tsd-signature-type">Shape</a></h5>
+									<h5>pShape: <a href="_onecode_shapes_shape_.shapes.shape.html" class="tsd-signature-type">Shape</a></h5>
 									<div class="tsd-comment tsd-typography">
 									</div>
 								</li>
@@ -439,7 +450,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in onecode/image/DrawingController.ts:77</li>
+									<li>Defined in onecode/image/DrawingController.ts:97</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -456,6 +467,29 @@
 									<div class="tsd-comment tsd-typography">
 										<p>-Text Selected</p>
 									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="settextinbound" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> set<wbr>Text<wbr>InBound</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Text<wbr>InBound<span class="tsd-signature-symbol">(</span>pMouseEvent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MouseEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in onecode/image/DrawingController.ts:172</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pMouseEvent: <span class="tsd-signature-type">MouseEvent</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -497,6 +531,12 @@
 								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mcurrenttext" class="tsd-kind-icon">m<wbr>Current<wbr>Text</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mlastgoodtextx" class="tsd-kind-icon">m<wbr>Last<wbr>Good<wbr>TextX</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mlastgoodtexty" class="tsd-kind-icon">m<wbr>Last<wbr>Good<wbr>TextY</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#mtimeout" class="tsd-kind-icon">m<wbr>Time<wbr>Out</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -510,9 +550,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#deletetext" class="tsd-kind-icon">delete<wbr>Text</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#ondeselect" class="tsd-kind-icon">on<wbr>Deselect</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#ondeselectshape" class="tsd-kind-icon">on<wbr>Deselect<wbr>Shape</a>
@@ -537,6 +574,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#onselecttext" class="tsd-kind-icon">on<wbr>Select<wbr>Text</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_onecode_image_drawingcontroller_.image.drawingcontroller.html#settextinbound" class="tsd-kind-icon">set<wbr>Text<wbr>InBound</a>
 							</li>
 						</ul>
 					</li>
