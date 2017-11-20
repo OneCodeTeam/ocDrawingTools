@@ -14,9 +14,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <div id="imageTools" style="width:370px; margin:0 auto">
+    <div id="imageTools" style="width:750px; margin:0 auto">
     
         <button title="Upload Image" id="setImageButton"><span class="glyphicon glyphicon-open"></span></button>
         <button title="Write"id="setTextButton"><span class="glyphicon glyphicon-font"></span></button>
@@ -29,13 +30,16 @@
         </datalist>
         
         <button title="Draw" id="drawButton"><span class="glyphicon glyphicon-pencil"></span></button>
-        <input id="lineWidthBox"type="text" list="lineWidth" style="width:40px;position:fixed" />
+        <input id="lineWidthBox"type="text" list="lineWidth" style="width:40px" />
         <datalist id="lineWidth">
             <option value="2">2</option>
             <option value="4">4</option>
             <option value="6">6</option>
             <option value="8">8</option>
         </datalist>
+        <button title="Draw Circle" id="drawCircleButton"><span class="fa fa-circle"></span></button>
+       
+        <button title="Draw Arrow" id="drawArrowButton"><span class=" glyphicon glyphicon-arrow-right"></span></button>
         <input id="drawColor" type="color"  style="width:40px" />
 
         <button title="Select" id="selectButton"><span class="fa fa-crosshairs"></span></button>
@@ -45,7 +49,11 @@
         <button title="Maximize" id="fullScreenButton"><span class="glyphicon glyphicon-resize-full"></span></button>
         <button title="Download Image" id="downloadButton"><span class="glyphicon glyphicon-save"></span></button>
         <button title="Rotate" id="rotateButton" style="display:none"><span class="glyphicon glyphicon-repeat"></span></button>
-
+        <button title="Crop" id="cropButton" >Crop</button>
+        <button title="Crop" id="confirmCropButton">Confirm Crop</button>
+        <button title="Undo" id="undoButton"><span class="material-icons">undo</span></button>
+        <button title="Redo" id="redoButton"><i class="material-icons">redo</i></button>
+ 
     </div>
 
 
@@ -60,7 +68,7 @@
         <button title="Close Menu"id="closeTextButton"><span class="glyphicon glyphicon-remove"></span></button>
       
     </div>
-    <div id="imageDiv" style="width:1000px;height:700px;background-color:aquamarine ;margin:0 auto" ></div>
+    <div id="imageDiv" style="width:1000px;height:700px;background-color:AliceBlue  ;margin:0 auto" ></div>
     <div style="width:448px;margin:0 auto"> <a href="http://onecode.co.il/"><img src="assets/OneCode Logo.png" /></a></div>
 </body>
 </html>
