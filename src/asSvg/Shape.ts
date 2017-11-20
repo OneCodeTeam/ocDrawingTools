@@ -18,6 +18,7 @@ module asSvg {
         private mDraw: string
         private mCurrentX: number = 0;
         private mCurrentY: number = 0;
+        
 
         /**
          * Creates an instance of Shape.

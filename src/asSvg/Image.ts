@@ -107,7 +107,11 @@
          * @memberOf Image
          */
         public setPath(pPath: string) {
+            this.mPath = pPath;
             this.mElement.setAttributeNS('http://www.w3.org/1999/xlink', 'href', pPath);
+        }
+        public getPath(): string {
+            return this.mPath;
         }
         //______________________________________________________________________________
         /**
