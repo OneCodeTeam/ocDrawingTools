@@ -153,6 +153,9 @@ Manages the scaling,dragging,rotation and drawing of the image
 **ImageSave**
 Manages the dowloading and saving of the image
 
+**ImageCrop**
+Manages cropping of the image
+
 ## Modules
 **action**
 Module for all classes that implement the IAction interfaces. 
@@ -161,16 +164,48 @@ Each "user action" is repsented by a class
 *ActionManager*
 You can add a new action and undo/redo an action.
 ```typescript
+Add a clear all shapes from the image action
 let aActionManager=new ActionManager();
-aActionManager.addAction(action);// Instance of class that implements IAction
+let aAction=new action.ClearAllAction(sprite);//instance of asSVG.Sprite that the shapes were cleared from
+aActionManager.addAction(aAction);// Instance of class that implements IAction
 aActionManager.undo(); // undo the last action
 aActionManager.redo() // redo the last action undone.
 ```
 **shapes**
+
 Module for all classes that extend the Shape Class. 
 Contains classes for shapes drawn by the user on the image
+*Arrow*
+An arrow object drawn by the user
+*Circle*
+A circle object drawn by the user
+*Scribble*
+A scribble object drawn by the user
 
+# Example
 
+Drawing a new shape:
+
+```typescript
+let aSprite=new asSvg.Sprite(); //create a new sprite or use a existing one to draw the shape on
+aStage.addChild(aSprite); // add the sprite to the stage you created earlier on
+let aCircle=new shapes.Circle(aSprite ,"#fffff");  // sprite to draw circle on, color to draw circle
+```
+
+**Globals**
+Class for constant variales used by all the other classes
+# Important Globals
+*image.Globals.isDrawInBound*
+Determines whether shapes can be drawn only in the image's bounds.
+(true-only in bound, false,anywhere in the frame)
+*image.Globals.isFullScreen*
+Determines when the frame is on the full screen or not
+*image.Globals.mTextArray*
+Array of all text objects in the frame
+*image.Globals.mCircles*
+Array of all shape objects in the frame
+*image.Globals.isArrowMode*
+Determines whether the user is drawing an arrow or not
 ## Documentation
 
 Full Documentation is available  here:http://labs.onecode.co.il/ocDrawingTools/doc
