@@ -1,8 +1,13 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var asBase;
 (function (asBase) {
     var events;
@@ -534,18 +539,49 @@ var asBase;
         var MathUtils = (function () {
             function MathUtils() {
             }
+            /**
+             * Interpolate two points by a given measurement
+             *
+             * @static
+             * @param {asBase.math.Point} pP1
+             * @param {asBase.math.Point} pP2
+             * @param {number} pVal
+             * @returns {Point} -interpolated point
+             *
+             * @memberOf MathUtils
+             */
             MathUtils.interpolate = function (pP1, pP2, pVal) {
                 var aDx = (pP2.x - pP1.x) * pVal;
                 var aDy = (pP2.y - pP1.y) * pVal;
                 return (new asBase.math.Point(pP1.x + aDx, pP1.y + aDy));
             };
             //_____________________________________________________________________
+            /**
+             * Caculates the distance between 2 points
+             *
+             * @static
+             * @param {asBase.math.Point} pP1 -point 1
+             * @param {asBase.math.Point} pP2 -point 2
+             * @returns {number} -caculated distance
+             *
+             * @memberOf MathUtils
+             */
             MathUtils.distance = function (pP1, pP2) {
                 var aDx = (pP1.x - pP2.x);
                 var aDy = (pP1.y - pP2.y);
                 return (Math.sqrt((aDx * aDx) + (aDy * aDy)));
             };
             //_____________________________________________________________________
+            /**
+             * Rotates a 2D point
+             *
+             * @static
+             * @param {asBase.math.Point} pPoint -point to rotate
+             * @param {number} pAngle -rotation angle
+             * @returns {Point} -rotated point
+             *
+             * @memberOf MathUtils
+             */
             MathUtils.rotatePoint = function (pPoint, pAngle) {
                 var aRadAngle = pAngle * MathUtils.DEG_TO_RAD;
                 var aX = pPoint.x * Math.cos(aRadAngle) - pPoint.y * Math.sin(aRadAngle);
@@ -553,6 +589,16 @@ var asBase;
                 return (new asBase.math.Point(aX, aY));
             };
             //_____________________________________________________________________
+            /**
+             * Checks if two rectangles are overlapping
+             *
+             * @static
+             * @param {ClientRect} pRect1
+             * @param {ClientRect} pRect2
+             * @returns {boolean}
+             *
+             * @memberOf MathUtils
+             */
             MathUtils.isRectOverlap = function (pRect1, pRect2) {
                 return !(pRect2.left > pRect1.right ||
                     pRect2.right < pRect1.left ||
@@ -560,6 +606,16 @@ var asBase;
                     pRect2.bottom < pRect1.top);
             };
             //_____________________________________________________________________
+            /**
+             * Combines two rectangles together
+             *
+             * @static
+             * @param {ClientRect} pBaseRect -Base rectangle
+             * @param {ClientRect} pWithRect -rectangle to add to base rectangle
+             * @returns {ClientRect} -combined rectangle
+             *
+             * @memberOf MathUtils
+             */
             MathUtils.combineRectToBaseRect = function (pBaseRect, pWithRect) {
                 pBaseRect.left = Math.min(pBaseRect.left, pWithRect.left);
                 pBaseRect.right = Math.max(pBaseRect.right, pWithRect.right);
@@ -595,6 +651,11 @@ https://github.com/epistemex/transformation-matrix-js/blob/master/src/matrix.js
          * @class Matrix
          */
         var Matrix = (function () {
+            /**
+             * Creates an instance of Matrix.
+             *
+             * @memberOf Matrix
+             */
             function Matrix() {
                 //------------------------------
                 // Members
@@ -655,12 +716,27 @@ https://github.com/epistemex/transformation-matrix-js/blob/master/src/matrix.js
             };
             ;
             //______________________________________________________
+            /**
+             * Rotate the matrix
+             *
+             * @param {any} pAngle -rotation angle
+             * @returns {Matrix} -rotated matrix
+             *
+             * @memberOf Matrix
+             */
             Matrix.prototype.rotate = function (pAngle) {
                 var cos = Math.cos(pAngle), sin = Math.sin(pAngle);
                 return this.transform(cos, sin, -sin, cos, 0, 0);
             };
             ;
             //____________________________________________________
+            /**
+             * Divide the matrix by a scalar
+             *
+             * @param {number} pScalar - scalar
+             *
+             * @memberOf Matrix
+             */
             Matrix.prototype.divideScalar = function (pScalar) {
                 this.a /= pScalar;
                 this.b /= pScalar;
@@ -699,10 +775,25 @@ https://github.com/epistemex/transformation-matrix-js/blob/master/src/matrix.js
             };
             ;
             //____________________________________________________
+            /**
+             * Multiply the matrix with another matrix
+             *
+             * @param {Matrix} pMatrix -matrix to multiply with
+             * @returns {Matrix} -multplied matrix
+             *
+             * @memberOf Matrix
+             */
             Matrix.prototype.multiply = function (pMatrix) {
                 return (this.transform(pMatrix.a, pMatrix.b, pMatrix.c, pMatrix.d, pMatrix.e, pMatrix.f));
             };
             //____________________________________________________
+            /**
+             * Inverse the matrix
+             *
+             * @returns {Matrix} -inversed matrix
+             *
+             * @memberOf Matrix
+             */
             Matrix.prototype.inverse = function () {
                 var aRet = new Matrix();
                 var dt = this.determinant();
@@ -719,6 +810,15 @@ https://github.com/epistemex/transformation-matrix-js/blob/master/src/matrix.js
             };
             ;
             //____________________________________________________
+            /**
+             * Interpolates two matrix with a given value
+             *
+             * @param {Matrix} pMatrix -matrix to interpolate with
+             * @param {any} pT
+             * @returns {Matrix} -interpolated matrix
+             *
+             * @memberOf Matrix
+             */
             Matrix.prototype.interpolate = function (pMatrix, pT) {
                 var aRet = new Matrix();
                 aRet.a = this.a + (pMatrix.a - this.a) * pT;
@@ -768,6 +868,13 @@ var asBase;
          * @class Point
          */
         var Point = (function () {
+            /**
+             * Creates an instance of Point.
+             * @param {number} [iX=0]
+             * @param {number} [iY=0]
+             *
+             * @memberOf Point
+             */
             function Point(iX, iY) {
                 if (iX === void 0) { iX = 0; }
                 if (iY === void 0) { iY = 0; }
@@ -780,14 +887,41 @@ var asBase;
             /****************************
             * Methods
             ****************************/
+            /**
+             * Subtracts two points
+             *
+             * @param {Point} p -point to subtract from this point
+             * @returns {Point}
+             *
+             * @memberOf Point
+             */
             Point.prototype.subtract = function (p) {
                 return (new Point(this.x - p.x, this.y - p.y));
             };
             //________________________________________________________________
+            /**
+             * Adds two points
+             *
+             * @param {Point} p -point to add
+             * @returns {Point} - the sum of two points
+             *
+             * @memberOf Point
+             */
             Point.prototype.add = function (p) {
                 return (new Point(this.x + p.x, this.y + p.y));
             };
             //________________________________________________________________
+            /**
+             *
+             *
+             * @static
+             * @param {Point} p1
+             * @param {Point} p2
+             * @param {number} pFrac
+             * @returns {Point}
+             *
+             * @memberOf Point
+             */
             Point.interpolate = function (p1, p2, pFrac) {
                 var aX = p1.x + (p2.x - p1.x) * pFrac;
                 var aY = p1.y + (p2.y - p1.y) * pFrac;
@@ -840,6 +974,12 @@ var asBase;
          * @class Rectangle
          */
         var Rectangle = (function () {
+            /**
+             * Creates an instance of Rectangle.
+             * @param {ClientRect} [pClientRect]
+             *
+             * @memberOf Rectangle
+             */
             function Rectangle(pClientRect) {
                 //------------------------------
                 // Members
@@ -856,10 +996,27 @@ var asBase;
                 }
             }
             //____________________________________
+            /**
+             * Checks is a point intersects with this rectangle
+             *
+             * @param {any} pX
+             * @param {any} pY
+             * @returns {boolean}
+             *
+             * @memberOf Rectangle
+             */
             Rectangle.prototype.intersectsPoint = function (pX, pY) {
                 return !((pX < this.left) || (pX > this.right) || (pY < this.top) || (pY > this.bottom));
             };
             //____________________________________
+            /**
+             * Checks if a rectangle intersects with this rectangle
+             *
+             * @param {Rectangle} pRectB -rectangle to check
+             * @returns {boolean}
+             *
+             * @memberOf Rectangle
+             */
             Rectangle.prototype.intersects = function (pRectB) {
                 return !(pRectB.left > this.right ||
                     pRectB.right < this.left ||
@@ -867,6 +1024,16 @@ var asBase;
                     pRectB.bottom < this.top);
             };
             //____________________________________
+            /**
+             * Chekks if two rectangles intersects
+             *
+             * @static
+             * @param {ClientRect} pRectA
+             * @param {ClientRect} pRectB
+             * @returns {boolean}
+             *
+             * @memberOf Rectangle
+             */
             Rectangle.intersectRect = function (pRectA, pRectB) {
                 return !(pRectB.left > pRectA.right ||
                     pRectB.right < pRectA.left ||
@@ -874,6 +1041,17 @@ var asBase;
                     pRectB.bottom < pRectA.top);
             };
             //____________________________________
+            /**
+             * Checks if a rectangle and a point intersect
+             *
+             * @static
+             * @param {ClientRect} pRectA
+             * @param {number} iX
+             * @param {number} iY
+             * @returns {boolean}
+             *
+             * @memberOf Rectangle
+             */
             Rectangle.intersectPoint = function (pRectA, iX, iY) {
                 return !(pRectA.left > iX ||
                     pRectA.right < iX ||
@@ -881,6 +1059,18 @@ var asBase;
                     pRectA.bottom < iY);
             };
             //____________________________________
+            /**
+             * Creates an instance of Rectangle
+             *
+             * @static
+             * @param {number} iX
+             * @param {number} iY
+             * @param {number} iWidth
+             * @param {number} iHeight
+             * @returns {Rectangle}
+             *
+             * @memberOf Rectangle
+             */
             Rectangle.create = function (iX, iY, iWidth, iHeight) {
                 var aRet = new Rectangle();
                 aRet.left = iX;
@@ -971,6 +1161,7 @@ var asSvg;
      *
      * @export
      * @class DisplayObject
+     * @module asSvg
      */
     var DisplayObject = (function () {
         /**
@@ -1216,6 +1407,7 @@ var asSvg;
                     this.mMatrix = new asBase.math.Matrix();
                     var a = this.mRotation * Math.PI / 180;
                     this.mMatrix.setTransform(this.mScaleX * Math.cos(a), this.mScaleY * Math.sin(a), -this.mScaleX * Math.sin(a), this.mScaleY * Math.cos(a), this.mX, this.mY);
+                    //this.mMatrix.setTransform(this.mScaleX, 0,0, this.mScaleY, this.mX, this.mY);
                 }
                 return (this.mMatrix);
             },
@@ -2227,910 +2419,6 @@ var asSvg;
     }(asSvg.DisplayObject));
     asSvg.Circle = Circle;
 })(asSvg || (asSvg = {}));
-///// https://github.com/pnitsch/BitmapData.js/blob/master/js/BitmapData.js
-var halfColorMax = 0.00784313725;
-function hexToRGB(hex) { return { r: ((hex & 0xff0000) >> 16), g: ((hex & 0x00ff00) >> 8), b: ((hex & 0x0000ff)) }; }
-;
-function RGBToHex(rgb) { return rgb.r << 16 | rgb.g << 8 | rgb.b; }
-;
-var asSvg;
-(function (asSvg) {
-    var display;
-    (function (display) {
-        var Point = asBase.math.Point;
-        var BitmapData = (function () {
-            function BitmapData(width, height, transparent, fillColor, canvas) {
-                if (transparent === void 0) { transparent = true; }
-                if (fillColor === void 0) { fillColor = 0x00000000; }
-                if (canvas === void 0) { canvas = null; }
-                this.va = null;
-                this.tex0 = null;
-                this.tex1 = null;
-                this.glPixelArray = null;
-                this.width = width;
-                this.height = height;
-                this.rect = new asBase.math.Rectangle();
-                this.rect.x = 0;
-                this.rect.y = 0;
-                this.rect.width = this.width;
-                this.rect.height = this.height;
-                this.transparent = transparent;
-                this.canvas = canvas || document.createElement("canvas");
-                this.context = this.canvas.getContext("2d");
-                this.canvas.setAttribute('width', this.width);
-                this.canvas.setAttribute('height', this.height);
-                this.drawingCanvas = document.createElement("canvas");
-                this.drawingContext = this.drawingCanvas.getContext("2d");
-                this.imagedata = this.context.createImageData(this.width, this.height);
-                /*** WebGL functions ***/
-                this.glCanvas = document.createElement("canvas");
-                this.gl = null;
-                this.program = null;
-                this.gpuEnabled = true;
-                try {
-                    this.gl = this.glCanvas.getContext("experimental-webgl");
-                }
-                catch (e) {
-                    this.gpuEnabled = false;
-                }
-            }
-            ;
-            Object.defineProperty(BitmapData.prototype, "data", {
-                //_________________________________________________________
-                get: function () {
-                    return this.imagedata;
-                },
-                set: function (pData) {
-                    this.imagedata = pData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            BitmapData.prototype.initProgram = function (effect) {
-                var gl = this.gl;
-                var program = gl.createProgram();
-                var vs = gl.createShader(gl.VERTEX_SHADER);
-                var fs = gl.createShader(gl.FRAGMENT_SHADER);
-                gl.shaderSource(vs, effect.vsSrc);
-                gl.shaderSource(fs, effect.fsSrc);
-                gl.compileShader(vs);
-                gl.compileShader(fs);
-                if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
-                    gl.deleteProgram(program);
-                }
-                if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
-                    gl.deleteProgram(program);
-                }
-                gl.attachShader(program, vs);
-                gl.attachShader(program, fs);
-                gl.deleteShader(vs);
-                gl.deleteShader(fs);
-                gl.linkProgram(program);
-                if (this.program != null)
-                    gl.deleteProgram(this.program);
-                this.program = program;
-                gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-                gl.useProgram(program);
-                var vertices = new Float32Array([-1.0, -1.0,
-                    1.0, -1.0,
-                    -1.0, 1.0,
-                    1.0, -1.0,
-                    1.0, 1.0,
-                    -1.0, 1.0]);
-                this.va = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, this.va);
-                gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.initTexture = function (pos, image) {
-                var gl = this.gl;
-                var tex = gl.createTexture();
-                gl.enable(gl.TEXTURE_2D);
-                gl.bindTexture(gl.TEXTURE_2D, tex);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-                gl.generateMipmap(gl.TEXTURE_2D);
-                gl.bindTexture(gl.TEXTURE_2D, null);
-                if (pos == 0) {
-                    if (this.tex0 != null)
-                        gl.deleteTexture(this.tex0);
-                    this.tex0 = tex;
-                    this.glCanvas.setAttribute('width', image.width);
-                    this.glCanvas.setAttribute('height', image.height);
-                    this.glPixelArray = new Uint8Array(image.width * image.height * 4);
-                }
-                else {
-                    if (this.tex1 != null)
-                        gl.deleteTexture(this.tex1);
-                    this.tex1 = tex;
-                }
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.drawGL = function (matrix) {
-                var gl = this.gl;
-                var program = this.program;
-                var ra = [matrix.a, matrix.c, 0, matrix.b, matrix.d, 0, 0, 0, 1];
-                var p = gl.getAttribLocation(program, "pos");
-                var ur = gl.getUniformLocation(program, "r");
-                var ut = gl.getUniformLocation(program, "t");
-                var t0 = gl.getUniformLocation(program, "tex0");
-                var t1 = gl.getUniformLocation(program, "tex1");
-                var rm = gl.getUniformLocation(program, "rMat");
-                gl.bindBuffer(gl.ARRAY_BUFFER, this.va);
-                gl.uniform2f(ur, this.glCanvas.width * 2, this.glCanvas.height * 2);
-                gl.uniformMatrix3fv(rm, false, new Float32Array(ra));
-                gl.uniform2f(ut, matrix.tx, matrix.ty);
-                gl.vertexAttribPointer(p, 2, gl.FLOAT, false, 0, 0);
-                gl.enableVertexAttribArray(p);
-                gl.uniform1i(t0, 0);
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, this.tex0);
-                gl.uniform1i(t1, 1);
-                gl.activeTexture(gl.TEXTURE1);
-                gl.bindTexture(gl.TEXTURE_2D, this.tex1);
-                gl.drawArrays(gl.TRIANGLES, 0, 6);
-                gl.disableVertexAttribArray(p);
-                gl.flush();
-                var w = this.glCanvas.width;
-                var h = this.glCanvas.height;
-                var arr = this.glPixelArray;
-                gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, arr);
-                var pos;
-                var data = this.imagedata.data;
-                for (var y = 0; y < h; y++) {
-                    for (var x = 0; x < w; x++) {
-                        pos = (x + y * w) * 4;
-                        data[pos] = arr[pos];
-                        data[pos + 1] = arr[pos + 1];
-                        data[pos + 2] = arr[pos + 2];
-                    }
-                }
-            };
-            ;
-            /*** Canvas2D functions ***/
-            //____________________________________________________________________
-            BitmapData.prototype.setPixel = function (x, y, color) {
-                var rgb = hexToRGB(color);
-                var pos = (x + y * this.width) * 4;
-                var data = this.imagedata.data;
-                data[pos + 0] = rgb.r;
-                data[pos + 1] = rgb.g;
-                data[pos + 2] = rgb.b;
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.getPixel = function (x, y) {
-                var pos = (x + y * this.width) * 4;
-                var data = this.imagedata.data;
-                var rgb = {
-                    r: data[pos + 0],
-                    g: data[pos + 1],
-                    b: data[pos + 2]
-                };
-                return RGBToHex(rgb);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.clear = function (rect) {
-                rect = rect || this.rect;
-                this.context.clearRect(rect.x, rect.y, rect.width, rect.height);
-                this.imagedata = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.clone = function () {
-                this.context.putImageData(this.imagedata, 0, 0);
-                var result = new BitmapData(this.width, this.height, this.transparent);
-                result.data = this.context.getImageData(0, 0, this.width, this.height);
-                return result;
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.histogramVector = function (n) {
-                var v = [];
-                for (var i = 0; i < 256; i++) {
-                    v[i] = n;
-                }
-                return v;
-            };
-            //___________________________________________________________________
-            BitmapData.prototype.colorTransform = function (rect, colorTransform) {
-                rect = rect || this.rect;
-                colorTransform = colorTransform || new display.ColorTransform();
-                var data = this.imagedata.data;
-                var xMax = rect.x + rect.height;
-                var yMax = rect.y + rect.height;
-                for (var y = rect.y; y < yMax; y++) {
-                    for (var x = rect.x; x < xMax; x++) {
-                        var r = (y * this.width + x) * 4;
-                        var g = r + 1;
-                        var b = r + 2;
-                        var a = r + 3;
-                        data[r] = data[r] * colorTransform.redMultiplier + colorTransform.redOffset;
-                        data[g] = data[g] * colorTransform.greenMultiplier + colorTransform.greenOffset;
-                        data[b] = data[b] * colorTransform.blueMultiplier + colorTransform.blueOffset;
-                        data[a] = data[a] * colorTransform.alphaMultiplier + colorTransform.alphaOffset;
-                    }
-                }
-                this.context.putImageData(this.imagedata, 0, 0);
-            };
-            //____________________________________________________________________
-            BitmapData.prototype.applyFilter = function (sourceBitmapData, sourceRect, destPoint, filter) {
-                var copy = this.clone();
-                filter.run(sourceRect, this.imagedata.data, copy.imagedata.data);
-                this.context.putImageData(this.imagedata, 0, 0);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.compare = function (otherBitmapData) {
-                if (this.width != otherBitmapData.width)
-                    return null; //-3;
-                if (this.height != otherBitmapData.height)
-                    return null; //-4;
-                if (this.imagedata === otherBitmapData.data)
-                    return null; //0;
-                var otherRGB, thisRGB, dif;
-                var result = new BitmapData(this.width, this.height);
-                for (var y = 0; y < this.height; y++) {
-                    for (var x = 0; x < this.width; x++) {
-                        otherRGB = hexToRGB(otherBitmapData.getPixel(x, y));
-                        thisRGB = hexToRGB(this.getPixel(x, y));
-                        dif = {
-                            r: Math.abs(otherRGB.r - thisRGB.r),
-                            g: Math.abs(otherRGB.g - thisRGB.g),
-                            b: Math.abs(otherRGB.b - thisRGB.b)
-                        };
-                        result.setPixel(x, y, RGBToHex(dif));
-                    }
-                }
-                return result;
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.copyCanvas = function (sourceCanvas, sourceRect, destPoint, blendMode) {
-                this.context.putImageData(this.imagedata, 0, 0);
-                var bw = this.canvas.width - sourceRect.width - destPoint.x;
-                var bh = this.canvas.height - sourceRect.height - destPoint.y;
-                var dw = (bw < 0) ? sourceRect.width + (this.canvas.width - sourceRect.width - destPoint.x) : sourceRect.width;
-                var dh = (bh < 0) ? sourceRect.height + (this.canvas.height - sourceRect.height - destPoint.y) : sourceRect.height;
-                if (blendMode && blendMode != display.BlendMode.NORMAL) {
-                    var sourceData = sourceCanvas.getContext("2d").getImageData(sourceRect.x, sourceRect.y, dw, dh).data;
-                    var sourcePos = void 0, destPos = void 0;
-                    var data = this.imagedata.data;
-                    for (var y = 0; y < dh; y++) {
-                        for (var x = 0; x < dw; x++) {
-                            sourcePos = (x + y * dw) * 4;
-                            destPos = ((x + destPoint.x) + (y + destPoint.y) * this.width) * 4;
-                            switch (blendMode) {
-                                case display.BlendMode.ADD:
-                                    data[destPos] = Math.min(data[destPos] + sourceData[sourcePos], 255);
-                                    data[destPos + 1] = Math.min(data[destPos + 1] + sourceData[sourcePos + 1], 255);
-                                    data[destPos + 2] = Math.min(data[destPos + 2] + sourceData[sourcePos + 2], 255);
-                                    break;
-                                case display.BlendMode.SUBTRACT:
-                                    data[destPos] = Math.max(sourceData[sourcePos] - data[destPos], 0);
-                                    data[destPos + 1] = Math.max(sourceData[sourcePos + 1] - data[destPos + 1], 0);
-                                    data[destPos + 2] = Math.max(sourceData[sourcePos + 2] - data[destPos + 2], 0);
-                                    break;
-                                case display.BlendMode.INVERT:
-                                    data[destPos] = 255 - sourceData[sourcePos];
-                                    data[destPos + 1] = 255 - sourceData[sourcePos + 1];
-                                    data[destPos + 2] = 255 - sourceData[sourcePos + 1];
-                                    break;
-                                case display.BlendMode.MULTIPLY:
-                                    data[destPos] = Math.floor(sourceData[sourcePos] * data[destPos] / 255);
-                                    data[destPos + 1] = Math.floor(sourceData[sourcePos + 1] * data[destPos + 1] / 255);
-                                    data[destPos + 2] = Math.floor(sourceData[sourcePos + 2] * data[destPos + 2] / 255);
-                                    break;
-                                case display.BlendMode.LIGHTEN:
-                                    if (sourceData[sourcePos] > data[destPos])
-                                        data[destPos] = sourceData[sourcePos];
-                                    if (sourceData[sourcePos + 1] > data[destPos + 1])
-                                        data[destPos + 1] = sourceData[sourcePos + 1];
-                                    if (sourceData[sourcePos + 2] > data[destPos + 2])
-                                        data[destPos + 2] = sourceData[sourcePos + 2];
-                                    break;
-                                case display.BlendMode.DARKEN:
-                                    if (sourceData[sourcePos] < data[destPos])
-                                        data[destPos] = sourceData[sourcePos];
-                                    if (sourceData[sourcePos + 1] < data[destPos + 1])
-                                        data[destPos + 1] = sourceData[sourcePos + 1];
-                                    if (sourceData[sourcePos + 2] < data[destPos + 2])
-                                        data[destPos + 2] = sourceData[sourcePos + 2];
-                                    break;
-                                case display.BlendMode.DIFFERENCE:
-                                    data[destPos] = Math.abs(sourceData[sourcePos] - data[destPos]);
-                                    data[destPos + 1] = Math.abs(sourceData[sourcePos + 1] - data[destPos + 1]);
-                                    data[destPos + 2] = Math.abs(sourceData[sourcePos + 2] - data[destPos + 2]);
-                                    break;
-                                case display.BlendMode.SCREEN:
-                                    data[destPos] = (255 - (((255 - data[destPos]) * (255 - sourceData[sourcePos])) >> 8));
-                                    data[destPos + 1] = (255 - (((255 - data[destPos + 1]) * (255 - sourceData[sourcePos + 1])) >> 8));
-                                    data[destPos + 2] = (255 - (((255 - data[destPos + 2]) * (255 - sourceData[sourcePos + 2])) >> 8));
-                                    break;
-                                case display.BlendMode.OVERLAY:
-                                    if (sourceData[sourcePos] < 128)
-                                        data[destPos] = data[destPos] * sourceData[sourcePos] * halfColorMax;
-                                    else
-                                        data[destPos] = 255 - (255 - data[destPos]) * (255 - sourceData[sourcePos]) * halfColorMax;
-                                    if (sourceData[sourcePos + 1] < 128)
-                                        data[destPos + 1] = data[destPos + 1] * sourceData[sourcePos + 1] * halfColorMax;
-                                    else
-                                        data[destPos + 1] = 255 - (255 - data[destPos + 1]) * (255 - sourceData[sourcePos + 1]) * halfColorMax;
-                                    if (sourceData[sourcePos + 2] < 128)
-                                        data[destPos + 2] = data[destPos + 2] * sourceData[sourcePos + 2] * halfColorMax;
-                                    else
-                                        data[destPos + 2] = 255 - (255 - data[destPos + 2]) * (255 - sourceData[sourcePos + 2]) * halfColorMax;
-                                    break;
-                                case display.BlendMode.HARDLIGHT:
-                                    if (data[destPos] < 128)
-                                        data[destPos] = data[destPos] * sourceData[sourcePos] * halfColorMax;
-                                    else
-                                        data[destPos] = 255 - (255 - data[destPos]) * (255 - sourceData[sourcePos]) * halfColorMax;
-                                    if (data[destPos + 1] < 128)
-                                        data[destPos + 1] = data[destPos + 1] * sourceData[sourcePos + 1] * halfColorMax;
-                                    else
-                                        data[destPos + 1] = 255 - (255 - data[destPos + 1]) * (255 - sourceData[sourcePos + 1]) * halfColorMax;
-                                    if (data[destPos + 2] < 128)
-                                        data[destPos + 2] = data[destPos + 2] * sourceData[sourcePos + 2] * halfColorMax;
-                                    else
-                                        data[destPos + 2] = 255 - (255 - data[destPos + 2]) * (255 - sourceData[sourcePos + 2]) * halfColorMax;
-                                    break;
-                            }
-                        }
-                    }
-                }
-                else {
-                    this.context.drawImage(sourceCanvas, sourceRect.x, sourceRect.y, dw, dh, destPoint.x, destPoint.y, dw, dh);
-                    this.imagedata = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-                }
-                this.context.putImageData(this.imagedata, 0, 0);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.copyChannel = function (sourceBitmapData, sourceRect, destPoint, sourceChannel, destChannel) {
-                var sourceColor, sourceRGB, rgb;
-                var redChannel = display.BitmapDataChannel.RED;
-                var greenChannel = display.BitmapDataChannel.GREEN;
-                var blueChannel = display.BitmapDataChannel.BLUE;
-                var channelValue;
-                for (var y = 0; y < sourceRect.height; y++) {
-                    for (var x = 0; x < sourceRect.width; x++) {
-                        sourceColor = sourceBitmapData.getPixel(sourceRect.x + x, sourceRect.y + y);
-                        sourceRGB = hexToRGB(sourceColor);
-                        switch (sourceChannel) {
-                            case redChannel:
-                                channelValue = sourceRGB.r;
-                                break;
-                            case greenChannel:
-                                channelValue = sourceRGB.g;
-                                break;
-                            case blueChannel:
-                                channelValue = sourceRGB.b;
-                                break;
-                        }
-                        rgb = hexToRGB(this.getPixel(destPoint.x + x, destPoint.y + y)); // redundancy
-                        switch (destChannel) {
-                            case redChannel:
-                                rgb.r = channelValue;
-                                break;
-                            case greenChannel:
-                                rgb.g = channelValue;
-                                break;
-                            case blueChannel:
-                                rgb.b = channelValue;
-                                break;
-                        }
-                        this.setPixel(destPoint.x + x, destPoint.y + y, RGBToHex(rgb));
-                    }
-                }
-                this.context.putImageData(this.imagedata, 0, 0);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.copyPixels = function (sourceBitmapData, sourceRect, destPoint, alphaBitmapData, alphaPoint, mergeAlpha) {
-                this.copyCanvas(sourceBitmapData.canvas, sourceRect, destPoint, display.BlendMode.NORMAL);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.dispose = function () {
-                this.rect = null;
-                this.drawingCanvas = null;
-                this.drawingContext = null;
-                this.imagedata = null;
-                this.glCanvas = null;
-                this.gl = null;
-                this.program = null;
-                this.tex0 = null;
-                this.tex1 = null;
-                this.glPixelArray = null;
-            };
-            //____________________________________________________________________
-            BitmapData.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
-                /*
-                 * currently only supports Image object
-                 * TODO: implement instanceof switches
-                 */
-                var sourceMatrix = matrix || new asBase.math.Matrix();
-                var sourceRect = clipRect;
-                if (sourceRect == null) {
-                    sourceRect = new asBase.math.Rectangle();
-                    this.rect.x = 0;
-                    this.rect.y = 0;
-                    this.rect.width = source.width;
-                    this.rect.height = source.height;
-                }
-                if (blendMode && this.gpuEnabled) {
-                }
-                this.drawingCanvas.setAttribute('width', source.width);
-                this.drawingCanvas.setAttribute('height', source.height);
-                this.drawingContext.transform(sourceMatrix.a, sourceMatrix.b, sourceMatrix.c, sourceMatrix.d, sourceMatrix.tx, sourceMatrix.ty);
-                this.drawingContext.drawImage(source, 0, 0, source.width, source.height, 0, 0, source.width, source.height);
-                this.copyCanvas(this.drawingCanvas, sourceRect, new asBase.math.Point(sourceRect.x, sourceRect.y), blendMode);
-            };
-            //____________________________________________________________________
-            BitmapData.prototype.fillRect = function (rect, color) {
-                this.context.putImageData(this.imagedata, 0, 0);
-                var rgb = hexToRGB(color);
-                this.context.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
-                this.context.fillRect(rect.x, rect.y, rect.width, rect.height);
-                this.imagedata = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.floodFill = function (x, y, color) {
-                var queue = new Array();
-                queue.push(new Point(x, y));
-                var old = this.getPixel(x, y);
-                var iterations = 0;
-                var searchBmp = new BitmapData(this.width, this.height, true, 0xffffff);
-                var currPoint, newPoint;
-                while (queue.length > 0) {
-                    currPoint = queue.shift();
-                    ++iterations;
-                    if (currPoint.x < 0 || currPoint.x >= this.width)
-                        continue;
-                    if (currPoint.y < 0 || currPoint.y >= this.height)
-                        continue;
-                    searchBmp.setPixel(currPoint.x, currPoint.y, 0x00);
-                    if (this.getPixel(currPoint.x, currPoint.y) == old) {
-                        this.setPixel(currPoint.x, currPoint.y, color);
-                        if (searchBmp.getPixel(currPoint.x + 1, currPoint.y) == 0xffffff) {
-                            queue.push(new Point(currPoint.x + 1, currPoint.y));
-                        }
-                        if (searchBmp.getPixel(currPoint.x, currPoint.y + 1) == 0xffffff) {
-                            queue.push(new Point(currPoint.x, currPoint.y + 1));
-                        }
-                        if (searchBmp.getPixel(currPoint.x - 1, currPoint.y) == 0xffffff) {
-                            queue.push(new Point(currPoint.x - 1, currPoint.y));
-                        }
-                        if (searchBmp.getPixel(currPoint.x, currPoint.y - 1) == 0xffffff) {
-                            queue.push(new Point(currPoint.x, currPoint.y - 1));
-                        }
-                    }
-                }
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.histogram = function (hRect) {
-                hRect = hRect || this.rect;
-                var rgb = { r: [], g: [], b: [] };
-                var rv = this.histogramVector(0);
-                var gv = this.histogramVector(0);
-                var bv = this.histogramVector(0);
-                var p = hRect.width * hRect.height;
-                var itr = -1;
-                var pos;
-                var color = [];
-                var bw = this.canvas.width - hRect.width - hRect.x;
-                var bh = this.canvas.height - hRect.height - hRect.y;
-                var dw = (bw < 0) ? hRect.width + (this.canvas.width - hRect.width - hRect.x) : hRect.width;
-                var dh = (bh < 0) ? hRect.height + (this.canvas.height - hRect.height - hRect.y) : hRect.height;
-                var data = this.imagedata.data;
-                for (var y = hRect.y; y < dh; y++) {
-                    for (var x = hRect.x; x < dw; x++) {
-                        pos = (x + y * this.width) * 4;
-                        color[itr++] = data[pos + 0];
-                        color[itr++] = data[pos + 1];
-                        color[itr++] = data[pos + 2];
-                    }
-                }
-                itr = 0;
-                for (var i = 0; i < p; i += Math.floor(p / 256)) {
-                    var px = itr * 3;
-                    rv[itr] = color[px + 0];
-                    gv[itr] = color[px + 1];
-                    bv[itr] = color[px + 2];
-                    itr++;
-                }
-                rgb.r = rv;
-                rgb.g = gv;
-                rgb.b = bv;
-                return rgb;
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.noise = function (randomSeed, low, high, channelOptions, grayScale) {
-                this.rand = this.rand || new display.PRNG();
-                this.rand.seed = randomSeed;
-                var redChannel = display.BitmapDataChannel.RED;
-                var greenChannel = display.BitmapDataChannel.GREEN;
-                var blueChannel = display.BitmapDataChannel.BLUE;
-                var data = this.imagedata.data;
-                low = low || 0;
-                high = high || 255;
-                channelOptions = channelOptions || 7;
-                grayScale = grayScale || false;
-                var pos, cr, cg, cb, gray;
-                for (var y = 0; y < this.height; y++) {
-                    for (var x = 0; x < this.width; x++) {
-                        pos = (x + y * this.width) * 4;
-                        cr = this.rand.nextRange(low, high);
-                        cg = this.rand.nextRange(low, high);
-                        cb = this.rand.nextRange(low, high);
-                        if (grayScale) {
-                            gray = (cr + cg + cb) / 3;
-                            cr = cg = cb = gray;
-                        }
-                        data[pos + 0] = (channelOptions & redChannel) ? (1 * cr) : 0x00;
-                        data[pos + 1] = (channelOptions & greenChannel) ? (1 * cg) : 0x00;
-                        data[pos + 2] = (channelOptions & blueChannel) ? (1 * cb) : 0x00;
-                    }
-                }
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.paletteMap = function (sourceBitmapData, sourceRect, destPoint, redArray, greenArray, blueArray, alphaArray) {
-                var bw = this.canvas.width - sourceRect.width - destPoint.x;
-                var bh = this.canvas.height - sourceRect.height - destPoint.y;
-                var dw = (bw < 0) ? sourceRect.width + (this.canvas.width - sourceRect.width - destPoint.x) : sourceRect.width;
-                var dh = (bh < 0) ? sourceRect.height + (this.canvas.height - sourceRect.height - destPoint.y) : sourceRect.height;
-                var sourceData = sourceBitmapData.imagedata.data;
-                var sourcePos, destPos, sourceHex;
-                var r, g, b, pos;
-                var sx = sourceRect.x;
-                var sy = sourceRect.y;
-                var sw = sourceBitmapData.width;
-                var dx = destPoint.x;
-                var dy = destPoint.y;
-                var data = this.imagedata.data;
-                var w = this.width;
-                for (var y = 0; y < dh; y++) {
-                    for (var x = 0; x < dw; x++) {
-                        sourcePos = ((x + sx) + (y + sy) * sw) * 4;
-                        r = sourceData[sourcePos + 0];
-                        g = sourceData[sourcePos + 1];
-                        b = sourceData[sourcePos + 2];
-                        pos = ((x + dx) + (y + dy) * w) * 4;
-                        data[pos + 0] = redArray[r];
-                        data[pos + 1] = greenArray[g];
-                        data[pos + 2] = blueArray[b];
-                    }
-                }
-                this.context.putImageData(this.imagedata, 0, 0);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.perlinNoise = function (baseX, baseY, randomSeed, channelOptions, grayScale) {
-                this.rand = this.rand || new display.PRNG();
-                this.rand.seed = randomSeed;
-                var redChannel = display.BitmapDataChannel.RED;
-                var greenChannel = display.BitmapDataChannel.GREEN;
-                var blueChannel = display.BitmapDataChannel.BLUE;
-                channelOptions = channelOptions || 7;
-                grayScale = grayScale || false;
-                var data = this.imagedata.data;
-                var numChannels = 0;
-                if (channelOptions & redChannel) {
-                    this.simplexR = this.simplexR || new display.SimplexNoise(this.rand);
-                    this.simplexR.setSeed(randomSeed);
-                    numChannels++;
-                }
-                if (channelOptions & greenChannel) {
-                    this.simplexG = this.simplexG || new display.SimplexNoise(this.rand);
-                    this.simplexG.setSeed(randomSeed + 1);
-                    numChannels++;
-                }
-                if (channelOptions & blueChannel) {
-                    this.simplexB = this.simplexB || new display.SimplexNoise(this.rand);
-                    this.simplexB.setSeed(randomSeed + 2);
-                    numChannels++;
-                }
-                var pos, cr, cg, cb;
-                for (var y = 0; y < this.height; y++) {
-                    for (var x = 0; x < this.width; x++) {
-                        pos = (x + y * this.width) * 4;
-                        cr = (channelOptions & redChannel) ? Math.floor(((this.simplexR.noise(x / baseX, y / baseY) + 1) * 0.5) * 255) : 0x00;
-                        cg = (channelOptions & greenChannel) ? Math.floor(((this.simplexG.noise(x / baseX, y / baseY) + 1) * 0.5) * 255) : 0x00;
-                        cb = (channelOptions & blueChannel) ? Math.floor(((this.simplexB.noise(x / baseX, y / baseY) + 1) * 0.5) * 255) : 0x00;
-                        if (grayScale) {
-                            var gray = (cr + cg + cb) / numChannels;
-                            cr = cg = cb = gray;
-                        }
-                        data[pos + 0] = cr;
-                        data[pos + 1] = cg;
-                        data[pos + 2] = cb;
-                    }
-                }
-                this.context.putImageData(this.imagedata, 0, 0);
-            };
-            ;
-            //____________________________________________________________________
-            BitmapData.prototype.threshold = function (sourceBitmapData, sourceRect, destPoint, operation, threshold, color, mask, copySource) {
-                color = color || 0;
-                mask = mask || 0xffffff;
-                copySource = copySource || false;
-                var bw = this.canvas.width - sourceRect.width - destPoint.x;
-                var bh = this.canvas.height - sourceRect.height - destPoint.y;
-                var dw = (bw < 0) ? sourceRect.width + (this.canvas.width - sourceRect.width - destPoint.x) : sourceRect.width;
-                var dh = (bh < 0) ? sourceRect.height + (this.canvas.height - sourceRect.height - destPoint.y) : sourceRect.height;
-                var sourceData = sourceBitmapData.imagedata.data;
-                var sourcePos, destPos, sourceHex;
-                var sx = sourceRect.x;
-                var sy = sourceRect.y;
-                var sw = sourceBitmapData.width;
-                for (var y = 0; y < dh; y++) {
-                    for (var x = 0; x < dw; x++) {
-                        sourcePos = ((x + sx) + (y + sy) * sw) * 4;
-                        sourceHex = RGBToHex({ r: sourceData[sourcePos], g: sourceData[sourcePos + 1], b: sourceData[sourcePos + 2] });
-                        switch (operation) {
-                            case "<":
-                                if ((sourceHex & mask) < (threshold & mask)) {
-                                    if (copySource)
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, sourceHex);
-                                    else
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, color);
-                                }
-                                break;
-                            case "<=":
-                                if ((sourceHex & mask) <= (threshold & mask)) {
-                                    if (copySource)
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, sourceHex);
-                                    else
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, color);
-                                }
-                                break;
-                            case ">":
-                                if ((sourceHex & mask) > (threshold & mask)) {
-                                    if (copySource)
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, sourceHex);
-                                    else
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, color);
-                                }
-                                break;
-                            case ">=":
-                                if ((sourceHex & mask) <= (threshold & mask)) {
-                                    if (copySource)
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, sourceHex);
-                                    else
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, color);
-                                }
-                                break;
-                            case "==":
-                                if ((sourceHex & mask) == (threshold & mask)) {
-                                    if (copySource)
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, sourceHex);
-                                    else
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, color);
-                                }
-                                break;
-                            case "!=":
-                                if ((sourceHex & mask) != (threshold & mask)) {
-                                    if (copySource)
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, sourceHex);
-                                    else
-                                        this.setPixel(x + destPoint.x, y + destPoint.y, color);
-                                }
-                                break;
-                        }
-                    }
-                }
-                this.context.putImageData(this.imagedata, 0, 0);
-            };
-            ;
-            return BitmapData;
-        }());
-        display.BitmapData = BitmapData;
-    })(display = asSvg.display || (asSvg.display = {}));
-})(asSvg || (asSvg = {}));
-var asSvg;
-(function (asSvg) {
-    var display;
-    (function (display) {
-        var BitmapDataChannel = (function () {
-            function BitmapDataChannel() {
-            }
-            return BitmapDataChannel;
-        }());
-        BitmapDataChannel.ALPHA = 8;
-        BitmapDataChannel.BLUE = 4;
-        BitmapDataChannel.GREEN = 2;
-        BitmapDataChannel.RED = 1;
-        display.BitmapDataChannel = BitmapDataChannel;
-    })(display = asSvg.display || (asSvg.display = {}));
-})(asSvg || (asSvg = {}));
-var asSvg;
-(function (asSvg) {
-    var display;
-    (function (display) {
-        var BlendMode = (function () {
-            function BlendMode() {
-            }
-            return BlendMode;
-        }());
-        BlendMode.ADD = "add";
-        BlendMode.ALPHA = "alpha";
-        BlendMode.DARKEN = "darken";
-        BlendMode.DIFFERENCE = "difference";
-        BlendMode.ERASE = "erase";
-        BlendMode.HARDLIGHT = "hardlight";
-        BlendMode.INVERT = "invert";
-        BlendMode.LAYER = "layer";
-        BlendMode.LIGHTEN = "lighten";
-        BlendMode.MULTIPLY = "multiply";
-        BlendMode.NORMAL = "normal";
-        BlendMode.OVERLAY = "overlay";
-        BlendMode.SCREEN = "screen";
-        BlendMode.SHADER = "shader";
-        BlendMode.SUBTRACT = "subtract";
-        display.BlendMode = BlendMode;
-    })(display = asSvg.display || (asSvg.display = {}));
-})(asSvg || (asSvg = {}));
-var asSvg;
-(function (asSvg) {
-    var display;
-    (function (display) {
-        var ColorTransform = (function () {
-            function ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
-                this.redMultiplier = 1;
-                this.greenMultiplier = 1;
-                this.blueMultiplier = 1;
-                this.alphaMultiplier = 1;
-                this.redOffset = 0;
-                this.greenOffset = 0;
-                this.blueOffset = 0;
-                this.alphaOffset = 0;
-                this.redMultiplier = redMultiplier == undefined ? 1 : redMultiplier;
-                this.greenMultiplier = greenMultiplier == undefined ? 1 : greenMultiplier;
-                this.blueMultiplier = blueMultiplier == undefined ? 1 : blueMultiplier;
-                this.alphaMultiplier = alphaMultiplier == undefined ? 1 : alphaMultiplier;
-                this.redOffset = redOffset || 0;
-                this.greenOffset = greenOffset || 0;
-                this.blueOffset = blueOffset || 0;
-                this.alphaOffset = alphaOffset || 0;
-            }
-            return ColorTransform;
-        }());
-        display.ColorTransform = ColorTransform;
-    })(display = asSvg.display || (asSvg.display = {}));
-})(asSvg || (asSvg = {}));
-var asSvg;
-(function (asSvg) {
-    var display;
-    (function (display) {
-        var PRNG = (function () {
-            function PRNG() {
-                this.seed = 1;
-            }
-            PRNG.prototype.next = function () {
-                return (this.gen() / 2147483647);
-            };
-            ;
-            PRNG.prototype.nextRange = function (min, max) {
-                return min + ((max - min) * this.next());
-            };
-            ;
-            PRNG.prototype.gen = function () {
-                return this.seed = (this.seed * 16807) % 2147483647;
-            };
-            ;
-            return PRNG;
-        }());
-        display.PRNG = PRNG;
-    })(display = asSvg.display || (asSvg.display = {}));
-})(asSvg || (asSvg = {}));
-var asSvg;
-(function (asSvg) {
-    var display;
-    (function (display) {
-        var SimplexNoise = (function () {
-            function SimplexNoise(gen) {
-                this.rand = gen;
-                this.grad3 = [
-                    [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
-                    [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
-                    [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
-                ];
-                this.simplex = [
-                    [0, 1, 2, 3], [0, 1, 3, 2], [0, 0, 0, 0], [0, 2, 3, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 2, 3, 0],
-                    [0, 2, 1, 3], [0, 0, 0, 0], [0, 3, 1, 2], [0, 3, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 3, 2, 0],
-                    [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
-                    [1, 2, 0, 3], [0, 0, 0, 0], [1, 3, 0, 2], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [2, 3, 0, 1], [2, 3, 1, 0],
-                    [1, 0, 2, 3], [1, 0, 3, 2], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [2, 0, 3, 1], [0, 0, 0, 0], [2, 1, 3, 0],
-                    [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
-                    [2, 0, 1, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 0, 1, 2], [3, 0, 2, 1], [0, 0, 0, 0], [3, 1, 2, 0],
-                    [2, 1, 0, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 1, 0, 2], [0, 0, 0, 0], [3, 2, 0, 1], [3, 2, 1, 0]
-                ];
-            }
-            SimplexNoise.prototype.setSeed = function (seed) {
-                this.p = [];
-                this.rand.seed = seed;
-                for (var i = 0; i < 256; i++) {
-                    this.p[i] = Math.floor(this.rand.nextRange(0, 255));
-                }
-                this.perm = [];
-                for (var i = 0; i < 512; i++) {
-                    this.perm[i] = this.p[i & 255];
-                }
-            };
-            SimplexNoise.prototype.dot = function (g, x, y) {
-                return g[0] * x + g[1] * y;
-            };
-            ;
-            SimplexNoise.prototype.noise = function (xin, yin) {
-                var n0, n1, n2;
-                var F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
-                var s = (xin + yin) * F2;
-                var i = Math.floor(xin + s);
-                var j = Math.floor(yin + s);
-                var G2 = (3.0 - Math.sqrt(3.0)) / 6.0;
-                var t = (i + j) * G2;
-                var X0 = i - t;
-                var Y0 = j - t;
-                var x0 = xin - X0;
-                var y0 = yin - Y0;
-                var i1, j1;
-                if (x0 > y0) {
-                    i1 = 1;
-                    j1 = 0;
-                }
-                else {
-                    i1 = 0;
-                    j1 = 1;
-                }
-                var x1 = x0 - i1 + G2;
-                var y1 = y0 - j1 + G2;
-                var x2 = x0 - 1.0 + 2.0 * G2;
-                var y2 = y0 - 1.0 + 2.0 * G2;
-                var ii = i & 255;
-                var jj = j & 255;
-                var gi0 = this.perm[ii + this.perm[jj]] % 12;
-                var gi1 = this.perm[ii + i1 + this.perm[jj + j1]] % 12;
-                var gi2 = this.perm[ii + 1 + this.perm[jj + 1]] % 12;
-                var t0 = 0.5 - x0 * x0 - y0 * y0;
-                if (t0 < 0)
-                    n0 = 0.0;
-                else {
-                    t0 *= t0;
-                    n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);
-                }
-                var t1 = 0.5 - x1 * x1 - y1 * y1;
-                if (t1 < 0)
-                    n1 = 0.0;
-                else {
-                    t1 *= t1;
-                    n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1);
-                }
-                var t2 = 0.5 - x2 * x2 - y2 * y2;
-                if (t2 < 0)
-                    n2 = 0.0;
-                else {
-                    t2 *= t2;
-                    n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2);
-                }
-                return 70.0 * (n0 + n1 + n2);
-            };
-            ;
-            return SimplexNoise;
-        }());
-        display.SimplexNoise = SimplexNoise;
-    })(display = asSvg.display || (asSvg.display = {}));
-})(asSvg || (asSvg = {}));
 /// <reference path="displayobject.ts" />
 var asSvg;
 /// <reference path="displayobject.ts" />
@@ -3232,7 +2520,9 @@ var asSvg;
          * @memberOf ForeignObject
          */
         function ForeignObject() {
-            return _super.call(this) || this;
+            var _this = _super.call(this) || this;
+            _this.mOldValue = "";
+            return _this;
         }
         /****************************
        * Override methods
@@ -3279,6 +2569,31 @@ var asSvg;
             set: function (pFont) {
                 //  this.mFontSize = pFont;
                 this.mInputElement.setAttribute("font-size", pFont.toString());
+            },
+            enumerable: true,
+            configurable: true
+        });
+        //_____________________
+        ForeignObject.prototype.clone = function () {
+            var aRet = new ForeignObject();
+            aRet.mElement = this.mElement.cloneNode();
+            aRet.mInputElement = this.mInputElement.cloneNode();
+            aRet.textField = this.mTextField.clone();
+            aRet.x = this.x;
+            aRet.y = this.y;
+            aRet.rotation = this.rotation;
+            aRet.scaleX = this.scaleX;
+            aRet.scaleY = this.scaleY;
+            return aRet;
+        };
+        Object.defineProperty(ForeignObject.prototype, "oldValue", {
+            //________________________
+            get: function () {
+                return this.mOldValue;
+            },
+            //_______________________
+            set: function (pVal) {
+                this.mOldValue = pVal;
             },
             enumerable: true,
             configurable: true
@@ -3471,7 +2786,11 @@ var asSvg;
          * @memberOf Image
          */
         Image.prototype.setPath = function (pPath) {
+            this.mPath = pPath;
             this.mElement.setAttributeNS('http://www.w3.org/1999/xlink', 'href', pPath);
+        };
+        Image.prototype.getPath = function () {
+            return this.mPath;
         };
         //______________________________________________________________________________
         /**
@@ -5074,6 +4393,18 @@ var asSvg;
             enumerable: true,
             configurable: true
         });
+        //_______________________
+        TextField.prototype.clone = function () {
+            var aRet = new TextField();
+            aRet.mElement = this.mElement.cloneNode(true);
+            aRet.mTextElement = this.mTextElement.cloneNode();
+            aRet.x = this.x;
+            aRet.y = this.y;
+            aRet.rotation = this.rotation;
+            aRet.scaleX = this.scaleX;
+            aRet.scaleY = this.scaleY;
+            return aRet;
+        };
         Object.defineProperty(TextField.prototype, "textElement", {
             //________________________________________________________________________
             /**
@@ -5359,127 +4690,696 @@ var asSvg;
     TextField.ALIGN_BOTTOM = "0em";
     asSvg.TextField = TextField;
 })(asSvg || (asSvg = {}));
-var image;
-(function (image) {
-    var Main = (function () {
-        function Main() {
-            var _this = this;
-            this.mImageDrawing = new image.ImageDrawing(document.getElementById("imageDiv"));
-            if (image.Globals.isTest) {
-                this.mImageSave = new image.ImageSaveCombineCanvas(this.mImageDrawing);
-            }
-            else {
-                this.mImageSave = new image.ImageSaveCanvas(this.mImageDrawing);
-            }
-            this.mDownloadButton = document.getElementById("downloadButton");
-            this.mDrawButton = document.getElementById("drawButton");
-            this.mSelectButton = document.getElementById("selectButton");
-            this.mSetImageButton = document.getElementById("setImageButton");
-            this.mSetTextButton = document.getElementById("setTextButton");
-            this.mDrawColorBox = document.getElementById("drawColor");
-            this.mRotateButton = document.getElementById("rotateButton");
-            this.mTextBox = document.getElementById("textBox");
-            this.mClearAllButton = document.getElementById("clearAllButton");
-            this.mFontSizeBox = document.getElementById("fontSizeBox");
-            this.mLineWidthBox = document.getElementById("lineWidthBox");
-            this.mImageDrawing.mDrawColor = document.getElementById("drawColor").value;
-            this.mImageDrawing.mTextButton = document.getElementById("setTextButton");
-            this.mSetImageButton.addEventListener("click", function () { return _this.setPicture(); });
-            this.mSetTextButton.addEventListener("click", function () { return _this.setText(); });
-            this.mDrawButton.addEventListener("click", function () { return _this.onDraw(); });
-            this.mDownloadButton.addEventListener("click", function () { return _this.onDownload(); });
-            this.mSelectButton.addEventListener("click", function () { return _this.onSelect(); });
-            document.getElementById("rotateButton").addEventListener("click", function () { return _this.rotateImage(); });
-            this.mDrawColorBox.addEventListener("input", function () { return _this.onColorChange(); });
-            document.getElementById("fullScreenButton").addEventListener("click", function (pText) { return _this.onFullScreen(); });
-            this.mClearAllButton.addEventListener("click", function () { return _this.onClearAll(); });
-            this.mFontSizeBox.addEventListener("input", function (pVal) { return _this.onFontSize(_this.mFontSizeBox.value); });
-            this.mLineWidthBox.addEventListener("input", function (pVal) { return _this.onLineWidth(_this.mLineWidthBox.value); });
+var action;
+(function (action) {
+    /**
+     * Class repsenting an action -when the user changes a shape's color
+     *
+     * @export
+     * @class ColorAction
+     * @implements {IAction}
+     */
+    var ColorAction = (function () {
+        /**
+         * Creates an instance of ColorAction.
+         * @param {any} pOldColor- -Color before change
+         * @param {any} pNewColor -Color after change
+         * @param {any} pObject -Object whose color was changes
+         *
+         * @memberOf ColorAction
+         */
+        function ColorAction(pOldColor, pNewColor, pObject) {
+            this.mOldColor = pOldColor;
+            this.mNewColor = pNewColor;
+            this.mObject = pObject;
         }
-        //______________________________________
-        Main.prototype.setPicture = function () {
-            var aNum = Math.floor(Math.random() * 5) + 1;
-            this.mImageDrawing.setPicture("assets/" + aNum + ".jpg", 0, 1);
-            this.mRotateButton.style.display = "inline-block";
+        //__________________________________________
+        ColorAction.prototype.redo = function () {
+            this.mObject.changeShapeColor(this.mNewColor);
         };
-        //____________________________________
-        Main.prototype.rotateImage = function () {
-            this.resetButtons();
-            this.mImageDrawing.rotate(90);
+        //___________________________________________
+        ColorAction.prototype.undo = function () {
+            this.mObject.changeShapeColor(this.mOldColor);
         };
-        //__________________________________
-        Main.prototype.setText = function () {
-            this.resetButtons();
-            this.mSetTextButton.classList.add("active");
-            this.mImageDrawing.onSetText();
-        };
+        return ColorAction;
+    }());
+    action.ColorAction = ColorAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class repsenting an action- when the user changes the color of a text
+     *
+     * @export
+     * @class ColorTextAction
+     * @implements {IAction}
+     */
+    var ColorTextAction = (function () {
+        /**
+         * Creates an instance of ColorTextAction.
+         * @param {asSvg.ForeignObject} pTextField -Text Object whose color was  changed
+         * @param {any} pOlDColor -color before change
+         * @param {any} pNewColor -color after change
+         *
+         * @memberOf ColorTextAction
+         */
+        function ColorTextAction(pTextField, pOlDColor, pNewColor) {
+            this.mTextField = pTextField;
+            this.mOldColor = pOlDColor;
+            this.mNewColor = pNewColor;
+        }
         //____________________________
-        Main.prototype.onDraw = function () {
-            this.resetButtons();
-            this.mDrawButton.classList.add("active");
-            var aColor = this.mDrawColorBox.value;
-            console.log(aColor);
-            this.mImageDrawing.startDraw(aColor);
+        ColorTextAction.prototype.redo = function () {
+            this.mTextField.mInputElement.style.color = this.mNewColor;
         };
-        //___________________________________
-        Main.prototype.onDownload = function () {
-            this.mImageSave.getImage();
+        //______________________
+        ColorTextAction.prototype.undo = function () {
+            this.mTextField.mInputElement.style.color = this.mOldColor;
         };
+        return ColorTextAction;
+    }());
+    action.ColorTextAction = ColorTextAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a crop image action by the user
+     *
+     * @export
+     * @class CropAction
+     */
+    var CropAction = (function () {
+        /**
+         * Creates an instance of CropAction.
+         * @param {string} pOldSrc -Image Source before crop
+         * @param {string} pNewSrc -Image Source after crop
+         * @param {Function} pCropCallBack - Callback to re/undo crop
+         * @param {number} [pAngle=0] -Angle of image after crop
+         * @param {number} [pOldAngle=0] -Angle of image before crop
+         * @param {number} [pOldScale=1] -Scale of image before crop
+         * @param {number} [pOldX=0] -X position of image before crop
+         * @param {number} [pOldY=0] -Y position of image before crop
+         *
+         * @memberOf CropAction
+         */
+        function CropAction(pOldSrc, pNewSrc, pCropCallBack, pAngle, pOldAngle, pOldScale, pOldX, pOldY) {
+            if (pAngle === void 0) { pAngle = 0; }
+            if (pOldAngle === void 0) { pOldAngle = 0; }
+            if (pOldScale === void 0) { pOldScale = 1; }
+            if (pOldX === void 0) { pOldX = 0; }
+            if (pOldY === void 0) { pOldY = 0; }
+            this.mOldSrc = pOldSrc;
+            this.mNewSrc = pNewSrc;
+            this.mCropCallBack = pCropCallBack;
+            this.mAngle = pAngle;
+            this.mOldAngle = pOldAngle;
+            this.mOldScale = pOldScale;
+            this.mOldX = pOldX;
+            this.mOldY = pOldY;
+            this.mDrawObjects = new Array();
+            for (var i = 0; i < image.Globals.mCircles.length; i++) {
+                this.mDrawObjects.push(image.Globals.mCircles[i].clone());
+                if (!this.mDrawPanel) {
+                    this.mDrawPanel = image.Globals.mCircles[0].parent;
+                }
+            }
+            this.mTextObjects = new Array();
+            for (var i = 0; i < image.Globals.mTextArray.length; i++) {
+                this.mTextObjects.push(image.Globals.mTextArray[i].clone());
+                if (!this.mDrawPanel) {
+                    this.mDrawPanel = image.Globals.mTextArray[0].parent;
+                }
+            }
+        }
+        //____________________________________________
+        CropAction.prototype.redo = function () {
+            image.Globals.cropCounter++;
+            this.mCropCallBack(this.mNewSrc, this.mAngle, 1, null);
+        };
+        //__________________________________________
+        CropAction.prototype.undo = function () {
+            image.Globals.cropCounter--;
+            this.mCropCallBack(this.mOldSrc, this.mOldAngle, this.mOldScale, this.mDrawObjects, this.mTextObjects, this.mOldX, this.mOldY);
+        };
+        return CropAction;
+    }());
+    action.CropAction = CropAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a delete text action
+     *
+     * @export
+     * @class DeleteTextAction
+     * @implements {IAction}
+     */
+    var DeleteTextAction = (function () {
+        /**
+         * Creates an instance of DeleteTextAction.
+         * @param {asSvg.ForeignObject} pTextField -Text object deleted
+         *
+         * @memberOf DeleteTextAction
+         */
+        function DeleteTextAction(pTextField) {
+            this.mSprite = pTextField.parent;
+            this.mTextField = pTextField;
+        }
+        //_____________________________
+        DeleteTextAction.prototype.redo = function () {
+            image.Globals.mTextArray.splice(image.Globals.mTextArray.indexOf(this.mTextField, 1));
+            this.mTextField.destruct();
+        };
+        //_______________________
+        DeleteTextAction.prototype.undo = function () {
+            image.Globals.mTextArray.push(this.mTextField);
+            this.mSprite.addChild(this.mTextField);
+        };
+        return DeleteTextAction;
+    }());
+    action.DeleteTextAction = DeleteTextAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a drag sprite user action
+     *
+     * @export
+     * @class DragAction
+     * @implements {IAction}
+     */
+    var DragAction = (function () {
+        /**
+         * Creates an instance of DragAction.
+         * @param {asBase.math.Point} pOldPostion -Old position of sprite
+         * @param {asSvg.Sprite} pMovePanel -Sprite that was moved
+         * @param {Function} pBoundaryCallBack -Callback to check boundaries
+         *
+         * @memberOf DragAction
+         */
+        function DragAction(pOldPostion, pMovePanel, pBoundaryCallBack) {
+            this.mIsAdded = false;
+            this.mOldPosition = pOldPostion;
+            this.mMovePanel = pMovePanel;
+            this.mBoundaryCallBack = pBoundaryCallBack;
+        }
+        //__________________________
+        DragAction.prototype.redo = function () {
+            this.mMovePanel.x = this.mNewPosition.x;
+            this.mMovePanel.y = this.mNewPosition.y;
+            this.mBoundaryCallBack();
+        };
+        //___________________________
+        DragAction.prototype.undo = function () {
+            this.mMovePanel.x = this.mOldPosition.x;
+            this.mMovePanel.y = this.mOldPosition.y;
+            this.mBoundaryCallBack();
+        };
+        Object.defineProperty(DragAction.prototype, "newPosition", {
+            //______________________________________________
+            set: function (pNewPosition) {
+                this.mNewPosition = pNewPosition;
+                this.mIsAdded = true;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DragAction.prototype, "isAdded", {
+            //______________________________________________
+            get: function () {
+                return this.mIsAdded;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return DragAction;
+    }());
+    action.DragAction = DragAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a drag shape user action
+     *
+     * @export
+     * @class DragShapeAction
+     * @implements {IAction}
+     */
+    var DragShapeAction = (function () {
+        /**
+         * Creates an instance of DragShapeAction.
+         * @param {any} pOldPosition -Old posiiton of shape
+         * @param {shapes.Shape} pShape -Shape whose position was changed
+         *
+         * @memberOf DragShapeAction
+         */
+        function DragShapeAction(pOldPosition, pShape) {
+            this.mIsAdded = false;
+            this.mOldPosition = pOldPosition;
+            this.mShape = pShape;
+        }
         //________________________________________
-        Main.prototype.onSelect = function () {
-            this.resetButtons();
-            this.mSelectButton.classList.add("active");
-            this.mImageDrawing.select();
-        };
-        //________________________________________
-        Main.prototype.onColorChange = function () {
-            var aColor = this.mDrawColorBox.value;
-            console.log(aColor);
-            this.mImageDrawing.changeColor(aColor);
+        DragShapeAction.prototype.redo = function () {
+            this.mShape.moveShape(this.mNewPosition);
         };
         //_________________________________________
-        Main.prototype.resetButtons = function () {
-            image.Globals.isSelectMode = false;
-            image.Globals.isTextMode = false;
-            image.Globals.isDrawMode = false;
-            image.Globals.isRotateMode = false;
-            this.mDrawButton.classList.remove("active");
-            this.mRotateButton.classList.remove("active");
-            this.mSelectButton.classList.remove("active");
-            this.mSetTextButton.classList.remove("active");
+        DragShapeAction.prototype.undo = function () {
+            this.mShape.moveShape(this.mOldPosition);
         };
-        //____________________________
-        Main.prototype.onFullScreen = function () {
-            this.mImageDrawing.onFullScreen(image.Globals.isFullScreen);
-            if (!image.Globals.isFullScreen) {
-                document.getElementById("fullScreenButton").getElementsByTagName("span")[0].className = "glyphicon glyphicon-resize-small";
-                image.Globals.isFullScreen = true;
+        Object.defineProperty(DragShapeAction.prototype, "newPosition", {
+            //_________________________________________
+            set: function (pNewPosition) {
+                this.mNewPosition = pNewPosition;
+                this.mIsAdded;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DragShapeAction.prototype, "isAdded", {
+            //__________________________________________
+            get: function () {
+                return this.mIsAdded;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return DragShapeAction;
+    }());
+    action.DragShapeAction = DragShapeAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a drag text user action
+     *
+     * @export
+     * @class DragTextAction
+     * @implements {IAction}
+     */
+    var DragTextAction = (function () {
+        /**
+         * Creates an instance of DragTextAction.
+         * @param {asSvg.ForeignObject} pTextField -Text Object whose position was changed
+         * @param {asBase.math.Point} pOldPosition -Old position of text object
+         *
+         * @memberOf DragTextAction
+         */
+        function DragTextAction(pTextField, pOldPosition) {
+            this.mIsAdded = false;
+            this.mTextField = pTextField;
+            this.mOldPosition = pOldPosition;
+        }
+        //______________________________
+        DragTextAction.prototype.redo = function () {
+            this.mTextField.x = this.mNewPosition.x;
+            this.mTextField.y = this.mNewPosition.y;
+        };
+        //__________________
+        DragTextAction.prototype.undo = function () {
+            this.mTextField.x = this.mOldPosition.x;
+            this.mTextField.y = this.mOldPosition.y;
+        };
+        Object.defineProperty(DragTextAction.prototype, "newPosition", {
+            //_______________________
+            set: function (pNewPosition) {
+                this.mNewPosition = pNewPosition;
+                this.mIsAdded = true;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DragTextAction.prototype, "isAdded", {
+            //________________________
+            get: function () {
+                return this.mIsAdded;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return DragTextAction;
+    }());
+    action.DragTextAction = DragTextAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a draw shape user action
+     *
+     * @export
+     * @class DrawAction
+     * @implements {IAction}
+     */
+    var DrawAction = (function () {
+        /**
+         * Creates an instance of DrawAction.
+         * @param {asSvg.Sprite} pDrawPanel -Sprite that shape was drawn on
+         * @param {shapes.Shape} pShape -Shape Object that was drawn
+         *
+         * @memberOf DrawAction
+         */
+        function DrawAction(pDrawPanel, pShape) {
+            this.mDrawPanel = pDrawPanel;
+            this.mShape = pShape;
+        }
+        //_______________________________________________
+        DrawAction.prototype.redo = function () {
+            image.Globals.mCircles.push(this.mShape);
+            this.mShape.addToSprite(this.mDrawPanel);
+        };
+        //__________________________________________
+        DrawAction.prototype.undo = function () {
+            image.Globals.mCircles.splice(image.Globals.mCircles.indexOf(this.mShape, 1));
+            this.mShape.deleteShape();
+        };
+        return DrawAction;
+    }());
+    action.DrawAction = DrawAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a delete shape action
+     *
+     * @export
+     * @class DeleteAction
+     * @implements {IAction}
+     */
+    var DeleteAction = (function () {
+        /**
+         * Creates an instance of DeleteAction.
+         * @param {shapes.Shape} pObject -Shape dleted
+         *
+         * @memberOf DeleteAction
+         */
+        function DeleteAction(pObject) {
+            this.mObject = pObject;
+            this.mParent = pObject.parent;
+        }
+        //____________________________________________
+        DeleteAction.prototype.redo = function () {
+            if (this.mObject.myClassName == "Arrow" || "Circle" || "Shape" || "Scribble") {
+                this.mObject.deleteShape();
+                var aIndex = image.Globals.mCircles.indexOf(this.mObject);
+                image.Globals.mCircles.splice(aIndex, 1);
             }
             else {
-                document.getElementById("fullScreenButton").getElementsByTagName("span")[0].className = "glyphicon glyphicon-resize-full";
-                image.Globals.isFullScreen = false;
+                this.mObject.destruct();
+                var aIndex = image.Globals.mTextArray.indexOf(this.mObject);
+                image.Globals.mTextArray.splice(aIndex, 1);
             }
         };
-        //____________________________________
-        Main.prototype.onClearAll = function () {
-            this.mImageDrawing.clearAll();
+        //_________________________________________________
+        DeleteAction.prototype.undo = function () {
+            if (this.mObject.myClassName == "Shape") {
+                image.Globals.mCircles.push(this.mObject);
+                this.mObject.addToSprite(this.mParent);
+            }
+            else {
+                image.Globals.mTextArray.push(this.mObject);
+                this.mParent.addChild(this.mObject);
+            }
         };
-        //__________________________________
-        Main.prototype.onFontSize = function (pVal) {
-            this.mImageDrawing.fontsize = pVal;
-        };
-        //__________________________________
-        Main.prototype.onLineWidth = function (pVal) {
-            this.mImageDrawing.lineWidth = pVal;
-        };
-        return Main;
+        return DeleteAction;
     }());
-    image.Main = Main;
-})(image || (image = {}));
-var image;
-(function (image) {
+    action.DeleteAction = DeleteAction;
+})(action || (action = {}));
+var action;
+(function (action) {
     /**
-     * Class that controls each drawing item(text/scribble)
+     * Class representing an action that the user changed the text onject's input
+     *
+     * @export
+     * @class editTextAction
+     * @implements {IAction}
+     */
+    var editTextAction = (function () {
+        /**
+         * Creates an instance of editTextAction.
+         * @param {asSvg.ForeignObject} pTextField -Text Object whose value was changed
+         * @param {string} pOldValue -Value of text object before its value was changed
+         *
+         * @memberOf editTextAction
+         */
+        function editTextAction(pTextField, pOldValue) {
+            this.mIsAdded = false;
+            this.mTextField = pTextField;
+            this.mOldValue = pOldValue;
+        }
+        //___________________________
+        editTextAction.prototype.redo = function () {
+            this.mTextField.mInputElement.value = this.mNewValue;
+        };
+        //_______________________
+        editTextAction.prototype.undo = function () {
+            this.mTextField.mInputElement.value = this.mOldValue;
+        };
+        Object.defineProperty(editTextAction.prototype, "newValue", {
+            //______________________________
+            /**
+             * @param {string} pNewValue-value of text after change
+             *
+             *
+             * @memberOf editTextAction
+             */
+            set: function (pNewValue) {
+                this.mNewValue = pNewValue;
+                this.mIsAdded = true;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(editTextAction.prototype, "isAdded", {
+            //__________________
+            get: function () {
+                return this.mIsAdded;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return editTextAction;
+    }());
+    action.editTextAction = editTextAction;
+})(action || (action = {}));
+var action;
+(function (action_1) {
+    /**
+     * Class that implements a redo/unod flow
+     *
+     * @export
+     * @class ActionManager
+     */
+    var ActionManager = (function () {
+        /**
+         * Creates an instance of ActionManager.
+         *
+         * @memberOf ActionManager
+         */
+        function ActionManager() {
+            this.mUndoArray = new Array();
+        }
+        //_______________________________________________
+        /**
+         * Redos the last user action undone
+         *
+         *
+         * @memberOf ActionManager
+         */
+        ActionManager.prototype.redo = function () {
+            if (this.mRedoArray.length > 0) {
+                var action_2 = this.mRedoArray.pop();
+                action_2.redo();
+                this.mUndoArray.push(action_2);
+            }
+        };
+        //______________________________________
+        /**
+         * Undos the last user action
+         *
+         *
+         * @memberOf ActionManager
+         */
+        ActionManager.prototype.undo = function () {
+            if (this.mUndoArray.length > 0) {
+                var action_3 = this.mUndoArray.pop();
+                action_3.undo();
+                this.mRedoArray.push(action_3);
+            }
+        };
+        //_____________________________
+        /**
+         * Adds a user action
+         *
+         * @param {IAction} pAction -User Action to add
+         *
+         * @memberOf ActionManager
+         */
+        ActionManager.prototype.addAction = function (pAction) {
+            this.mRedoArray = new Array();
+            this.mUndoArray.push(pAction);
+        };
+        return ActionManager;
+    }());
+    action_1.ActionManager = ActionManager;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class reprseting a clear all shapes and text action
+     *
+     * @export
+     * @class ClearAllAction
+     * @implements {IAction}
+     */
+    var ClearAllAction = (function () {
+        /**
+         * Creates an instance of ClearAllAction.
+         * @param {any} pSprite -SVG sprite that the shapes were cleared from
+         *
+         * @memberOf ClearAllAction
+         */
+        function ClearAllAction(pSprite) {
+            this.mShapes = new Array();
+            this.mTextFields = new Array();
+            for (var i = 0; i < image.Globals.mCircles.length; i++) {
+                this.mShapes.push(image.Globals.mCircles[i].clone());
+            }
+            for (var i = 0; i < image.Globals.mTextArray.length; i++) {
+                this.mTextFields.push(image.Globals.mTextArray[i].clone());
+            }
+            this.mSprite = pSprite;
+        }
+        //__________________________________
+        ClearAllAction.prototype.redo = function () {
+            this.mSprite.removeChildren();
+            image.Globals.mCircles = new Array();
+            image.Globals.mTextArray = new Array();
+        };
+        //_________________________________
+        ClearAllAction.prototype.undo = function () {
+            image.Globals.mCircles = this.mShapes;
+            image.Globals.mTextArray = this.mTextFields;
+            for (var i = 0; i < image.Globals.mCircles.length; i++) {
+                image.Globals.mCircles[i].addToSprite(this.mSprite);
+            }
+            for (var i = 0; i < image.Globals.mTextArray.length; i++) {
+                this.mSprite.addChild(image.Globals.mTextArray[i]);
+            }
+        };
+        return ClearAllAction;
+    }());
+    action.ClearAllAction = ClearAllAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a rotate sprite action
+     *
+     * @export
+     * @class RotateAction
+     * @implements {IAction}
+     */
+    var RotateAction = (function () {
+        /**
+         * Creates an instance of RotateAction.
+         * @param {any} pOldAngle -Angle of sprite before rotation
+         * @param {any} pNewAngle -Angle of sprite after rotation
+         * @param {Function} pRotationCallBack -Function to rotate sprite
+         *
+         * @memberOf RotateAction
+         */
+        function RotateAction(pOldAngle, pNewAngle, pRotationCallBack) {
+            this.mOldAngle = pOldAngle;
+            this.mNewAngle = pNewAngle;
+            this.mRotationFunc = pRotationCallBack;
+        }
+        //______________________________________________
+        RotateAction.prototype.undo = function () {
+            this.mRotationFunc(this.mOldAngle);
+        };
+        //______________________________________________
+        RotateAction.prototype.redo = function () {
+            this.mRotationFunc(this.mNewAngle);
+        };
+        return RotateAction;
+    }());
+    action.RotateAction = RotateAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    var TextAction = (function () {
+        /**
+         * Creates an instance of TextAction.
+         * @param {asSvg.Sprite} pDrawPanel -Sprite text was added to
+         * @param {asSvg.ForeignObject} pTextField -Text object added
+         *
+         * @memberOf TextAction
+         */
+        function TextAction(pDrawPanel, pTextField) {
+            this.mSprite = pDrawPanel;
+            this.mTextField = pTextField;
+        }
+        //___________________________________
+        TextAction.prototype.redo = function () {
+            image.Globals.mTextArray.push(this.mTextField);
+            this.mSprite.addChild(this.mTextField);
+        };
+        //________________________________________
+        TextAction.prototype.undo = function () {
+            image.Globals.mTextArray.splice(image.Globals.mTextArray.indexOf(this.mTextField, 1));
+            this.mTextField.destruct();
+        };
+        return TextAction;
+    }());
+    action.TextAction = TextAction;
+})(action || (action = {}));
+var action;
+(function (action) {
+    /**
+     * Class representing a zoom action
+     *
+     * @export
+     * @class ZoomAction
+     * @implements {IAction}
+     */
+    var ZoomAction = (function () {
+        /**
+         * Creates an instance of ZoomAction.
+         * @param {number} pOldScale -Scale before zoom
+         * @param {number} pNewScale -Scale after zoom
+         * @param {Function} pScaleCallBack -Callback that re/undos the zoom
+         *
+         * @memberOf ZoomAction
+         */
+        function ZoomAction(pOldScale, pNewScale, pScaleCallBack) {
+            this.mOldScale = pOldScale;
+            this.mNewScale = pNewScale;
+            this.mScaleCallBack = pScaleCallBack;
+        }
+        //____________________________
+        ZoomAction.prototype.redo = function () {
+            this.mScaleCallBack(this.mNewScale);
+        };
+        //____________________________
+        ZoomAction.prototype.undo = function () {
+            this.mScaleCallBack(this.mOldScale);
+        };
+        Object.defineProperty(ZoomAction.prototype, "scale", {
+            //_____________________________
+            set: function (pVal) {
+                this.mNewScale += pVal;
+                this.mOldScale -= pVal;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return ZoomAction;
+    }());
+    action.ZoomAction = ZoomAction;
+})(action || (action = {}));
+var image;
+(function (image_1) {
+    /**
+     * Class that controls each drawing item(text/shape)
      *
      * @export
      * @class DrawingController
@@ -5501,26 +5401,34 @@ var image;
         }
         //_________________________________________
         DrawingController.prototype.deleteShape = function () {
-            this.mCurrentShape.destruct();
-            var aIndex = image.Globals.mDrawingShapes.indexOf(this.mCurrentShape);
-            image.Globals.mDrawingShapes.splice(aIndex, 1);
+            var aAction = new action.DeleteAction(this.mCurrentShape);
+            image_1.Globals.ActionManager.addAction(aAction);
+            this.mCurrentShape.deleteShape();
+            var aIndex = image_1.Globals.mCircles.indexOf(this.mCurrentShape);
+            image_1.Globals.mCircles.splice(aIndex, 1);
             this.onDeselectShape();
         };
         //_________________________________________
         DrawingController.prototype.deleteText = function () {
+            var aAction = new action.DeleteTextAction(this.mCurrentText);
+            image_1.Globals.ActionManager.addAction(aAction);
             this.mCurrentText.destruct();
-            var aIndex = image.Globals.mTextArray.indexOf(this.mCurrentText);
-            image.Globals.mTextArray.splice(aIndex, 1);
+            var aIndex = image_1.Globals.mTextArray.indexOf(this.mCurrentText);
+            image_1.Globals.mTextArray.splice(aIndex, 1);
             this.onDeselectText();
         };
         //_______________________________________
         DrawingController.prototype.changeShapeColor = function () {
             var aColor = document.getElementById("editColor").value;
-            this.mCurrentShape.element.setAttribute("stroke", aColor);
+            var aAction = new action.ColorAction(this.mCurrentShape.color, aColor, this.mCurrentShape);
+            image_1.Globals.ActionManager.addAction(aAction);
+            this.mCurrentShape.changeShapeColor(aColor);
         };
         //_________________________________________
         DrawingController.prototype.changeTextColor = function () {
             var aColor = document.getElementById("editTextColor").value;
+            var aAction = new action.ColorTextAction(this.mCurrentText, this.mCurrentText.mInputElement.style.color, aColor);
+            image_1.Globals.ActionManager.addAction(aAction);
             this.mCurrentText.mInputElement.style.color = aColor;
         };
         //________________________________________
@@ -5531,13 +5439,14 @@ var image;
          *
          * @memberOf DrawingController
          */
+        //_______________________________
         DrawingController.prototype.onSelectShape = function (pShape) {
             var _this = this;
             this.mCurrentShape = pShape;
-            this.mCurrentShape.element.onmousedown = function (pEvent) { return _this.onMouseDownShape(pEvent); };
-            window.addEventListener("mouseup", function () { return _this.onMouseUpShape(); });
             document.getElementById("editShapeToolBar").style.display = "block";
             document.getElementById("imageTools").style.display = "none";
+            this.mCurrentShape.addMouseEvents(function (pEvent) { return _this.onMouseDownShape(pEvent); });
+            $(window).bind("mouseup", function (event) { return _this.onMouseUpShape(event); });
         };
         //___________________________________
         /**
@@ -5562,57 +5471,86 @@ var image;
             var _this = this;
             document.getElementById("editShapeToolBar").style.display = "none";
             document.getElementById("imageTools").style.display = "block";
-            this.mCurrentShape.stopDrag();
-            this.mCurrentShape.element.onmousedown = null;
-            window.removeEventListener("mouseup", function () { return _this.onMouseUpShape(); });
-            this.onDeselect();
+            this.mCurrentShape.onDeselect();
+            this.mCurrentShape.removeMouseEvents();
+            this.mCurrentShape = null;
+            $(window).unbind("mouseup", function (event) { return _this.onMouseUpShape(event); });
         };
         //________________________________________
-        DrawingController.prototype.onDeselect = function () {
-            for (var i = 0; i < image.Globals.mDrawingShapes.length; i++) {
-                image.Globals.mDrawingShapes[i].alpha = 1;
-            }
-            for (var i = 0; i < image.Globals.mTextArray.length; i++) {
-                image.Globals.mTextArray[i].alpha = 1;
-            }
-            image.Globals.isItemSelected = false;
-        };
-        //____________________________________
         DrawingController.prototype.onDeselectText = function () {
             var _this = this;
+            image_1.Globals.isItemSelected = false;
+            this.mLastGoodTextX = null;
+            this.mLastGoodTextY = null;
             this.mCurrentText.mInputElement.style.outline = "none";
             document.getElementById("editTextToolBar").style.display = "none";
             document.getElementById("imageTools").style.display = "block";
             this.mCurrentText.stopDrag();
             this.mCurrentText.element.onmousedown = null;
             window.removeEventListener("mouseup", function () { return _this.onMouseUpText(); });
-            this.onDeselect();
-        };
-        //______________________________________________
-        DrawingController.prototype.onMouseDownShape = function (pEvent) {
-            pEvent.preventDefault();
-            pEvent.stopPropagation();
-            this.mCurrentShape.startDrag();
         };
         //__________________________________
         DrawingController.prototype.onMouseDownText = function (pEvent) {
-            image.Globals.isSelectDragMode = true;
-            this.mCurrentText.startDrag();
+            var _this = this;
+            image_1.Globals.isSelectDragMode = true;
+            var aPoint = new asBase.math.Point(this.mCurrentText.x, this.mCurrentText.y);
+            image_1.Globals.currentTextDragAction = new action.DragTextAction(this.mCurrentText, aPoint);
+            this.mCurrentText.startDrag(false, function () { return _this.setTextInBound(pEvent); });
+        };
+        //_________________________________________
+        DrawingController.prototype.onMouseDownShape = function (pEvent) {
+            pEvent.preventDefault();
+            pEvent.stopPropagation();
+            image_1.Globals.isSelectDragMode = true;
+            if (this.mCurrentShape) {
+                this.mCurrentShape.startDrag();
+            }
         };
         //_______________________________________
         DrawingController.prototype.onMouseUpText = function () {
-            image.Globals.isSelectDragMode = false;
+            image_1.Globals.isSelectDragMode = false;
             this.mCurrentText.stopDrag();
+            var aPoint = new asBase.math.Point(this.mCurrentText.x, this.mCurrentText.y);
+            if (image_1.Globals.currentTextDragAction && !image_1.Globals.currentTextDragAction.isAdded) {
+                image_1.Globals.currentTextDragAction.newPosition = aPoint;
+                image_1.Globals.ActionManager.addAction(image_1.Globals.currentTextDragAction);
+            }
         };
-        //____________________________________
-        DrawingController.prototype.onMouseUpShape = function () {
-            this.mCurrentShape.stopDrag();
+        //__________________________________________
+        DrawingController.prototype.onMouseUpShape = function (pEvent) {
+            if (this.mCurrentShape) {
+                this.mCurrentShape.stopDrag();
+            }
+            image_1.Globals.isSelectDragMode = false;
+        };
+        //______________________________________________
+        DrawingController.prototype.setTextInBound = function (pMouseEvent) {
+            image_1.Globals.ImageDrawing.mDrawPanel.stage.onMouseMove(pMouseEvent);
+            var image = document.getElementById("image");
+            var aImageRect = image.getBoundingClientRect();
+            var aTextRect = this.mCurrentText.mInputElement.getBoundingClientRect();
+            if ((aTextRect.left < aImageRect.left || aTextRect.right > aImageRect.right) && image_1.Globals.isDrawInBound) {
+                console.log("text drag x out of bounds");
+                this.mLastGoodTextX = this.mCurrentText.x;
+            }
+            else {
+                this.mLastGoodTextX = this.mCurrentText.x;
+            }
+            if ((aTextRect.top < aImageRect.top || aTextRect.bottom > aImageRect.bottom) && image_1.Globals.isDrawInBound) {
+                console.log("text drag y out of bounds");
+                this.mLastGoodTextY = this.mCurrentText.y;
+            }
+            else {
+                this.mLastGoodTextY = this.mCurrentText.y;
+            }
         };
         return DrawingController;
     }());
-    image.DrawingController = DrawingController;
+    image_1.DrawingController = DrawingController;
 })(image || (image = {}));
+/// <reference path="../action/actionmanager.ts" />
 var image;
+/// <reference path="../action/actionmanager.ts" />
 (function (image) {
     /**
      * Contains Global Variables
@@ -5623,15 +5561,9 @@ var image;
     var Globals = (function () {
         function Globals() {
         }
-        Object.defineProperty(Globals, "isDragMode", {
-            get: function () {
-                return (!Globals.isDrawMode && !Globals.isSelectDragMode);
-            },
-            enumerable: true,
-            configurable: true
-        });
         return Globals;
     }());
+    Globals.isDrawInBound = true;
     Globals.isSelectMode = false;
     Globals.isDrawMode = false;
     Globals.isRotateMode = false;
@@ -5639,17 +5571,25 @@ var image;
     Globals.isSelectDragMode = false;
     Globals.isItemSelected = false;
     Globals.imgURL = "assets/img2000.JPG";
-    Globals.isTest = false;
+    Globals.isUseBase64 = true;
     Globals.isFullScreen = false;
+    Globals.isCropMode = false;
+    Globals.isCircleMode = false;
+    Globals.isArrowMode = false;
+    Globals.ActionManager = new action.ActionManager();
     Globals.angle = 0;
-    Globals.mDrawingShapes = new Array();
+    Globals.SET_IMAGE = "SET IMAGE";
+    Globals.isDragMode = false;
+    Globals.cropCounter = 0;
+    Globals.ADD_SHAPES_AFTER_CROP = "ADD SHAPES AFTER CROP";
     Globals.mTextArray = new Array();
+    Globals.mCircles = new Array();
     image.Globals = Globals;
 })(image || (image = {}));
 /// <reference path="../../../scripts/jquery.d.ts" />
 var image;
 /// <reference path="../../../scripts/jquery.d.ts" />
-(function (image) {
+(function (image_2) {
     /**
      *
      *
@@ -5660,9 +5600,9 @@ var image;
         function ImageDrawing(pDiv) {
             var _this = this;
             this.fontSize = 25;
-            this.mLineWidth = 6;
             this.mCurrentAngle = 0;
             this.mOriginalAngle = 0;
+            this.isRightMouseDown = false;
             this.mImageContainer = pDiv;
             var aDiv = document.createElement("div");
             aDiv.style.position = "absolute";
@@ -5677,9 +5617,12 @@ var image;
             this.mRotationPanel.instanceName = "Rotation Panel";
             this.mSVGStage.addChild(this.mRotationPanel);
             this.mSVGStage.activeMouseLocation();
+            this.mScalePanel = new asSvg.Sprite();
+            this.mScalePanel.instanceName = "Scale Panel";
+            this.mRotationPanel.addChild(this.mScalePanel);
             this.mMovePanel = new asSvg.Sprite();
             this.mMovePanel.instanceName = "Move Panel";
-            this.mRotationPanel.addChild(this.mMovePanel);
+            this.mScalePanel.addChild(this.mMovePanel);
             this.mSVGStage.element.onmousewheel = function (pEvent) { return _this.onMouseWheel(pEvent); };
             this.mDrawPanel = new asSvg.Sprite();
             //this.mMovePanel.addChild(this.mTextElement);
@@ -5687,11 +5630,12 @@ var image;
             this.mSVGStage.element.onmousedown = function (pEvent) { return _this.onMouseDown(pEvent); };
             this.mSVGStage.element.onmousemove = function (pEvent) { return _this.onMouseMove(pEvent); };
             window.onmouseup = function (pEvent) { return _this.onMouseUp(pEvent); };
-            this.mDrawingController = new image.DrawingController();
+            this.mDrawingController = new image_2.DrawingController();
+            document.getElementById("cropButton").addEventListener("click", function () { return _this.onCrop(); });
         }
         //___________________________________________________
         /**
-         *
+         * Removes image from frame
          *
          *
          * @memberOf ImageDrawing
@@ -5704,12 +5648,25 @@ var image;
                 this.mDrawPanel.destruct();
                 this.mDrawPanel.removeChildren();
             }
+            image_2.Globals.mCircles = new Array();
+            image_2.Globals.mTextArray = new Array();
+            image_2.Globals.currentShapeDragAction = null;
+            image_2.Globals.currentDragAction = null;
+            image_2.Globals.currentZoomAction = null;
+            image_2.Globals.currentEditTextAction = null;
+            image_2.Globals.currentTextDragAction = null;
+            this.mDrawPanel.visible = true;
             this.mMovePanel.removeChildren();
             this.mRotationPanel.removeChildren();
             this.mRotationPanel.rotation = 0;
             this.mMovePanel = new asSvg.Sprite();
             this.mMovePanel.instanceName = "Move Panel";
             this.mRotationPanel.addChild(this.mMovePanel);
+            image_2.Globals.currentShapeDragAction = null;
+            image_2.Globals.currentDragAction = null;
+            image_2.Globals.currentZoomAction = null;
+            image_2.Globals.currentEditTextAction = null;
+            image_2.Globals.currentTextDragAction = null;
         };
         //__________________________________________
         /**
@@ -5721,23 +5678,31 @@ var image;
          *
          * @memberOf ImageDrawing
          */
-        ImageDrawing.prototype.setPicture = function (pURL, pAngle, pScale) {
+        ImageDrawing.prototype.setPicture = function (pURL, pAngle, pScale, pDrawingObjects, pTextArray, pX, pY) {
             if (pAngle === void 0) { pAngle = 0; }
             if (pScale === void 0) { pScale = 1; }
+            if (pDrawingObjects === void 0) { pDrawingObjects = null; }
+            if (pTextArray === void 0) { pTextArray = null; }
+            if (pX === void 0) { pX = 0; }
+            if (pY === void 0) { pY = 0; }
             this.removeImage();
-            if (image.Globals.isTest) {
-                this.setPictureTest(pURL, pAngle, pScale);
+            if (image_2.Globals.isUseBase64) {
+                this.setPictureCanvas(pURL, pAngle, pScale, pDrawingObjects, pTextArray, pX, pY);
             }
             else {
-                this.setPictureCanvas(pURL, pAngle, pScale);
+                this.setPictureTest(pURL, pAngle, pScale, pDrawingObjects, pTextArray, pX, pY);
             }
         };
         //_______________________________________
-        ImageDrawing.prototype.setPictureTest = function (pURL, pAngle, pScale) {
+        ImageDrawing.prototype.setPictureTest = function (pURL, pAngle, pScale, pDrawingObjects, pTextArray, pX, pY) {
             var _this = this;
             if (pAngle === void 0) { pAngle = 0; }
             if (pScale === void 0) { pScale = 1; }
-            this.mImage = new asSvg.Image(pURL, function (pData) { return _this.onImageLoadTest(pAngle, pScale); });
+            if (pDrawingObjects === void 0) { pDrawingObjects = null; }
+            if (pTextArray === void 0) { pTextArray = null; }
+            if (pX === void 0) { pX = 0; }
+            if (pY === void 0) { pY = 0; }
+            this.mImage = new asSvg.Image(pURL, function (pData) { return _this.onImageLoadTest(pAngle, pScale, pDrawingObjects, pX, pY); });
         };
         //_________________________________________________
         /**
@@ -5748,9 +5713,16 @@ var image;
          *
          * @memberOf ImageDrawing
          */
-        ImageDrawing.prototype.onImageLoadTest = function (pAngle, pScale) {
+        ImageDrawing.prototype.onImageLoadTest = function (pAngle, pScale, pDrawingObjects, pTextArray, pX, pY) {
+            var _this = this;
             if (pAngle === void 0) { pAngle = 0; }
             if (pScale === void 0) { pScale = 1; }
+            if (pDrawingObjects === void 0) { pDrawingObjects = null; }
+            if (pTextArray === void 0) { pTextArray = null; }
+            if (pX === void 0) { pX = 0; }
+            if (pY === void 0) { pY = 0; }
+            this.HTMLImage = document.createElement("img");
+            this.HTMLImage.src = this.mImage.getPath();
             this.mOriginalAngle = pAngle;
             this.mCurrentAngle = pAngle;
             this.mOrginalScale = pScale;
@@ -5774,22 +5746,60 @@ var image;
                 this.rotate(pAngle);
             }
             if (this.mOrginalScale != 1) {
-                this.scale(this.mOrginalScale);
+                this.scale(this.mOrginalScale - this.minImgScale);
+            }
+            if (pX != 0 || pY != 0) {
+                this.mMovePanel.x = pX;
+                this.mMovePanel.y = pY;
+                this.setImageInBound();
+            }
+            // add shapes after crop
+            asBase.events.EventManager.dispatchEvent(image_2.Globals.ADD_SHAPES_AFTER_CROP, this);
+            this.mImageCrop = new image_2.ImageCrop(this.mMovePanel);
+            if (pDrawingObjects) {
+                for (var i = 0; i < pDrawingObjects.length; i++) {
+                    pDrawingObjects[i].addToSprite(this.mDrawPanel);
+                    image_2.Globals.mCircles.push(pDrawingObjects[i]);
+                }
+            }
+            if (pTextArray) {
+                var _loop_1 = function (i) {
+                    pTextArray[i].element.appendChild(pTextArray[i].mInputElement);
+                    this_1.mDrawPanel.addChild(pTextArray[i]);
+                    image_2.Globals.mTextArray.push(pTextArray[i]);
+                    $(pTextArray[i].mInputElement).on("focusin", function (pEvent, pTextElement) { return _this.onSelectText(pEvent, pTextArray[i]); });
+                    pTextArray[i].mInputElement.addEventListener("input", function (pTextElement) { return _this.onInputText(pTextArray[i]); });
+                    pTextArray[i].mInputElement.oninput = function (pInput) { return _this.expandTextBox(pTextArray[i].mInputElement); };
+                    pTextArray[i].element.style.display = "block";
+                };
+                var this_1 = this;
+                for (var i = 0; i < pTextArray.length; i++) {
+                    _loop_1(i);
+                }
             }
         };
         //__________________________________________
-        ImageDrawing.prototype.setPictureCanvas = function (pURL, pAngle, pScale) {
+        ImageDrawing.prototype.setPictureCanvas = function (pURL, pAngle, pScale, pDrawingObjects, pTextArray, pX, pY) {
             var _this = this;
             if (pAngle === void 0) { pAngle = 0; }
             if (pScale === void 0) { pScale = 1; }
+            if (pDrawingObjects === void 0) { pDrawingObjects = null; }
+            if (pTextArray === void 0) { pTextArray = null; }
+            if (pX === void 0) { pX = 0; }
+            if (pY === void 0) { pY = 0; }
             this.mSourceImage = document.createElement("img");
             this.mSourceImage.src = pURL;
-            this.mSourceImage.onload = function (pData) { return _this.onImageLoadCanvas(pAngle, pScale); };
+            this.mSourceImage.onload = function (pData) { return _this.onImageLoadCanvas(pAngle, pScale, pDrawingObjects, pTextArray, pX, pY); };
         };
         //______________________________________________
-        ImageDrawing.prototype.onImageLoadCanvas = function (pAngle, pScale) {
+        ImageDrawing.prototype.onImageLoadCanvas = function (pAngle, pScale, pDrawingObjects, pTextArray, pX, pY) {
+            var _this = this;
             if (pAngle === void 0) { pAngle = 0; }
             if (pScale === void 0) { pScale = 1; }
+            if (pDrawingObjects === void 0) { pDrawingObjects = null; }
+            if (pTextArray === void 0) { pTextArray = null; }
+            if (pX === void 0) { pX = 0; }
+            if (pY === void 0) { pY = 0; }
             this.mOriginalAngle = pAngle;
             this.mCurrentAngle = pAngle;
             this.mOrginalScale = pScale;
@@ -5826,7 +5836,34 @@ var image;
                 this.rotate(pAngle);
             }
             if (this.mOrginalScale != 1) {
-                this.scale(this.mOrginalScale);
+                this.scale(this.mOrginalScale - this.minImgScale);
+            }
+            if (pX != 0 && pY != 0) {
+                this.mMovePanel.x = pX;
+                this.mMovePanel.y = pY;
+            }
+            // add shapes after crop
+            asBase.events.EventManager.dispatchEvent(image_2.Globals.ADD_SHAPES_AFTER_CROP, this);
+            this.mImageCrop = new image_2.ImageCrop(this.mMovePanel);
+            if (pDrawingObjects) {
+                for (var i = 0; i < pDrawingObjects.length; i++) {
+                    pDrawingObjects[i].addToSprite(this.mDrawPanel);
+                    image_2.Globals.mCircles.push(pDrawingObjects[i]);
+                }
+            }
+            if (pTextArray) {
+                var _loop_2 = function (i) {
+                    pTextArray[i].element.appendChild(pTextArray[i].mInputElement);
+                    this_2.mDrawPanel.addChild(pTextArray[i]);
+                    image_2.Globals.mTextArray.push(pTextArray[i]);
+                    $(pTextArray[i].mInputElement).on("focusin", function (pEvent, pTextElement) { return _this.onSelectText(pEvent, pTextArray[i]); });
+                    pTextArray[i].mInputElement.addEventListener("input", function (pTextElement) { return _this.onInputText(pTextArray[i]); });
+                    pTextArray[i].mInputElement.oninput = function (pInput) { return _this.expandTextBox(pTextArray[i].mInputElement); };
+                };
+                var this_2 = this;
+                for (var i = 0; i < pTextArray.length; i++) {
+                    _loop_2(i);
+                }
             }
         };
         //_____________________________________
@@ -5855,10 +5892,10 @@ var image;
         };
         //_________________________________
         /**
-         *
+         * Rotates the sprite
          *
          * @param {number} pAngle -angle to rotate image
-         *
+         * im
          * @memberOf ImageDrawing
          */
         ImageDrawing.prototype.rotate = function (pAngle) {
@@ -5876,44 +5913,50 @@ var image;
             this.adjustTextPanelAfterRotation();
             this.setImageInBound();
         };
+        //_________________________
+        ImageDrawing.prototype.onCrop = function () {
+            image_2.Globals.isCropMode = true;
+        };
         //_____________________________________
         /**
-         *
+         * Starts sribbling on the image
          *
          * @param {string} pColor -drawing color( in hex)
          *
          * @memberOf ImageDrawing
          */
         ImageDrawing.prototype.startDraw = function (pColor) {
-            if (!image.Globals.isDrawMode) {
-                image.Globals.isDrawMode = true;
+            if (!image_2.Globals.isDrawMode) {
+                image_2.Globals.isDrawMode = true;
                 this.mDrawColor = pColor;
             }
             else {
-                image.Globals.isDrawMode = false;
+                image_2.Globals.isDrawMode = false;
             }
         };
         //_________________________________________
         ImageDrawing.prototype.stopDraw = function () {
-            image.Globals.isDrawMode = false;
+            image_2.Globals.isDrawMode = false;
         };
         //_____________________________________
         /**
-         *
+         * Clears all shapes and text from the image
          *
          *
          * @memberOf ImageDrawing
          */
         ImageDrawing.prototype.clearAll = function () {
+            var aAction = new action.ClearAllAction(this.mDrawPanel);
+            image_2.Globals.ActionManager.addAction(aAction);
             this.mDrawPanel.removeChildren();
-            image.Globals.mDrawingShapes = new Array();
-            image.Globals.mTextArray = new Array();
+            image_2.Globals.mCircles = new Array();
+            image_2.Globals.mTextArray = new Array();
         };
         //____________________________
         /**
+         * Changes the draw color
          *
-         *
-         * @param {string} pColor
+         * @param {string} pColor -Color to change to
          *
          * @memberOf ImageDrawing
          */
@@ -5923,16 +5966,16 @@ var image;
         //_____________________________________
         /**
          *
-         *
+         * Sets the mode to text mode
          *
          * @memberOf ImageDrawing
          */
         ImageDrawing.prototype.onSetText = function () {
-            if (!image.Globals.isTextMode) {
-                image.Globals.isTextMode = true;
+            if (!image_2.Globals.isTextMode) {
+                image_2.Globals.isTextMode = true;
             }
             else
-                image.Globals.isTextMode = false;
+                image_2.Globals.isTextMode = false;
         };
         //________________________________
         /**
@@ -5946,21 +5989,22 @@ var image;
             var _this = this;
             this.stopDraw();
             var aTextElement = new asSvg.TextField();
-            if (!image.Globals.mTextArray) {
-                image.Globals.mTextArray = new Array();
+            if (!image_2.Globals.mTextArray) {
+                image_2.Globals.mTextArray = new Array();
             }
             aTextElement.setLineStyle(6 / this.mRotationPanel.scaleX);
             this.mDrawPanel.addChild(aTextElement);
             var aForeignObject = new asSvg.ForeignObject();
             aForeignObject.x = this.msetTextPoint.x;
             aForeignObject.y = this.msetTextPoint.y;
-            aForeignObject.setWidth(100);
-            aForeignObject.setHeight(50);
+            aForeignObject.setWidth(10);
+            aForeignObject.setHeight(10);
             this.mDrawPanel.addChild(aForeignObject);
             aForeignObject.mInputElement = document.createElement("input");
             aForeignObject.mInputElement.size = 1;
             //  $(aForeignObject.mInputElement).on("focusout", (pForeign) => this.onFocusOutText(aForeignObject, aForeignObject.mInputElement));
             $(aForeignObject.mInputElement).on("focusin", function (pEvent, pTextElement) { return _this.onSelectText(pEvent, aForeignObject); });
+            aForeignObject.mInputElement.addEventListener("input", function (pTextElement) { return _this.onInputText(aForeignObject); });
             aForeignObject.mInputElement.oninput = function (pInput) { return _this.expandTextBox(aForeignObject.mInputElement); };
             aForeignObject.mInputElement.type = "text";
             aForeignObject.mInputElement.className = "imageTextBox";
@@ -5968,15 +6012,20 @@ var image;
             aForeignObject.mInputElement.style.color = this.mDrawColor;
             aForeignObject.textField = aTextElement;
             aForeignObject.textField.textElement.style.display = "none";
-            aForeignObject.rotation = -this.mRotationPanel.rotation;
+            // aForeignObject.rotation = -this.mRotationPanel.rotation;
             // aForeignObject.mInputElement.setAttribute("outline","dashed black")
             aForeignObject.element.appendChild(aForeignObject.mInputElement);
             aForeignObject.mInputElement.focus();
-            image.Globals.mTextArray.push(aForeignObject);
+            image_2.Globals.mTextArray.push(aForeignObject);
+            //add action to action array
+            var aAction = new action.TextAction(this.mDrawPanel, aForeignObject);
+            image_2.Globals.ActionManager.addAction(aAction);
         };
         //___________________________
         ImageDrawing.prototype.createSVGText = function (pForeignObject, pInput) {
+            this.mDrawPanel.addChild(pForeignObject.textField);
             pForeignObject.textField.textElement.style.display = "block";
+            pForeignObject.textField.element.appendChild(pForeignObject.textField.textElement);
             pForeignObject.textField.x = pForeignObject.x;
             pForeignObject.textField.y = pForeignObject.y;
             pForeignObject.textField.rotation = pForeignObject.rotation;
@@ -5992,44 +6041,125 @@ var image;
         };
         //___________________________________________
         ImageDrawing.prototype.onMouseDown = function (pMouseEvent) {
-            var _this = this;
-            this.mMouseDown = true;
-            if (image.Globals.isDragMode) {
-                this.mMovePanel.startDrag(false, function () { return _this.setImageInBound(); });
+            if (pMouseEvent.which != 1) {
+                this.onRightMouseDown();
                 return;
             }
-            var aShape = new asSvg.Shape();
-            if (image.Globals.mDrawingShapes == null) {
-                image.Globals.mDrawingShapes = new Array();
+            this.mMouseDown = true;
+            //crop mode
+            if (image_2.Globals.isCropMode) {
+                this.mImageCrop.onMousedown(pMouseEvent);
+                return;
             }
-            image.Globals.mDrawingShapes.push(aShape);
-            this.mDrawPanel.addChild(aShape);
-            aShape.setFill(null);
-            aShape.setLineStyle(this.mLineWidth / this.mRotationPanel.scaleX, parseInt(this.mDrawColor));
-            aShape.addEventListener("click", function (pShape) { return _this.onSelectShape(aShape); }, this);
-            aShape.moveTo(this.mMovePanel.mouseX, this.mMovePanel.mouseY);
+            //draw a circle
+            if (image_2.Globals.isCircleMode) {
+                var aCircle = new shapes.Circle(this.mDrawPanel, this.mDrawColor);
+                image_2.Globals.mCircles.push(aCircle);
+                aCircle.onMouseDown(pMouseEvent);
+                var aAction = new action.DrawAction(this.mDrawPanel, aCircle);
+                image_2.Globals.ActionManager.addAction(aAction);
+                return;
+            }
+            // draw an arrow
+            if (image_2.Globals.isArrowMode) {
+                var aArrow = new shapes.Arrow(this.mDrawPanel, this.mDrawColor);
+                image_2.Globals.mCircles.push(aArrow);
+                aArrow.onMouseDown(pMouseEvent);
+                var aAction = new action.DrawAction(this.mDrawPanel, aArrow);
+                image_2.Globals.ActionManager.addAction(aAction);
+                return;
+            }
+            //draw a scribble
+            if (image_2.Globals.isDrawMode) {
+                //scribble mode
+                var aShape = new shapes.Scribble(this.mDrawPanel, this.mDrawColor, ImageDrawing.LINE_WIDTH);
+                image_2.Globals.mCircles.push(aShape);
+                image_2.Globals.mCircles[image_2.Globals.mCircles.length - 1].onMouseDown(pMouseEvent);
+                var aAction = new action.DrawAction(this.mDrawPanel, aShape);
+                image_2.Globals.ActionManager.addAction(aAction);
+            }
+        };
+        //__________________________________________
+        ImageDrawing.prototype.onRightMouseDown = function () {
+            var _this = this;
+            this.isRightMouseDown = true;
+            image_2.Globals.isDragMode = true;
+            this.mMovePanel.startDrag(false, function () { return _this.setImageInBound(); });
+            var aPoint = new asBase.math.Point(this.mMovePanel.x, this.mMovePanel.y);
+            image_2.Globals.currentDragAction = new action.DragAction(aPoint, this.mMovePanel, function () { return _this.setImageInBound(); });
         };
         //__________________________________________
         ImageDrawing.prototype.setTextPoint = function (pMouseEvent) {
-            if (image.Globals.isTextMode) {
+            console.log("client x :" + pMouseEvent.clientX + "   client y :" + pMouseEvent.clientY);
+            if (image_2.Globals.isTextMode && this.isMouseInBound(pMouseEvent)) {
                 this.msetTextPoint = {};
                 this.msetTextPoint.x = this.mMovePanel.mouseX;
                 this.msetTextPoint.y = this.mMovePanel.mouseY;
                 this.setText();
-                image.Globals.isTextMode = false;
+                image_2.Globals.isTextMode = false;
                 this.mTextButton.classList.remove("active");
             }
         };
         //_____________________________________
         ImageDrawing.prototype.onMouseMove = function (pMouseEvent) {
-            if (!this.mMouseDown) {
+            if (!this.mMouseDown || pMouseEvent.which != 1) {
                 return;
             }
-            if (!image.Globals.isDragMode && image.Globals.isDrawMode) {
-                var aCurrentShape = image.Globals.mDrawingShapes[image.Globals.mDrawingShapes.length - 1];
-                aCurrentShape.element.setAttribute("stroke", this.mDrawColor);
-                aCurrentShape.setLineStyle(this.mLineWidth / this.mRotationPanel.scaleX);
-                aCurrentShape.lineTo(this.mMovePanel.mouseX, this.mMovePanel.mouseY);
+            //crop mode
+            if (image_2.Globals.isCropMode) {
+                this.mImageCrop.onMouseMove(pMouseEvent);
+                return;
+            }
+            //draw a circle
+            if (image_2.Globals.isCircleMode) {
+                image_2.Globals.mCircles[image_2.Globals.mCircles.length - 1].onMouseMove(pMouseEvent);
+            }
+            // draw an arrow
+            if (image_2.Globals.isArrowMode) {
+                image_2.Globals.mCircles[image_2.Globals.mCircles.length - 1].onMouseMove(pMouseEvent);
+            }
+            //scribble
+            if (!image_2.Globals.isDragMode && image_2.Globals.isDrawMode) {
+                var aCurrentShape = image_2.Globals.mCircles[image_2.Globals.mCircles.length - 1];
+                aCurrentShape.onMouseMove(pMouseEvent);
+            }
+        };
+        //______________________________
+        ImageDrawing.prototype.isTextInBound = function (pText) {
+            var image = document.getElementById("image");
+            var aImageRect = image.getBoundingClientRect();
+            var aTextRect = pText.mInputElement.getBoundingClientRect();
+            if ((aTextRect.left < aImageRect.left || aTextRect.right > aImageRect.right || aTextRect.top < aImageRect.top || aTextRect.bottom > aImageRect.bottom) && image_2.Globals.isDrawInBound) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        };
+        //______________________________
+        //______________________________
+        ImageDrawing.prototype.onInputText = function (pText) {
+            var _this = this;
+            if (!this.isTextInBound(pText)) {
+                // pText.mInputElement.value = pText.mInputElement.value.slice(0, pText.mInputElement.value.length - 1);
+                console.log("text out of bounds");
+                return;
+            }
+            //            pText.oldValue = pText.mInputElement.value;
+            if (this.mInputTimeout) {
+                clearTimeout(this.mInputTimeout);
+            }
+            else {
+                image_2.Globals.currentEditTextAction = new action.editTextAction(pText, pText.mInputElement.value);
+            }
+            this.mInputTimeout = setTimeout(function (aText) { return _this.addEditTextAction(pText); }, 1000);
+        };
+        //_________________________________________
+        ImageDrawing.prototype.addEditTextAction = function (pText) {
+            this.mInputTimeout = null;
+            if (image_2.Globals.currentEditTextAction && !image_2.Globals.currentEditTextAction.isAdded) {
+                image_2.Globals.currentEditTextAction.newValue = pText.mInputElement.value;
+                image_2.Globals.ActionManager.addAction(image_2.Globals.currentEditTextAction);
             }
         };
         //_____________________________________
@@ -6043,8 +6173,6 @@ var image;
         };
         //_____________________
         ImageDrawing.prototype.setImageInBoundOriginal = function () {
-            var aX = this.mMovePanel.x;
-            var aY = this.mMovePanel.y;
             var aImageRect = this.mMovePanel.getBounds();
             var aConRect = this.mImageContainer.getBoundingClientRect();
             if (this.mWidthOriginalScale >= this.mRotationPanel.scaleX) {
@@ -6053,7 +6181,6 @@ var image;
             else {
                 var aPanelWidth = this.mImgWidth * this.mRotationPanel.scaleX;
                 var aMaxX = (aPanelWidth / 2 - aConRect.width / 2) / this.mRotationPanel.scaleX;
-                console.log("aPanelWidth = " + aPanelWidth + " --- " + aImageRect.width);
                 if (this.mMovePanel.x > aMaxX) {
                     this.mMovePanel.x = aMaxX;
                 }
@@ -6067,7 +6194,6 @@ var image;
             else {
                 var aPanelHight = this.mImgHeight * this.mRotationPanel.scaleX;
                 var aMaxY = (aPanelHight / 2 - aConRect.height / 2) / this.mRotationPanel.scaleX;
-                console.log("aPanelWidth = " + aPanelHight + " --- " + aImageRect.height);
                 if (this.mMovePanel.y > aMaxY) {
                     this.mMovePanel.y = aMaxY;
                 }
@@ -6086,7 +6212,6 @@ var image;
             else {
                 var aPanelWidth = this.mImgHeight * this.mRotationPanel.scaleX;
                 var aMaxX = (aPanelWidth / 2 - aConRect.width / 2) / this.mRotationPanel.scaleX;
-                console.log("aPanelWidth = " + aPanelWidth + " --- " + aImageRect.width);
                 if (this.mMovePanel.y > aMaxX) {
                     this.mMovePanel.y = aMaxX;
                 }
@@ -6100,7 +6225,6 @@ var image;
             else {
                 var aPanelHight = this.mImgWidth * this.mRotationPanel.scaleX;
                 var aMaxY = (aPanelHight / 2 - aConRect.height / 2) / this.mRotationPanel.scaleX;
-                console.log("aPanelWidth = " + aPanelHight + " --- " + aImageRect.height);
                 if (this.mMovePanel.x > aMaxY) {
                     this.mMovePanel.x = aMaxY;
                 }
@@ -6109,15 +6233,81 @@ var image;
                 }
             }
         };
+        //________________________________
+        ImageDrawing.prototype.clearImgSrc = function () {
+            if (this.mSourceImage) {
+                this.mSourceImage.onload = function () { };
+            }
+            if (this.HTMLImage) {
+                this.HTMLImage.onload = function () { };
+            }
+        };
+        //___________________________________________
+        ImageDrawing.prototype.isMouseInBound = function (pMousEvent) {
+            var image = document.getElementById("image");
+            var aImageRect = image.getBoundingClientRect();
+            if ((pMousEvent.clientX < aImageRect.left || pMousEvent.clientX > aImageRect.right || pMousEvent.clientY < aImageRect.top || pMousEvent.clientY > aImageRect.bottom) && image_2.Globals.isDrawInBound) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        };
         //_____________________________________
         ImageDrawing.prototype.onMouseUp = function (pMouseEvent) {
+            if (pMouseEvent.which != 1) {
+                this.onRightMouseUp();
+            }
             this.mMouseDown = false;
             this.mMousePoint = null;
+            //crop mode
+            if (image_2.Globals.isCropMode) {
+                this.mImageCrop.onMouseUp();
+                return;
+            }
+            //draw a circle
+            if (image_2.Globals.isCircleMode) {
+                image_2.Globals.mCircles[image_2.Globals.mCircles.length - 1].onMouseUp();
+                return;
+            }
+            //draw an arrow
+            if (image_2.Globals.isArrowMode) {
+                image_2.Globals.mCircles[image_2.Globals.mCircles.length - 1].onMouseUp();
+                return;
+            }
+            if (image_2.Globals.isDrawMode) {
+                //draw a shape
+                image_2.Globals.mCircles[image_2.Globals.mCircles.length - 1].onMouseUp();
+                return;
+            }
+        };
+        //_____________________________________
+        ImageDrawing.prototype.onRightMouseUp = function () {
+            this.isRightMouseDown = false;
+            image_2.Globals.isDragMode = false;
             this.mMovePanel.stopDrag();
+            //add drag action
+            if (image_2.Globals.currentDragAction && !image_2.Globals.currentDragAction.isAdded) {
+                var aNewPosition = new asBase.math.Point(this.mMovePanel.x, this.mMovePanel.y);
+                image_2.Globals.currentDragAction.newPosition = aNewPosition;
+                image_2.Globals.ActionManager.addAction(image_2.Globals.currentDragAction);
+            }
         };
         //________________________________________
         ImageDrawing.prototype.onMouseWheel = function (e) {
+            var _this = this;
             ImageDrawing.isZoomed = true;
+            var aNewScale = e.wheelDelta / 10000 * this.mRotationPanel.scaleX;
+            var aOldScale = -aNewScale;
+            if (ImageDrawing.zoom_timeout && image_2.Globals.currentZoomAction) {
+                clearTimeout(ImageDrawing.zoom_timeout);
+                image_2.Globals.currentZoomAction.scale = aNewScale;
+            }
+            else {
+                image_2.Globals.currentZoomAction = new action.ZoomAction(aOldScale, aNewScale, function (pScale) { return _this.scale(pScale); });
+                console.log("add zoom action");
+            }
+            ImageDrawing.zoom_timeout = setTimeout(function (pAction) { return _this.addZoomAction(image_2.Globals.currentZoomAction); }, 500);
             this.scale(e.wheelDelta / 10000 * this.mRotationPanel.scaleX);
         };
         //__________________________________
@@ -6133,28 +6323,37 @@ var image;
             this.setImageInBound();
             this.adjustDrawPanelAfterScale();
         };
+        //__________________________________
+        ImageDrawing.prototype.addZoomAction = function (pZoomAction) {
+            image_2.Globals.ActionManager.addAction(pZoomAction);
+            ImageDrawing.zoom_timeout = null;
+            image_2.Globals.currentZoomAction = null;
+        };
         //___________________________________________
         ImageDrawing.prototype.adjustDrawPanelAfterScale = function () {
-            for (var i = 0; i < image.Globals.mDrawingShapes.length; i++) {
-                image.Globals.mDrawingShapes[i].setLineStyle(this.mLineWidth / this.mRotationPanel.scaleX);
+            for (var i = 0; i < image_2.Globals.mCircles.length; i++) {
+                image_2.Globals.mCircles[i].setLineWidth(ImageDrawing.LINE_WIDTH / this.mRotationPanel.scaleX);
             }
             if (ImageDrawing.FIX_TEXT_TO_ZOOM) {
-                for (var i = 0; i < image.Globals.mTextArray.length; i++) {
-                    image.Globals.mTextArray[i].mInputElement.style.fontSize = this.fontSize / this.mRotationPanel.scaleX + "px";
+                for (var i = 0; i < image_2.Globals.mTextArray.length; i++) {
+                    image_2.Globals.mTextArray[i].mInputElement.style.fontSize = this.fontSize / this.mRotationPanel.scaleX + "px";
+                    //Globals.mTextArray[i].mInputElement.style.height = 64 / this.mRotationPanel.scaleX + "px";
+                    // Globals.mTextArray[i].mInputElement.style.outlineWidth = ((Globals.mTextArray[i].mInputElement.value.length + 1) * (this.fontSize / this.mRotationPanel.scaleX)) / 10 + "px";
+                    //  Globals.mTextArray[i].mInputElement.style.width = (Globals.mTextArray[i].mInputElement.value.length + 1) * (this.fontSize / this.mRotationPanel.scaleX) + "px";
                 }
             }
         };
         //_____________________________________
         ImageDrawing.prototype.adjustTextPanelAfterRotation = function () {
-            for (var i = 0; i < image.Globals.mTextArray.length; i++) {
-                image.Globals.mTextArray[i].rotation = -this.mRotationPanel.rotation;
-                var aTemp = image.Globals.mTextArray[i].x;
-                image.Globals.mTextArray[i].x = image.Globals.mTextArray[i].y;
-                image.Globals.mTextArray[i].y = aTemp;
-                image.Globals.mTextArray[i].textField.rotation = -this.mRotationPanel.rotation;
-                var aTemp1 = image.Globals.mTextArray[i].textField.x;
-                image.Globals.mTextArray[i].textField.x = image.Globals.mTextArray[i].textField.y;
-                image.Globals.mTextArray[i].textField.y = aTemp1;
+            for (var i = 0; i < image_2.Globals.mTextArray.length; i++) {
+                image_2.Globals.mTextArray[i].rotation = -this.mRotationPanel.rotation;
+                var aTemp = image_2.Globals.mTextArray[i].x;
+                image_2.Globals.mTextArray[i].x = image_2.Globals.mTextArray[i].y;
+                image_2.Globals.mTextArray[i].y = aTemp;
+                image_2.Globals.mTextArray[i].textField.rotation = -this.mRotationPanel.rotation;
+                var aTemp1 = image_2.Globals.mTextArray[i].textField.x;
+                image_2.Globals.mTextArray[i].textField.x = image_2.Globals.mTextArray[i].textField.y;
+                image_2.Globals.mTextArray[i].textField.y = aTemp1;
             }
         };
         //_________________________________________
@@ -6165,52 +6364,34 @@ var image;
          * @memberOf ImageDrawing
          */
         ImageDrawing.prototype.select = function () {
-            if (!image.Globals.isSelectMode) {
-                image.Globals.isSelectMode = true;
+            if (!image_2.Globals.isSelectMode) {
+                image_2.Globals.isSelectMode = true;
             }
             else
-                image.Globals.isSelectMode = false;
-        };
-        //__________________________________________
-        ImageDrawing.prototype.onSelectShape = function (pShape) {
-            if (image.Globals.isSelectMode && !image.Globals.isItemSelected) {
-                for (var i = 0; i < image.Globals.mDrawingShapes.length; i++) {
-                    if (image.Globals.mDrawingShapes[i] != pShape) {
-                        image.Globals.mDrawingShapes[i].alpha = 0.5;
-                    }
-                }
-                for (var i = 0; i < image.Globals.mTextArray.length; i++) {
-                    image.Globals.mTextArray[i].alpha = 0.5;
-                }
-                pShape.parent.addChild(pShape);
-                image.Globals.isItemSelected = true;
-                this.mDrawingController.onSelectShape(pShape);
-            }
+                image_2.Globals.isSelectMode = false;
         };
         //____________________________________________
         ImageDrawing.prototype.onSelectText = function (pEvent, pText) {
-            if (image.Globals.isSelectMode && !image.Globals.isItemSelected) {
-                for (var i = 0; i < image.Globals.mDrawingShapes.length; i++) {
-                    image.Globals.mDrawingShapes[i].alpha = 0.5;
-                }
-                for (var i = 0; i < image.Globals.mTextArray.length; i++) {
-                    if (image.Globals.mTextArray[i] != pText) {
-                        image.Globals.mTextArray[i].alpha = 0.5;
-                    }
-                }
-                image.Globals.isItemSelected = true;
-                // pText.parent.addChild(pText);
+            if (!image_2.Globals.isItemSelected) {
+                image_2.Globals.isItemSelected = true;
                 this.mDrawingController.onSelectText(pText);
             }
-            else if (!image.Globals.isTextMode) {
+            else if (!image_2.Globals.isTextMode) {
                 pEvent.preventDefault();
                 pEvent.stopPropagation();
                 $(pText.mInputElement).blur();
+                image_2.Globals.currentEditTextAction = new action.editTextAction(pText, pText.mInputElement.value);
             }
-            ;
+        };
+        //____________________________
+        ImageDrawing.prototype.onSelectShape = function (pShape) {
+            this.mDrawingController.onSelectShape(pShape);
+        };
+        //__________________________________________
+        ImageDrawing.prototype.drawShapes = function (pShapes, pScale) {
         };
         Object.defineProperty(ImageDrawing.prototype, "minImgScale", {
-            //___________________________________________
+            //___________________________________
             /**
              *
              *
@@ -6253,10 +6434,10 @@ var image;
          * @memberOf ImageDrawing
          */
         ImageDrawing.prototype.convertInuptToSVG = function () {
-            for (var i = 0; i < image.Globals.mTextArray.length; i++) {
+            for (var i = 0; i < image_2.Globals.mTextArray.length; i++) {
                 // this.onFocusOutText()
-                image.Globals.mTextArray[i].element.style.display = "none";
-                this.createSVGText(image.Globals.mTextArray[i], image.Globals.mTextArray[i].mInputElement);
+                image_2.Globals.mTextArray[i].element.style.display = "none";
+                this.createSVGText(image_2.Globals.mTextArray[i], image_2.Globals.mTextArray[i].mInputElement);
             }
         };
         //_______________________________________
@@ -6267,14 +6448,14 @@ var image;
          * @memberOf ImageDrawing
          */
         ImageDrawing.prototype.convertSVGToInput = function () {
-            for (var i = 0; i < image.Globals.mTextArray.length; i++) {
-                image.Globals.mTextArray[i].element.style.display = "block";
-                image.Globals.mTextArray[i].textField.text = "";
+            for (var i = 0; i < image_2.Globals.mTextArray.length; i++) {
+                image_2.Globals.mTextArray[i].element.style.display = "block";
+                image_2.Globals.mTextArray[i].textField.text = "";
             }
         };
         //_______________________________________
         /**
-         *
+         * Expands the frame to full screem
          *
          * @param {boolean} pIsFullScreen-true:minimize,false:maximize
          *
@@ -6289,10 +6470,10 @@ var image;
             }
         };
         /**
+         * Resizes the SVG stage
          *
-         *
-         * @param {number} pWidth
-         * @param {number} pHeight
+         * @param {number} pWidth -width to resize to
+         * @param {number} pHeight -heigth to resize to
          *
          * @memberOf ImageDrawing
          */
@@ -6327,11 +6508,19 @@ var image;
             this.setImageInBound();
             this.adjustDrawPanelAfterScale();
         };
+        //_______________________________________
+        ImageDrawing.prototype.getCroppedBound = function () {
+            var aRectBounds = this.mImageCrop.getCropBounds();
+            return aRectBounds;
+        };
+        //____________________________________
+        ImageDrawing.prototype.getCroppedRect = function () {
+            return this.mImageCrop.rect;
+        };
         Object.defineProperty(ImageDrawing.prototype, "fontsize", {
-            //_______________________________________
             /**
              *
-             *
+             * Sets the font size of text objects
              *
              * @memberOf ImageDrawing
              */
@@ -6345,12 +6534,12 @@ var image;
             //__________________________________
             /**
              *
-             *
+             * Sets the line width of shapes
              *
              * @memberOf ImageDrawing
              */
             set: function (pLineWidth) {
-                this.mLineWidth = pLineWidth;
+                ImageDrawing.LINE_WIDTH = pLineWidth;
             },
             enumerable: true,
             configurable: true
@@ -6388,7 +6577,8 @@ var image;
     ImageDrawing.FIX_TEXT_TO_ZOOM = true;
     ImageDrawing.SCALE_TO_MIN_AFTER_ROTATE = false;
     ImageDrawing.isZoomed = false;
-    image.ImageDrawing = ImageDrawing;
+    ImageDrawing.LINE_WIDTH = 4;
+    image_2.ImageDrawing = ImageDrawing;
 })(image || (image = {}));
 var image;
 (function (image) {
@@ -6400,13 +6590,18 @@ var image;
      */
     var ImageSave = (function () {
         function ImageSave(pImageDrawing) {
-            this.mStage = pImageDrawing.mSVGStage;
             this.mImageDrawing = pImageDrawing;
+            this.mStage = this.mImageDrawing.mSVGStage;
         }
         //____________________________
         ImageSave.prototype.getImage = function () {
         };
+        //___________________________
+        ImageSave.prototype.getCroppedImage = function (pRect) {
+        };
         //________________________________________
+        ImageSave.prototype.saveCroppedImage = function (pRect) {
+        };
         ImageSave.prototype.saveImage = function () {
         };
         //_____________________________________
@@ -6465,12 +6660,14 @@ var image;
          * @memberOf ImageSaveCanvas
          */
         function ImageSaveCanvas(pImageDrawing) {
-            return _super.call(this, pImageDrawing) || this;
+            var _this = _super.call(this, pImageDrawing) || this;
+            asBase.events.EventManager.addEventListener(image.Globals.ADD_SHAPES_AFTER_CROP, function () { return _this.onAddShapesAfterCrop(); }, _this);
+            return _this;
         }
         //____________________________
         /**
          *
-         *
+         * Download the image in the frame
          *
          * @memberOf ImageSaveCanvas
          */
@@ -6480,7 +6677,83 @@ var image;
             this.mImage = this.mStage.getImage();
             this.mImage.onload = function () { return _this.saveImage(); };
         };
-        //________________________________________
+        //____________________________________________________________
+        /**
+         * Downloads the image frame with the original angle,scale and size
+         *
+         *
+         * @memberOf ImageSaveCanvas
+         */
+        ImageSaveCanvas.prototype.getFullImage = function () {
+            var _this = this;
+            this.mImageDrawing.convertInuptToSVG();
+            var aConRect = this.mImageDrawing.mImageContainer.getBoundingClientRect();
+            var aPanelWidth = this.mImageDrawing.mImgWidth * this.mImageDrawing.mRotationPanel.scaleX;
+            var aMaxX = (aPanelWidth / 2 - aConRect.width / 2) / this.mImageDrawing.mRotationPanel.scaleX;
+            var aPanelHight = this.mImageDrawing.mImgHeight * this.mImageDrawing.mRotationPanel.scaleX;
+            var aMaxY = (aPanelHight / 2 - aConRect.height / 2) / this.mImageDrawing.mRotationPanel.scaleX;
+            this.mImage = this.mImageDrawing.mRotationPanel.getImage(1, aMaxX, aMaxY);
+            this.mImage.onload = function () { return _this.saveImage(); };
+        };
+        //_______________________________________________________________
+        /**
+         * Gets and saves the cropped image
+         *
+         * @param {ClientRect} pRect
+         *
+         * @memberOf ImageSaveCanvas
+         */
+        ImageSaveCanvas.prototype.getCroppedImage = function (pRect) {
+            var _this = this;
+            this.mPrevScale = this.mImageDrawing.mRotationPanel.scaleX;
+            this.mPrevRotation = this.mImageDrawing.mRotationPanel.rotation;
+            this.mPrevX = this.mImageDrawing.mMovePanel.x;
+            this.mPrevY = this.mImageDrawing.mMovePanel.y;
+            // this.mDrawingObjects= this.mImageDrawing.getShapesInRect();
+            // this.mImageDrawing.mDrawPanel.visible = false;
+            this.mImageDrawing.convertInuptToSVG();
+            this.mImage = this.mStage.getImage();
+            this.mImage.onload = function (p) { return _this.saveCroppedImage(pRect); };
+        };
+        //_______________________________________________________________
+        ImageSaveCanvas.prototype.saveCroppedImage = function (pRect) {
+            var _this = this;
+            var aWidthScale = this.mImageDrawing.mImgWidth / pRect.width;
+            var aHeightScale = this.mImageDrawing.mImgHeight / pRect.height;
+            this.mScale = Math.min(aWidthScale, aHeightScale);
+            var aCanvas = document.createElement("canvas");
+            ;
+            // aCanvas.width = this.mImage.naturalWidth;
+            //aCanvas.height = this.mImage.naturalHeight;
+            aCanvas.width = pRect.width * this.mScale;
+            aCanvas.height = pRect.height * this.mScale;
+            var aContext = aCanvas.getContext("2d");
+            //   aContext.drawImage(this.mImage, pRect.x, pRect.y, pRect.width, pRect.height, 0, 0, this.mImage.naturalWidth, this.mImage.naturalHeight);
+            aContext.drawImage(this.mImage, pRect.x, pRect.y, pRect.width, pRect.height, 0, 0, pRect.width * this.mScale, pRect.height * this.mScale);
+            var aDataURL = aCanvas.toDataURL();
+            this.mImageDrawing.convertSVGToInput();
+            var aAction = new action.CropAction(this.mImageDrawing.mSourceImage.src, aDataURL, function (pSrc, p, d, e, g, f, h) { return _this.mImageDrawing.setPicture(pSrc, p, d, e, g, f, h); }, 0, this.mPrevRotation, this.mPrevScale, this.mPrevX, this.mPrevY);
+            image.Globals.ActionManager.addAction(aAction);
+            //for (let i = 0; i < this.mDrawingObjects.length; i++) {
+            //    let aWidth = this.mDrawingObjects[i].element.getBoundingClientRect().width;
+            //    let aHeight = this.mDrawingObjects[i].element.getBoundingClientRect().height;
+            //    this.mDrawingObjects[i].setScale(aScale);
+            //    this.mDrawingObjects[i].x = ((aWidth * aScale) - aWidth  / 2);
+            //    this.mDrawingObjects[i].y = ((aHeight * aScale) - aHeight / 2);
+            //}
+            this.mImageDrawing.setPicture(aDataURL);
+        };
+        //______________________________________________________________
+        ImageSaveCanvas.prototype.saveFullImage = function () {
+            var aCanvas = document.createElement("canvas");
+            aCanvas.width = this.mImageDrawing.mImgWidth;
+            aCanvas.height = this.mImageDrawing.mImgHeight;
+            var aContext = aCanvas.getContext("2d");
+            aContext.drawImage(this.mImage, 0, 0, this.mImageDrawing.mImgWidth, this.mImageDrawing.mImgHeight);
+            var aDataURL = aCanvas.toDataURL();
+            this.downloadImage(aDataURL);
+        };
+        //__________________________________________________________
         ImageSaveCanvas.prototype.saveImage = function () {
             var aCanvas = document.createElement("canvas");
             ;
@@ -6507,6 +6780,13 @@ var image;
             //return afile;
             this.mImageDrawing.convertSVGToInput();
         };
+        //_____________________________________________________________
+        ImageSaveCanvas.prototype.onAddShapesAfterCrop = function () {
+            if (this.mDrawingObjects) {
+                this.mImageDrawing.drawShapes(this.mDrawingObjects, this.mScale);
+            }
+        };
+        //______________________________________________
         ImageSaveCanvas.dataURLtoBlob = function (dataurl) {
             var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
             while (n--) {
@@ -6538,145 +6818,1777 @@ var image;
         ImageSaveCombineCanvas.prototype.getImage = function () {
             var _this = this;
             this.mImageDrawing.convertInuptToSVG();
-            //this.mImageDrawing.resetRotationAndScale();
+            this.mPrevScale = this.mImageDrawing.mRotationPanel.scaleX;
+            this.mPrevX = this.mImageDrawing.mMovePanel.x;
+            this.mPrevY = this.mImageDrawing.mMovePanel.y;
+            this.mPrevRotation = this.mImageDrawing.mRotationPanel.rotation;
+            this.mImageDrawing.mRotationPanel.scaleX = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mRotationPanel.scaleY = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mMovePanel.x = 0;
+            this.mImageDrawing.mMovePanel.y = 0;
+            this.mImageDrawing.mRotationPanel.rotation = 0;
             this.mImage = this.mStage.getImage();
             this.mImage.onload = function () { return _this.saveImage(); };
         };
         //____________________________________________________
-        ImageSaveCombineCanvas.prototype.saveImage = function () {
+        ImageSaveCombineCanvas.prototype.getCroppedImage = function (pRect) {
             var _this = this;
-            this.aImage = document.createElement("img");
-            this.aImage.src = image.Globals.imgURL;
-            this.aImage.onload = function () { return _this.onLoadImage(); };
+            this.mImageDrawing.convertInuptToSVG();
+            this.mPrevScale = this.mImageDrawing.mRotationPanel.scaleX;
+            this.mPrevX = this.mImageDrawing.mMovePanel.x;
+            this.mPrevY = this.mImageDrawing.mMovePanel.y;
+            this.mPrevRotation = this.mImageDrawing.mRotationPanel.rotation;
+            this.mImageDrawing.mRotationPanel.scaleX = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mRotationPanel.scaleY = this.mImageDrawing.minImgScale;
+            this.mImageDrawing.mMovePanel.x = 0;
+            this.mImageDrawing.mMovePanel.y = 0;
+            this.mImageDrawing.mRotationPanel.rotation = 0;
+            var aRectBounds = pRect.getBounds();
+            pRect.visible = false;
+            this.mImage = this.mStage.getImage();
+            this.mImage.onload = function () { return _this.saveCroppedImage(aRectBounds); };
         };
-        //__________________________________________
-        ImageSaveCombineCanvas.prototype.onLoadImage = function () {
-            this.mCanvas = document.createElement("canvas");
-            this.mCanvas.width = this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX;
-            this.mCanvas.height = this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX;
-            // this.aImage.width = this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX;
-            //  this.aImage.height = this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX;
-            //let aCanvas = this.combineImageAndCanvas(this.aImage, this.mCanvas);
-            var aContext = this.mCanvas.getContext("2d");
-            aContext.drawImage(this.aImage, 0, 0, this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX, this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX);
-            //this.adjustCanvas();
-            aContext.drawImage(this.mImage, (this.aImage.naturalWidth * this.mImageDrawing.mRotationPanel.scaleX - this.mImage.width) / 2, this.aImage.naturalHeight * this.mImageDrawing.mRotationPanel.scaleX - this.mImage.height);
-            //scale image to orginal size,
-            var aTempCanvas = document.createElement("canvas");
-            var tctx = aTempCanvas.getContext("2d");
-            aTempCanvas.width = this.mCanvas.width;
-            aTempCanvas.height = this.mCanvas.height;
-            tctx.drawImage(this.mCanvas, 0, 0);
-            this.mCanvas.width /= this.mImageDrawing.minImgScale;
-            this.mCanvas.height /= this.mImageDrawing.minImgScale;
-            // aContext.drawImage(aTempCanvas, 0, 0, this.mCanvas.width this.mImageDrawing.mRotationPanel.scaleX, this.mCanvas.height * this.mImageDrawing.mRotationPanel.scaleX,);
-            //  //rotate image 
-            // let aTempCanvas2 = document.createElement("canvas");
-            // aTempCanvas2.width = this.mCanvas.width;
-            // aTempCanvas2.height = this.mCanvas.height;
-            // let aCtx = aTempCanvas2.getContext("2d");
-            // aCtx.translate(this.mCanvas.width / 2, this.mCanvas.height / 2);
-            // aCtx.rotate(Math.PI );
-            // aCtx.drawImage(this.mCanvas, -this.mCanvas.width / 2,- this.mCanvas.height / 2);
-            // aCtx.rotate(-Math.PI );
-            //aCtx.translate(-this.mCanvas.width / 2, - this.mCanvas.height / 2);
-            //aContext.scale(1 / this.mImageDrawing.minImgScale, 1 / this.mImageDrawing.minImgScale);
+        //____________________________________
+        ImageSaveCombineCanvas.prototype.saveCroppedImage = function (pRect) {
+            var _this = this;
+            var aCanvas = document.createElement("canvas");
+            ;
+            aCanvas.width = this.mImage.naturalWidth;
+            aCanvas.height = this.mImage.naturalHeight;
+            var aContext = aCanvas.getContext("2d");
+            aContext.drawImage(this.mImage, 0, 0);
+            this.mImageDrawing.HTMLImage;
+            this.mCanvas = this.combineImageAndCanvas(this.mImageDrawing.HTMLImage, aCanvas);
+            var aRectBounds = pRect;
+            var aCropX = (pRect.left - image.Globals.ImageDrawing.mImage.getBounds().left) / image.Globals.ImageDrawing.minImgScale;
+            var aCropY = (pRect.top - image.Globals.ImageDrawing.mImage.getBounds().top) / image.Globals.ImageDrawing.minImgScale;
+            var aSaveCanvas = document.createElement("canvas");
+            aSaveCanvas.width = aRectBounds.width / image.Globals.ImageDrawing.minImgScale;
+            aSaveCanvas.height = aRectBounds.height / image.Globals.ImageDrawing.minImgScale;
+            var aSaveContext = aSaveCanvas.getContext("2d");
+            aSaveContext.drawImage(this.mCanvas, aCropX, aCropY, aRectBounds.width / image.Globals.ImageDrawing.minImgScale, aRectBounds.height / image.Globals.ImageDrawing.minImgScale, 0, 0, aRectBounds.width / image.Globals.ImageDrawing.minImgScale, aRectBounds.height / image.Globals.ImageDrawing.minImgScale);
+            var aDataURL = aSaveCanvas.toDataURL();
+            this.mImageDrawing.convertSVGToInput();
+            var aAction = new action.CropAction(this.mImageDrawing.HTMLImage.src, aDataURL, function (pSrc, p, d, e, g, f, h) { return _this.mImageDrawing.setPicture(pSrc, p, d, e, g, f, h); }, this.mPrevRotation, this.mPrevRotation, this.mPrevScale, this.mPrevX, this.mPrevY);
+            image.Globals.ActionManager.addAction(aAction);
+            image.Globals.cropCounter++;
+            this.mImageDrawing.setPicture(aDataURL, this.mPrevRotation, 1);
+        };
+        //_____________________________________
+        ImageSaveCombineCanvas.prototype.saveImage = function () {
+            var aCanvas = document.createElement("canvas");
+            ;
+            aCanvas.width = this.mImage.naturalWidth;
+            aCanvas.height = this.mImage.naturalHeight;
+            var aContext = aCanvas.getContext("2d");
+            aContext.drawImage(this.mImage, 0, 0);
+            this.mImageDrawing.HTMLImage;
+            this.mCanvas = this.combineImageAndCanvas(this.mImageDrawing.HTMLImage, aCanvas);
             var aDataURL = this.mCanvas.toDataURL();
             this.downloadImage(aDataURL);
-            this.mImageDrawing.convertSVGToInput();
+            this.mImageDrawing.mRotationPanel.scaleX = this.mPrevScale;
+            this.mImageDrawing.mRotationPanel.scaleY = this.mPrevScale;
+            this.mImageDrawing.mMovePanel.x = this.mPrevX;
+            this.mImageDrawing.mMovePanel.y = this.mPrevY;
+            this.mImageDrawing.mRotationPanel.rotation = this.mPrevRotation;
         };
-        //___________________________________________________________
-        ImageSaveCombineCanvas.prototype.adjustCanvas = function () {
-            this.mImage.width = this.mImage.width / this.mImageDrawing.minImgScale;
-            this.mImage.height = this.mImage.height / this.mImageDrawing.minImgScale;
-        };
-        //_________________________________________
+        //_____________________________________________________________
         ImageSaveCombineCanvas.prototype.combineImageAndCanvas = function (pImage, pDrawing) {
             var aCanvasToReturn;
             var aAngle = image.Globals.angle;
             var aScaleFactor = 1;
-            var aImageRect = pImage.getBoundingClientRect();
-            var aCanvasRect = pDrawing.getBoundingClientRect();
             var aAllImageWidth = pImage.naturalWidth;
             var aAllImageHeight = pImage.naturalHeight;
             aCanvasToReturn = document.createElement('canvas');
+            aCanvasToReturn.width = pImage.naturalWidth;
+            aCanvasToReturn.height = pImage.naturalHeight;
             var ctxToSave = aCanvasToReturn.getContext("2d");
-            ctxToSave.save();
-            var aMaxSize = 12000;
-            var aScale;
-            var aSize = Math.sqrt(aAllImageWidth * aAllImageWidth + aAllImageHeight * aAllImageHeight);
-            if (aAngle == 0) {
-                aScale = aImageRect.width / aAllImageWidth;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageWidth * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageHeight * aScale * aScaleFactor;
-            }
-            if (aAngle == 90) {
-                aScale = aImageRect.width / aAllImageHeight;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageHeight * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageWidth * aScale * aScaleFactor;
-                ctxToSave.rotate(aAngle * Math.PI / 180);
-                ctxToSave.translate(0, -aAllImageHeight * aScale * aScaleFactor);
-            }
-            if (aAngle == 180) {
-                aScale = aImageRect.width / aAllImageWidth;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageWidth * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageHeight * aScale * aScaleFactor;
-                ctxToSave.rotate(aAngle * Math.PI / 180);
-                ctxToSave.translate(-aAllImageWidth * aScale * aScaleFactor, -aAllImageHeight * aScale * aScaleFactor);
-            }
-            if (aAngle == 270) {
-                aScale = aImageRect.width / aAllImageHeight;
-                if (aSize * aScale > aMaxSize) {
-                    aScaleFactor = aMaxSize / (aSize * aScale);
-                }
-                aCanvasToReturn.width = aAllImageHeight * aScale * aScaleFactor;
-                aCanvasToReturn.height = aAllImageWidth * aScale * aScaleFactor;
-                ctxToSave.rotate(aAngle * Math.PI / 180);
-                ctxToSave.translate(-aAllImageWidth * aScale * aScaleFactor, 0);
-            }
-            ctxToSave.scale(aScale * aScaleFactor, aScale * aScaleFactor);
             ctxToSave.drawImage(pImage, 0, 0);
-            ctxToSave.restore();
-            ctxToSave.save();
-            var aX = aCanvasRect.left - aImageRect.left;
-            var aY = aCanvasRect.top - aImageRect.top;
-            var aCanvasToSave2 = document.createElement('canvas');
-            aCanvasToSave2.width = aCanvasToReturn.width;
-            aCanvasToSave2.height = aCanvasToReturn.height;
-            var ctxToSave2 = aCanvasToSave2.getContext("2d");
-            ctxToSave2.drawImage(aCanvasToReturn, 0, 0);
-            ctxToSave2.scale(aScaleFactor, aScaleFactor);
-            ctxToSave2.drawImage(pDrawing, aX, aY);
-            aCanvasToReturn = aCanvasToSave2;
-            aX = (aX > 0) ? aX : 0;
-            aY = (aY > 0) ? aY : 0;
-            var aWidth = Math.min(aCanvasRect.width, aImageRect.width);
-            var aHight = Math.min(aCanvasRect.height, aImageRect.height);
-            aX *= aScaleFactor;
-            aY *= aScaleFactor;
-            aWidth *= aScaleFactor;
-            aHight *= aScaleFactor;
-            var aCanvasToSave3 = document.createElement('canvas');
-            aCanvasToSave3.width = aWidth;
-            aCanvasToSave3.height = aHight;
-            var ctxToSave3 = aCanvasToSave3.getContext("2d");
-            ctxToSave3.translate(-aX, -aY);
-            ctxToSave3.drawImage(aCanvasToReturn, 0, 0);
-            aCanvasToReturn = aCanvasToSave3;
-            ////oc.Utils.debugHTMLElement(aCanvasToReturn, 400);
-            return (aCanvasToReturn);
+            var aScale = 1 / this.mImageDrawing.minImgScale;
+            var aWidth = pDrawing.width * aScale;
+            var aHeight = pDrawing.height * aScale;
+            var aX = (aWidth - pImage.naturalWidth) / 2;
+            var aY = (aHeight - pImage.naturalHeight) / 2;
+            ctxToSave.drawImage(pDrawing, 0, 0, pDrawing.width, pDrawing.height, -aX, -aY, aWidth, aHeight);
+            return aCanvasToReturn;
         };
         return ImageSaveCombineCanvas;
     }(image.ImageSave));
     image.ImageSaveCombineCanvas = ImageSaveCombineCanvas;
 })(image || (image = {}));
+/// <reference path="onecode/action/rotateaction.ts" />
+var image;
+/// <reference path="onecode/action/rotateaction.ts" />
+(function (image) {
+    var Main = (function () {
+        function Main() {
+            var _this = this;
+            image.Globals.ImageDrawing = new image.ImageDrawing(document.getElementById("imageDiv"));
+            if (image.Globals.isUseBase64) {
+                this.mImageSave = new image.ImageSaveCanvas(image.Globals.ImageDrawing);
+            }
+            else {
+                this.mImageSave = new image.ImageSaveCombineCanvas(image.Globals.ImageDrawing);
+            }
+            //get elements
+            this.mDownloadButton = document.getElementById("downloadButton");
+            this.mDrawButton = document.getElementById("drawButton");
+            this.mSelectButton = document.getElementById("selectButton");
+            this.mSetImageButton = document.getElementById("setImageButton");
+            this.mSetTextButton = document.getElementById("setTextButton");
+            this.mDrawColorBox = document.getElementById("drawColor");
+            this.mRotateButton = document.getElementById("rotateButton");
+            this.mTextBox = document.getElementById("textBox");
+            this.mClearAllButton = document.getElementById("clearAllButton");
+            this.mFontSizeBox = document.getElementById("fontSizeBox");
+            this.mLineWidthBox = document.getElementById("lineWidthBox");
+            image.Globals.ImageDrawing.mDrawColor = document.getElementById("drawColor").value;
+            image.Globals.ImageDrawing.mTextButton = document.getElementById("setTextButton");
+            this.mRedoButton = document.getElementById("redoButton");
+            this.mUndoButton = document.getElementById("undoButton");
+            this.mDrawCircleButton = document.getElementById("drawCircleButton");
+            //event listeners
+            this.mSetImageButton.addEventListener("click", function () { return _this.setPicture(); });
+            this.mSetTextButton.addEventListener("click", function () { return _this.setText(); });
+            this.mDrawButton.addEventListener("click", function () { return _this.onDraw(); });
+            this.mDownloadButton.addEventListener("click", function () { return _this.onDownload(); });
+            this.mSelectButton.addEventListener("click", function () { return _this.onSelect(); });
+            document.getElementById("rotateButton").addEventListener("click", function () { return _this.rotateImage(); });
+            this.mDrawColorBox.addEventListener("input", function () { return _this.onColorChange(); });
+            document.getElementById("fullScreenButton").addEventListener("click", function (pText) { return _this.onFullScreen(); });
+            this.mClearAllButton.addEventListener("click", function () { return _this.onClearAll(); });
+            this.mFontSizeBox.addEventListener("input", function (pVal) { return _this.onFontSize(_this.mFontSizeBox.value); });
+            this.mLineWidthBox.addEventListener("input", function (pVal) { return _this.onLineWidth(_this.mLineWidthBox.value); });
+            document.getElementById("confirmCropButton").addEventListener("click", function () { return _this.onSaveCrop(); });
+            this.mRedoButton.addEventListener("click", function () { return _this.onRedo(); });
+            this.mUndoButton.addEventListener("click", function () { return _this.onUndo(); });
+            this.mDrawCircleButton.addEventListener("click", function () { return _this.onDrawCircle(); });
+            document.getElementById("drawArrowButton").addEventListener("click", function () { return _this.onDrawArrow(); });
+        }
+        //______________________________________
+        Main.prototype.setPicture = function () {
+            var aNum = Math.floor(Math.random() * 5) + 1;
+            image.Globals.ImageDrawing.setPicture("assets/" + aNum + ".jpg", 0, 1);
+            this.mRotateButton.style.display = "inline-block";
+        };
+        //____________________________________
+        Main.prototype.rotateImage = function () {
+            this.resetButtons();
+            image.Globals.ImageDrawing.rotate(90);
+            var aAction = new action.RotateAction(-90, 90, function (pAngle) { return image.Globals.ImageDrawing.rotate(pAngle); });
+            image.Globals.ActionManager.addAction(aAction);
+        };
+        //__________________________________
+        Main.prototype.setText = function () {
+            this.resetButtons();
+            this.mSetTextButton.classList.add("active");
+            image.Globals.ImageDrawing.onSetText();
+        };
+        //_______________________________
+        Main.prototype.onRedo = function () {
+            image.Globals.ActionManager.redo();
+        };
+        //______________________________________
+        Main.prototype.onUndo = function () {
+            image.Globals.ActionManager.undo();
+        };
+        //____________________________
+        Main.prototype.onDraw = function () {
+            this.resetButtons();
+            this.mDrawButton.classList.add("active");
+            var aColor = this.mDrawColorBox.value;
+            console.log(aColor);
+            image.Globals.ImageDrawing.startDraw(aColor);
+        };
+        //_________________________________
+        Main.prototype.onDrawCircle = function () {
+            this.resetButtons();
+            image.Globals.isCircleMode = true;
+        };
+        //___________________________
+        Main.prototype.onDrawArrow = function () {
+            this.resetButtons();
+            image.Globals.isArrowMode = true;
+        };
+        //___________________________________
+        Main.prototype.onDownload = function () {
+            this.mImageSave.getImage();
+        };
+        //_________________________________________
+        Main.prototype.onSaveCrop = function () {
+            this.resetButtons();
+            if (image.Globals.isUseBase64) {
+                var aRectBounds = image.Globals.ImageDrawing.getCroppedBound();
+                this.mImageSave.getCroppedImage(aRectBounds);
+            }
+            else {
+                var aRect = image.Globals.ImageDrawing.getCroppedRect();
+                this.mImageSave.getCroppedImage(aRect);
+            }
+        };
+        //________________________________________
+        Main.prototype.onSelect = function () {
+            this.resetButtons();
+            this.mSelectButton.classList.add("active");
+            image.Globals.ImageDrawing.select();
+        };
+        //________________________________________
+        Main.prototype.onColorChange = function () {
+            var aColor = this.mDrawColorBox.value;
+            console.log(aColor);
+            image.Globals.ImageDrawing.changeColor(aColor);
+        };
+        //_________________________________________
+        Main.prototype.resetButtons = function () {
+            image.Globals.isSelectMode = false;
+            image.Globals.isTextMode = false;
+            image.Globals.isDrawMode = false;
+            image.Globals.isRotateMode = false;
+            image.Globals.isCropMode = false;
+            image.Globals.isCircleMode = false;
+            image.Globals.isArrowMode = false;
+            this.mDrawButton.classList.remove("active");
+            this.mRotateButton.classList.remove("active");
+            this.mSelectButton.classList.remove("active");
+            this.mSetTextButton.classList.remove("active");
+        };
+        //____________________________
+        Main.prototype.onFullScreen = function () {
+            image.Globals.ImageDrawing.onFullScreen(image.Globals.isFullScreen);
+            if (!image.Globals.isFullScreen) {
+                document.getElementById("fullScreenButton").getElementsByTagName("span")[0].className = "glyphicon glyphicon-resize-small";
+                image.Globals.isFullScreen = true;
+            }
+            else {
+                document.getElementById("fullScreenButton").getElementsByTagName("span")[0].className = "glyphicon glyphicon-resize-full";
+                image.Globals.isFullScreen = false;
+            }
+        };
+        //____________________________________
+        Main.prototype.onClearAll = function () {
+            var aAction = new action.ClearAllAction(image.Globals.ImageDrawing.mDrawPanel);
+            image.Globals.ActionManager.addAction(aAction);
+            image.Globals.ImageDrawing.clearAll();
+        };
+        //__________________________________
+        Main.prototype.onFontSize = function (pVal) {
+            image.Globals.ImageDrawing.fontsize = pVal;
+        };
+        //__________________________________
+        Main.prototype.onLineWidth = function (pVal) {
+            image.Globals.ImageDrawing.lineWidth = pVal;
+        };
+        return Main;
+    }());
+    image.Main = Main;
+})(image || (image = {}));
+var shapes;
+(function (shapes) {
+    var Shape = (function () {
+        function Shape() {
+            this.mIsMouseDown = false;
+        }
+        //________________________________________
+        Shape.prototype.onMouseDown = function (pEvent) {
+            image.Globals.activeShape = this;
+            this.mIsMouseDown = true;
+            this.mLastMouseDownPoint = new asBase.math.Point();
+            this.mLastMouseDownPoint.x = this.mSprite.parent.mouseX;
+            this.mLastMouseDownPoint.y = this.mSprite.parent.mouseY;
+        };
+        //_____________________________
+        Shape.prototype.onMouseMove = function (pEvent) {
+        };
+        //____________________________________
+        Shape.prototype.onMouseUp = function () {
+            image.Globals.activeShape = null;
+            this.mIsMouseDown = false;
+            this.mLastMouseDownPoint = null;
+        };
+        //___________________________________
+        Shape.prototype.drawShape = function () {
+        };
+        //________________________
+        Shape.prototype.changeShapeColor = function (pColor) {
+        };
+        //__________________________________
+        Shape.prototype.onSelect = function () {
+            image.Globals.isItemSelected = true;
+            image.Globals.isSelectMode = false;
+            image.Globals.isTextMode = false;
+            image.Globals.isDrawMode = false;
+            image.Globals.isRotateMode = false;
+            image.Globals.isCropMode = false;
+            image.Globals.isCircleMode = false;
+            image.Globals.isArrowMode = false;
+        };
+        //____________________________________
+        Shape.prototype.onDeselect = function () {
+            image.Globals.isItemSelected = false;
+        };
+        //__________________________
+        Shape.prototype.startDrag = function () {
+        };
+        //__________________________
+        Shape.prototype.stopDrag = function () {
+        };
+        //________________________
+        Shape.prototype.moveShape = function (pArr) {
+            this.mShape.x = pArr[0].x;
+            this.mShape.y = pArr[0].y;
+        };
+        //_______________________________________-
+        Shape.prototype.addMouseEvents = function (pMouseDownCallBack) {
+        };
+        //_________________________________________
+        Shape.prototype.removeMouseEvents = function () {
+            var _this = this;
+            this.element.removeEventListener("mousedown", function (pEvent) { return _this.mMouseDownListener(pEvent); });
+            window.removeEventListener("mouseup", function () { return _this.mMouseUpListener(); }, false);
+        };
+        //__________________________
+        Shape.prototype.deleteShape = function () {
+        };
+        //______________________________________
+        Shape.prototype.addToSprite = function (pSprite) {
+            var _this = this;
+            this.mSprite = pSprite;
+            this.mSprite.addChild(this.element);
+            this.element.addEventListener("click", function () { return _this.onSelect(); }, this);
+        };
+        //_____________________________________
+        Shape.prototype.clone = function () {
+            var aShape = new Shape();
+            aShape.mWidth = this.mWidth;
+            aShape.mColor = this.mColor;
+            aShape.mShape = this.element.clone();
+            aShape.myClassName = this.myClassName;
+            return aShape;
+        };
+        //________________________________________
+        Shape.prototype.setShapeInBound = function () {
+        };
+        //___________________________________________
+        Shape.prototype.setLineWidth = function (pWidth) {
+            this.element.setLineStyle(pWidth);
+        };
+        Object.defineProperty(Shape.prototype, "scale", {
+            //___________________________________
+            get: function () {
+                return this.mSprite.parent.parent.scaleX;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Shape.prototype, "element", {
+            //____________________
+            get: function () {
+                return this.mShape;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Shape.prototype, "myClassName", {
+            //__________________________
+            get: function () {
+                return this.mClassName;
+            },
+            //_______________________________
+            set: function (pClassName) {
+                this.mClassName = pClassName;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Shape.prototype, "parent", {
+            //______________________
+            get: function () {
+                return this.mSprite;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Shape.prototype, "color", {
+            //__________________________
+            get: function () {
+                return this.mColor;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return Shape;
+    }());
+    shapes.Shape = Shape;
+})(shapes || (shapes = {}));
+/// <reference path="../shapes/shape.ts" />
+var image;
+/// <reference path="../shapes/shape.ts" />
+(function (image) {
+    /**
+     * Class that manages cropping of an image
+     *
+     * @export
+     * @class ImageCrop
+     * @extends {shapes.Shape}
+     */
+    var ImageCrop = (function (_super) {
+        __extends(ImageCrop, _super);
+        /**
+         * Creates an instance of ImageCrop.
+         * @param {asSvg.Sprite} pSprite
+         *
+         * @memberOf ImageCrop
+         */
+        function ImageCrop(pSprite) {
+            var _this = _super.call(this) || this;
+            _this.mRectBounds = {};
+            _this.mSprite = new asSvg.Sprite();
+            _this.mSprite.instanceName = "Crop Panel";
+            pSprite.addChild(_this.mSprite);
+            return _this;
+        }
+        //_________________________________
+        ImageCrop.prototype.onMousedown = function (pEvent) {
+            _super.prototype.onMouseDown.call(this, pEvent);
+            this.mRectBounds = {};
+            if (this.mRect) {
+                this.mSprite.removeChild(this.mRect);
+            }
+            this.mRect = null;
+            this.mLastGoodMouseX = null;
+            this.mLastGoodMouseY = null;
+            this.mLastGoodRectX = null;
+            this.mLastGoodRectY = null;
+            this.mLastMouseDownPointRect = new asBase.math.Point();
+            this.mLastMouseDownPointRect.x = this.mSprite.parent.parent.parent.mouseX;
+            this.mLastMouseDownPointRect.y = this.mSprite.parent.parent.parent.mouseY;
+            this.getGoodPoints(pEvent, this.mLastMouseDownPoint, this.mLastMouseDownPointRect);
+        };
+        //____________________________________
+        ImageCrop.prototype.onMouseMove = function (pEvent) {
+            if (this.mIsMouseDown) {
+                var aPoint = new asBase.math.Point(this.mSprite.parent.mouseX, this.mSprite.parent.mouseY);
+                var aPointRect = new asBase.math.Point(this.mSprite.parent.parent.parent.mouseX, this.mSprite.parent.parent.parent.mouseY);
+                this.getGoodPoints(pEvent, aPoint, aPointRect);
+                if (!this.mLastMouseDownPoint.x || !this.mLastMouseDownPoint.y) {
+                    this.mLastMouseDownPoint.x = aPoint.x;
+                    this.mLastMouseDownPoint.y = aPoint.y;
+                    this.mLastMouseDownPointRect.x = aPointRect.x;
+                    this.mLastMouseDownPointRect.y = aPointRect.y;
+                }
+                if (this.mLastMouseDownPoint.x && this.mLastMouseDownPoint.y && aPoint.x && aPoint.y) {
+                    var aX1 = Math.min(aPoint.x, this.mLastMouseDownPoint.x);
+                    var aX2 = Math.max(aPoint.x, this.mLastMouseDownPoint.x);
+                    var aY1 = Math.min(aPoint.y, this.mLastMouseDownPoint.y);
+                    var aY2 = Math.max(aPoint.y, this.mLastMouseDownPoint.y);
+                    this.mWidth = aX2 - aX1;
+                    this.mHeight = aY2 - aY1;
+                    if (aPoint.x < this.mLastMouseDownPoint.x) {
+                        this.mX = this.mLastMouseDownPoint.x - this.mWidth;
+                    }
+                    else {
+                        this.mX = this.mLastMouseDownPoint.x;
+                    }
+                    if (aPoint.y < this.mLastMouseDownPoint.y) {
+                        this.mY = this.mLastMouseDownPoint.y - this.mHeight;
+                    }
+                    else {
+                        this.mY = this.mLastMouseDownPoint.y;
+                    }
+                    var aX1Rect = Math.min(aPointRect.x, this.mLastMouseDownPointRect.x);
+                    var aX2Rect = Math.max(aPointRect.x, this.mLastMouseDownPointRect.x);
+                    var aY1Rect = Math.min(aPointRect.y, this.mLastMouseDownPointRect.y);
+                    var aY2Rect = Math.max(aPointRect.y, this.mLastMouseDownPointRect.y);
+                    this.mRectBounds.width = aX2Rect - aX1Rect;
+                    this.mRectBounds.height = aY2Rect - aY1Rect;
+                    if (aPointRect.x < this.mLastMouseDownPointRect.x) {
+                        this.mRectBounds.x = this.mLastMouseDownPointRect.x - this.mRectBounds.width;
+                    }
+                    else {
+                        this.mRectBounds.x = this.mLastMouseDownPointRect.x;
+                    }
+                    if (aPointRect.y < this.mLastMouseDownPointRect.y) {
+                        this.mRectBounds.y = this.mLastMouseDownPointRect.y - this.mRectBounds.height;
+                    }
+                    else {
+                        this.mRectBounds.y = this.mLastMouseDownPointRect.y;
+                    }
+                    this.drawShape();
+                }
+            }
+        };
+        //____________________________________________
+        ImageCrop.prototype.drawShape = function () {
+            if (!this.mRect) {
+                this.mRect = new asSvg.Rect(this.mX, this.mY, this.mWidth, this.mHeight);
+                this.mRect.setFill(null, 0);
+                this.mRect.setLineStyle(4, 0xffff, 1, null, null, [10, 3]);
+                this.mSprite.addChild(this.mRect);
+            }
+            else {
+                this.mRect.update(this.mX, this.mY, this.mWidth, this.mHeight);
+            }
+        };
+        //_______________________________________
+        ImageCrop.prototype.getGoodPoints = function (pMouseEvent, pPoint, pPointRect) {
+            this.mSprite.stage.onMouseMove(pMouseEvent);
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            if ((pMouseEvent.clientX < aImageRect.left || pMouseEvent.clientX > aImageRect.right || pMouseEvent.clientY < aImageRect.top || pMouseEvent.clientY > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                pPoint.x = this.mLastGoodMouseX;
+                pPoint.y = this.mLastGoodMouseY;
+                pPointRect.x = this.mLastGoodRectX;
+                pPointRect.y = this.mLastGoodRectY;
+            }
+            else {
+                this.mLastGoodMouseX = pPoint.x = this.mSprite.parent.mouseX;
+                this.mLastGoodMouseY = pPoint.y = this.mSprite.parent.mouseY;
+                this.mLastGoodRectX = pPointRect.x = this.mSprite.parent.parent.parent.mouseX;
+                this.mLastGoodRectY = pPointRect.y = this.mSprite.parent.parent.parent.mouseY;
+            }
+        };
+        //_________________________________________
+        ImageCrop.prototype.onMouseUp = function () {
+            _super.prototype.onMouseUp.call(this);
+        };
+        //____________________________________________
+        /**
+         * Returns the bounds of the rectangle to crop
+         *
+         * @returns
+         *
+         * @memberOf ImageCrop
+         */
+        ImageCrop.prototype.getCropBounds = function () {
+            return this.mRectBounds;
+        };
+        Object.defineProperty(ImageCrop.prototype, "rect", {
+            //_________________________________
+            /**
+             * Returns the rectangle  to crop
+             *
+             * @readonly
+             *
+             * @memberOf ImageCrop
+             */
+            get: function () {
+                return this.mRect;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return ImageCrop;
+    }(shapes.Shape));
+    image.ImageCrop = ImageCrop;
+})(image || (image = {}));
+//module 
+var shapes;
+//module 
+(function (shapes) {
+    /**
+     * Represents an arrow drawn by the user
+     *
+     * @export
+     * @class Arrow
+     * @extends {Shape}
+     */
+    var Arrow = (function (_super) {
+        __extends(Arrow, _super);
+        /**
+         * Creates an instance of Arrow.
+         * @param {asSvg.Sprite} pSprite - Sprite to draw the arrow on
+         * @param {any} pColor -Color to draw the arrow- in hex code
+         *
+         * @memberOf Arrow
+         */
+        function Arrow(pSprite, pColor) {
+            var _this = _super.call(this) || this;
+            _this.mWidth = 4;
+            _this.mArrowLength = 25;
+            _this.mSprite = pSprite;
+            _this.mColor = pColor;
+            return _this;
+        }
+        //_____________________________________
+        Arrow.prototype.onMouseDown = function (pMouseEvent) {
+            _super.prototype.onMouseDown.call(this, pMouseEvent);
+            this.getGoodPoint(pMouseEvent, this.mLastMouseDownPoint);
+        };
+        //____________________________________________________
+        Arrow.prototype.onMouseMove = function (pMouseEvent) {
+            if (this.mIsMouseDown) {
+                this.mEndPoint = new asBase.math.Point(this.mSprite.parent.mouseX, this.mSprite.parent.mouseY);
+                this.getGoodPoint(pMouseEvent, this.mEndPoint);
+                if (!this.mLastMouseDownPoint.x || !this.mLastMouseDownPoint.y) {
+                    this.mLastMouseDownPoint.x = this.mEndPoint.x;
+                    this.mLastMouseDownPoint.y = this.mEndPoint.y;
+                }
+                this.drawShape();
+            }
+        };
+        //_____________________________
+        Arrow.prototype.drawShape = function () {
+            var _this = this;
+            if (this.mLastMouseDownPoint.x && this.mLastMouseDownPoint.y && this.mEndPoint.x && this.mEndPoint.y) {
+                if (!this.mLines) {
+                    this.mLines = new Array();
+                    //main line
+                    this.mLines[0] = new asSvg.Line(this.mLastMouseDownPoint.x, this.mLastMouseDownPoint.y, this.mEndPoint.x, this.mEndPoint.y);
+                    this.mLines[0].setFill(null);
+                    this.mLines[0].setLineStyle(this.mWidth / this.scale, 0xffbbff);
+                    this.mLines[0].element.setAttribute("stroke", this.mColor);
+                    this.mSprite.addChild(this.mLines[0]);
+                    this.mLines[0].addEventListener("click", function () { return _this.onSelect(); }, this);
+                    ////arrow line 1
+                    var aArrowPoint1 = this.getArrowPoint1();
+                    if (isNaN(aArrowPoint1.x) || isNaN(aArrowPoint1.y)) {
+                        aArrowPoint1.x = this.mEndPoint.x;
+                        aArrowPoint1.y = this.mEndPoint.y;
+                    }
+                    this.mLines[1] = new asSvg.Line(this.mEndPoint.x, this.mEndPoint.y, aArrowPoint1.x, aArrowPoint1.y);
+                    this.mLines[1].setFill(null);
+                    this.mLines[1].setLineStyle((this.mWidth / this.scale) * 0.5);
+                    this.mLines[1].element.setAttribute("stroke", this.mColor);
+                    this.mSprite.addChild(this.mLines[1]);
+                    this.mLines[1].addEventListener("click", function () { return _this.onSelect(); }, this);
+                    var aArrowPoint2 = this.getArrowPoint2();
+                    if (isNaN(aArrowPoint2.x) || isNaN(aArrowPoint2.y)) {
+                        aArrowPoint2.x = this.mEndPoint.x;
+                        aArrowPoint2.y = this.mEndPoint.y;
+                    }
+                    this.mLines[2] = new asSvg.Line(this.mEndPoint.x, this.mEndPoint.y, aArrowPoint2.x, aArrowPoint2.y);
+                    this.mLines[2].setFill(null);
+                    this.mLines[2].setLineStyle((this.mWidth / this.scale) * 0.5);
+                    this.mLines[2].element.setAttribute("stroke", this.mColor);
+                    this.mSprite.addChild(this.mLines[2]);
+                    this.mLines[2].addEventListener("click", function () { return _this.onSelect(); }, this);
+                }
+                else {
+                    this.mLines[0].update(this.mLastMouseDownPoint.x, this.mLastMouseDownPoint.y, this.mEndPoint.x, this.mEndPoint.y);
+                    var aArrowPoint1 = this.getArrowPoint1();
+                    if (isNaN(aArrowPoint1.x) || isNaN(aArrowPoint1.y)) {
+                        aArrowPoint1.x = this.mEndPoint.x;
+                        aArrowPoint1.y = this.mEndPoint.y;
+                    }
+                    this.mLines[1].update(this.mEndPoint.x, this.mEndPoint.y, aArrowPoint1.x, aArrowPoint1.y);
+                    var aArrowPoint2 = this.getArrowPoint2();
+                    if (isNaN(aArrowPoint2.x) || isNaN(aArrowPoint2.y)) {
+                        aArrowPoint2.x = this.mEndPoint.x;
+                        aArrowPoint2.y = this.mEndPoint.y;
+                    }
+                    this.mLines[2].update(this.mEndPoint.x, this.mEndPoint.y, aArrowPoint2.x, aArrowPoint2.y);
+                }
+            }
+        };
+        //________________________________
+        Arrow.prototype.onMouseUp = function () {
+            image.Globals.isArrowMode = false;
+            _super.prototype.onMouseUp.call(this);
+            if (this.mLines) {
+                for (var i = 0; i < this.mLines.length; i++) {
+                    if (this.mLines[i].getBounds().width == 0 && this.mLines[i].getBounds().height) {
+                        this.mLines[0].destruct();
+                        this.mLines[1].destruct();
+                        this.mLines[2].destruct();
+                        image.Globals.mCircles.splice(image.Globals.mCircles.indexOf(this), 1);
+                        break;
+                    }
+                }
+            }
+            else {
+                image.Globals.mCircles.splice(image.Globals.mCircles.indexOf(this), 1);
+            }
+        };
+        Object.defineProperty(Arrow.prototype, "length", {
+            //________________________________
+            /**
+             * Returns the length of the arrow
+             *
+             * @readonly
+             *
+             * @memberOf Arrow
+             * @returns {number}-length of arrow
+             */
+            get: function () {
+                var aLen = asBase.math.MathUtils.distance(this.mEndPoint, this.mLastMouseDownPoint);
+                return aLen;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        //________________________________________________
+        Arrow.prototype.getLineAngle = function () {
+            var angle = Math.atan((this.mEndPoint.x - this.mLastMouseDownPoint.x) / (this.mEndPoint.y - this.mLastMouseDownPoint.y)) * 180 / Math.PI;
+            return angle;
+        };
+        //_______________________
+        Arrow.prototype.getArrowPoint1 = function () {
+            var arrowAngle = this.getLineAngle() + 45;
+            if (this.mEndPoint.y < this.mLastMouseDownPoint.y) {
+                arrowAngle = this.getLineAngle() + 180 + 45;
+            }
+            var aAdjAngle = 180 - arrowAngle;
+            var aX = this.mEndPoint.x - (Math.cos(aAdjAngle * Math.PI / 180)) * (20);
+            var aY = this.mEndPoint.y - (Math.sin(aAdjAngle * Math.PI / 180)) * (20);
+            var aPoint = new asBase.math.Point(aX, aY);
+            return aPoint;
+        };
+        //________________________________________
+        Arrow.prototype.getArrowPoint2 = function () {
+            var arrowAngle = this.getLineAngle() - 45;
+            if (this.mEndPoint.y < this.mLastMouseDownPoint.y) {
+                arrowAngle = this.getLineAngle() + 180 - 45;
+            }
+            var aAdjAngle = 180 - arrowAngle;
+            var aX = this.mEndPoint.x + (Math.cos(aAdjAngle * Math.PI / 180)) * (20);
+            var aY = this.mEndPoint.y + (Math.sin(aAdjAngle * Math.PI / 180)) * (20);
+            var aPoint = new asBase.math.Point(aX, aY);
+            return aPoint;
+        };
+        //_______________________________________________________
+        Arrow.prototype.onSelect = function () {
+            if (!image.Globals.isItemSelected) {
+                _super.prototype.onSelect.call(this);
+                this.mHighlightedLines = new Array();
+                for (var i = 0; i < this.mLines.length; i++) {
+                    var aLine = this.mLines[i].clone();
+                    this.mSprite.addChild(aLine);
+                    this.mSprite.addChild(this.mLines[i]);
+                    this.mHighlightedLines.push(aLine);
+                    aLine.setLineStyle(this.mWidth * 2.5, null, 0.5);
+                }
+                image.Globals.ImageDrawing.onSelectShape(this);
+            }
+        };
+        //_________________________________________
+        /**
+         * Function that is called when the arrow object is unselected by the user
+         *
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.onDeselect = function () {
+            _super.prototype.onDeselect.call(this);
+            for (var i = 0; i < this.mHighlightedLines.length; i++) {
+                this.mSprite.removeChild(this.mHighlightedLines[i]);
+            }
+        };
+        //______________________________
+        /**
+         * Changes the color of the arrow
+         *
+         * @param {any} pColor -color to change to- in hex code
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.changeShapeColor = function (pColor) {
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mLines[i].element.setAttribute("stroke", pColor);
+            }
+            if (this.mHighlightedLines) {
+                for (var i = 0; i < this.mHighlightedLines.length; i++) {
+                    this.mHighlightedLines[i].element.setAttribute("stroke", pColor);
+                }
+            }
+        };
+        //___________________________________________________
+        /**
+         * Starts dragging the arrow object on the screen by the mouse
+         *
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.startDrag = function () {
+            var _this = this;
+            var aOldPositionArr = new Array();
+            this.mLastGoodX = new Array(3);
+            this.mLastGoodY = new Array(3);
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mLastGoodX[i] = this.mLines[i].x;
+                this.mLastGoodY[i] = this.mLines[i].y;
+                var aPoint = new asBase.math.Point(this.mLines[i].x, this.mLines[i].y);
+                aOldPositionArr.push(aPoint);
+                image.Globals.currentShapeDragAction = new action.DragShapeAction(aOldPositionArr, this);
+            }
+            if (this.mHighlightedLines) {
+                for (var i = 0; i < this.mHighlightedLines.length; i++) {
+                    this.mHighlightedLines[i].startDrag();
+                }
+            }
+            for (var i = 0; i < this.mLines.length - 1; i++) {
+                this.mLines[i].startDrag();
+            }
+            this.mLines[2].startDrag(false, function () { return _this.setShapeInBound(); });
+        };
+        //_____________________________________________
+        /**
+         * Stops dragging the arrow object on the screen
+         *
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.stopDrag = function () {
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mLines[i].stopDrag();
+            }
+            if (this.mHighlightedLines) {
+                for (var i = 0; i < this.mHighlightedLines.length; i++) {
+                    this.mHighlightedLines[i].stopDrag();
+                }
+            }
+            var aNewPositionArr = new Array();
+            if (image.Globals.currentShapeDragAction && !image.Globals.currentShapeDragAction.isAdded) {
+                for (var i = 0; i < this.mLines.length; i++) {
+                    var aPoint = new asBase.math.Point(this.mLines[i].x, this.mLines[i].y);
+                    aNewPositionArr.push(aPoint);
+                    image.Globals.currentShapeDragAction.newPosition = aNewPositionArr;
+                    image.Globals.ActionManager.addAction(image.Globals.currentShapeDragAction);
+                }
+            }
+        };
+        //______________________________________
+        Arrow.prototype.setShapeInBound = function () {
+            if (image.Globals.ImageDrawing.isOriginalRatio) {
+                this.setShapeInBoundOriginal();
+            }
+            else {
+                this.setShapeInBoundTransform();
+            }
+        };
+        //___________________________________
+        Arrow.prototype.setShapeInBoundOriginal = function () {
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            for (var i = 0; i < this.mLines.length; i++) {
+                var aLineRect = this.mLines[i].getBounds();
+                if ((aLineRect.left < aImageRect.left || aLineRect.right > aImageRect.right && image.Globals.isDrawInBound)) {
+                    this.mLines[0].x = this.mLastGoodX[0];
+                    this.mLines[1].x = this.mLastGoodX[1];
+                    this.mLines[2].x = this.mLastGoodX[2];
+                    if (this.mHighlightedLines) {
+                        this.mHighlightedLines[0].x = this.mLastGoodX[0];
+                        this.mHighlightedLines[1].x = this.mLastGoodX[1];
+                        this.mHighlightedLines[2].x = this.mLastGoodX[2];
+                    }
+                }
+                else {
+                    this.mLastGoodX[0] = this.mLines[0].x;
+                    this.mLastGoodX[1] = this.mLines[1].x;
+                    this.mLastGoodX[2] = this.mLines[2].x;
+                }
+            }
+            for (var i = 0; i < this.mLines.length; i++) {
+                var aLineRect = this.mLines[i].getBounds();
+                if ((aLineRect.top < aImageRect.top || aLineRect.bottom > aImageRect.bottom && image.Globals.isDrawInBound)) {
+                    this.mLines[0].y = this.mLastGoodY[0];
+                    this.mLines[1].y = this.mLastGoodY[1];
+                    this.mLines[2].y = this.mLastGoodY[2];
+                    if (this.mHighlightedLines) {
+                        this.mHighlightedLines[0].y = this.mLastGoodY[0];
+                        this.mHighlightedLines[1].y = this.mLastGoodY[1];
+                        this.mHighlightedLines[2].y = this.mLastGoodY[2];
+                    }
+                }
+                else {
+                    this.mLastGoodY[0] = this.mLines[0].y;
+                    this.mLastGoodY[1] = this.mLines[1].y;
+                    this.mLastGoodY[2] = this.mLines[2].y;
+                }
+            }
+        };
+        //___________________________________
+        Arrow.prototype.setShapeInBoundTransform = function () {
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            for (var i = 0; i < this.mLines.length; i++) {
+                var aLineRect = this.mLines[i].getBounds();
+                if ((aLineRect.left < aImageRect.left || aLineRect.right > aImageRect.right) && image.Globals.isDrawInBound) {
+                    this.mLines[0].y = this.mLastGoodY[0];
+                    this.mLines[1].y = this.mLastGoodY[1];
+                    this.mLines[2].y = this.mLastGoodY[2];
+                    if (this.mHighlightedLines) {
+                        this.mHighlightedLines[0].y = this.mLastGoodY[0];
+                        this.mHighlightedLines[1].y = this.mLastGoodY[1];
+                        this.mHighlightedLines[2].y = this.mLastGoodY[2];
+                    }
+                }
+                else {
+                    this.mLastGoodY[0] = this.mLines[0].y;
+                    this.mLastGoodY[1] = this.mLines[1].y;
+                    this.mLastGoodY[2] = this.mLines[2].y;
+                }
+            }
+            for (var i = 0; i < this.mLines.length; i++) {
+                var aLineRect = this.mLines[i].getBounds();
+                if ((aLineRect.top < aImageRect.top || aLineRect.bottom > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                    this.mLines[0].x = this.mLastGoodX[0];
+                    this.mLines[1].x = this.mLastGoodX[1];
+                    this.mLines[2].x = this.mLastGoodX[2];
+                    if (this.mHighlightedLines) {
+                        this.mHighlightedLines[0].x = this.mLastGoodX[0];
+                        this.mHighlightedLines[1].x = this.mLastGoodX[1];
+                        this.mHighlightedLines[2].x = this.mLastGoodX[2];
+                    }
+                }
+                else {
+                    this.mLastGoodX[0] = this.mLines[0].x;
+                    this.mLastGoodX[1] = this.mLines[1].x;
+                    this.mLastGoodX[2] = this.mLines[2].x;
+                }
+            }
+        };
+        //_____________________________________
+        Arrow.prototype.getGoodPoint = function (pMouseEvent, pPoint) {
+            this.mSprite.stage.onMouseMove(pMouseEvent);
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            if ((pMouseEvent.clientX < aImageRect.left || pMouseEvent.clientX > aImageRect.right || pMouseEvent.clientY < aImageRect.top || pMouseEvent.clientY > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                pPoint.x = this.mLastGoodMouseX;
+                pPoint.y = this.mLastGoodMouseY;
+            }
+            else {
+                this.mLastGoodMouseX = pPoint.x = this.mSprite.parent.mouseX;
+                this.mLastGoodMouseY = pPoint.y = this.mSprite.parent.mouseY;
+            }
+        };
+        //__________________________________________________
+        /**
+         * Moves the arrow object to a given point
+         *
+         * @param {Array<asBase.math.Point>} pArr -Point to move arrow to {x,y}
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.moveShape = function (pArr) {
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mLines[i].x = pArr[i].x,
+                    this.mLines[i].y = pArr[i].y;
+            }
+        };
+        //____________________________________________________
+        /**
+         * Add mouse events to the arrow object
+         *
+         * @param {Function} pMouseDownCallBack -Callback for "mouse down"
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.addMouseEvents = function (pMouseDownCallBack) {
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mLines[i].addEventListener("mousedown", function (pEvent) { return pMouseDownCallBack(pEvent); }, this);
+            }
+            this.mMouseDownListener = function () { return pMouseDownCallBack(); };
+        };
+        //____________________________________
+        /**
+         * Removes mouse events from the arrow o
+         *
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.removeMouseEvents = function () {
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mLines[i].removeEventListener("mousedown", this.mMouseDownListener);
+            }
+        };
+        //________________________________________
+        /**
+         * Deletes the arrow object and removes it from the sprite
+         *
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.deleteShape = function () {
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mLines[i].destruct();
+            }
+            if (this.mHighlightedLines) {
+                for (var i = 0; i < this.mHighlightedLines.length; i++) {
+                    this.mHighlightedLines[i].destruct();
+                }
+            }
+        };
+        //____________________________________________
+        /**
+         * Clones the arrow object
+         *
+         * @returns {Arrow} -The cloned arrow
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.clone = function () {
+            var aShape = new Arrow(null, this.mColor);
+            aShape.mWidth = this.mWidth;
+            aShape.mColor = this.mColor;
+            aShape.mLines = new Array();
+            for (var i = 0; i < this.mLines.length; i++) {
+                aShape.mLines[i] = this.mLines[i].clone();
+            }
+            return aShape;
+        };
+        //________________________________
+        /**
+         * Adds the arrow object to a  svg sprite
+         *
+         * @param {asSvg.Sprite} pSprite - SVG Sprite to add arrow to
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.addToSprite = function (pSprite) {
+            var _this = this;
+            this.mSprite = pSprite;
+            for (var i = 0; i < this.mLines.length; i++) {
+                this.mSprite.addChild(this.mLines[i]);
+                this.mLines[i].addEventListener("click", function () { return _this.onSelect(); }, this);
+            }
+        };
+        //_______________________
+        /**
+         * Set the line width of arrow
+         *
+         * @param {number} pWidth -Width to set arrow to
+         *
+         * @memberOf Arrow
+         */
+        Arrow.prototype.setLineWidth = function (pWidth) {
+            this.mLines[0].setLineStyle(pWidth);
+            this.mLines[1].setLineStyle(pWidth * 0.5);
+            this.mLines[2].setLineStyle(pWidth * 0.5);
+        };
+        return Arrow;
+    }(shapes.Shape));
+    shapes.Arrow = Arrow;
+})(shapes || (shapes = {}));
+/// <reference path="shape.ts" />
+var shapes;
+/// <reference path="shape.ts" />
+(function (shapes) {
+    /**
+     * Class reprsenting a circle drawn by the user
+     *
+     * @export
+     * @class Circle
+     * @extends {Shape}
+     */
+    var Circle = (function (_super) {
+        __extends(Circle, _super);
+        /**
+         * Creates an instance of Circle.
+         * @param {asSvg.Sprite} pSprite -SVG Sprite to draw circle on
+         * @param {any} pColor -Color to draw circle in
+         *
+         * @memberOf Circle
+         */
+        function Circle(pSprite, pColor) {
+            var _this = _super.call(this) || this;
+            _this.mWidth = 4;
+            _this.mClassName = "Circle";
+            _this.mSprite = pSprite;
+            _this.mColor = pColor;
+            return _this;
+        }
+        //_________________________________________
+        Circle.prototype.onMouseDown = function (pMouseEvent) {
+            _super.prototype.onMouseDown.call(this, pMouseEvent);
+            this.getGoodPoint(pMouseEvent, this.mLastMouseDownPoint);
+        };
+        //_____________________________________
+        Circle.prototype.onMouseMove = function (pEvent) {
+            var aPoint = new asBase.math.Point(this.mSprite.parent.mouseX, this.mSprite.parent.mouseY);
+            this.getGoodPoint(pEvent, aPoint);
+            if (!this.mLastMouseDownPoint.x || !this.mLastMouseDownPoint.y) {
+                this.mLastMouseDownPoint.x = aPoint.x;
+                this.mLastMouseDownPoint.y = aPoint.y;
+            }
+            var aDist = asBase.math.MathUtils.distance(this.mLastMouseDownPoint, aPoint);
+            this.mRadius = aDist;
+            this.drawShape();
+        };
+        //_________________________________________
+        Circle.prototype.drawShape = function () {
+            var _this = this;
+            if (this.mLastMouseDownPoint.x && this.mLastMouseDownPoint.y && this.mRadius && !isNaN(this.mRadius)) {
+                var aX = void 0, aY = void 0;
+                if (this.mSprite.parent.mouseX < this.mLastMouseDownPoint.x) {
+                    this.mX = this.mSprite.parent.mouseX + this.mRadius / 2;
+                }
+                else {
+                    this.mX = this.mLastMouseDownPoint.x + this.mRadius / 2;
+                }
+                if (this.mSprite.parent.mouseY < this.mLastMouseDownPoint.y) {
+                    this.mY = this.mSprite.parent.mouseY + this.mRadius / 2;
+                }
+                else {
+                    this.mY = this.mLastMouseDownPoint.y + this.mRadius / 2;
+                }
+                if (!this.mCircle) {
+                    this.mCircle = new asSvg.Circle(this.mX, this.mY, this.mRadius / 2);
+                    this.mCircle.setFill(null);
+                    this.mCircle.setLineStyle(this.mWidth / this.scale);
+                    this.mCircle.element.setAttribute("stroke", this.mColor);
+                    this.mSprite.addChild(this.mCircle);
+                    this.mCircle.addEventListener("click", function () { return _this.onSelect(); }, this);
+                    this.mLastGoodMouseX = this.mSprite.parent.mouseX;
+                    this.mLastGoodMouseY = this.mSprite.parent.mouseY;
+                    this.mLastGoodX = this.mLastGoodMouseX;
+                    this.mLastGoodY = this.mLastGoodMouseY;
+                }
+                else {
+                    this.mCircle.update(this.mX, this.mY, this.mRadius / 2);
+                    this.drawShapeInBound();
+                }
+            }
+        };
+        //____________________________
+        Circle.prototype.onSelect = function () {
+            if (!image.Globals.isItemSelected) {
+                _super.prototype.onSelect.call(this);
+                this.mHighlightedCircle = this.mCircle.clone();
+                this.mHighlightedCircle.setLineStyle(this.mWidth * 4 / this.scale, null, 0.5);
+                this.mHighlightedCircle.element.setAttribute("stroke", this.mColor);
+                this.mSprite.addChild(this.mHighlightedCircle);
+                this.mSprite.addChild(this.mCircle);
+                image.Globals.ImageDrawing.onSelectShape(this);
+            }
+        };
+        //_____________________________
+        Circle.prototype.onMouseUp = function () {
+            image.Globals.isCircleMode = false;
+            _super.prototype.onMouseUp.call(this);
+            if (this.mCircle) {
+                if (this.mCircle.getBounds().width == 0 && this.mCircle.getBounds().height == 0) {
+                    this.mCircle.destruct();
+                    image.Globals.mCircles.splice(image.Globals.mCircles.indexOf(this), 1);
+                }
+            }
+            else {
+                image.Globals.mCircles.splice(image.Globals.mCircles.indexOf(this), 1);
+            }
+        };
+        //___________________________________
+        /**
+         * Changes the color of the circle object
+         *
+         * @param {any} pColor -Color to set the circle to -in hex code
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.changeShapeColor = function (pColor) {
+            this.mCircle.element.setAttribute("stroke", pColor);
+            if (this.mHighlightedCircle) {
+                this.mHighlightedCircle.element.setAttribute("stroke", pColor);
+            }
+        };
+        //____________________________________
+        Circle.prototype.onDeselect = function () {
+            _super.prototype.onDeselect.call(this);
+            this.mSprite.removeChild(this.mHighlightedCircle);
+        };
+        //______________________
+        /**
+         * Adds event listeners for mouse events to the circle object
+         *
+         * @param {Function} pMouseDownCallBack -Callback for the mousedown events
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.addMouseEvents = function (pMouseDownCallBack) {
+            this.mCircle.addEventListener("mousedown", function (pEvent) { return pMouseDownCallBack(pEvent); }, this);
+            this.mMouseDownListener = function () { return pMouseDownCallBack(); };
+        };
+        //________________________________
+        /**
+         * Starts dragging the circle object by following the mouse position
+         *
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.startDrag = function () {
+            var _this = this;
+            this.mX = this.mCircle.x;
+            this.mY = this.mCircle.y;
+            this.mLastGoodX = this.mCircle.x;
+            this.mLastGoodY = this.mCircle.y;
+            var aOldPostionArr = new Array();
+            var aPoint = new asBase.math.Point(this.mX, this.mY);
+            aOldPostionArr.push(aPoint);
+            image.Globals.currentShapeDragAction = new action.DragShapeAction(aOldPostionArr, this);
+            if (this.mHighlightedCircle) {
+                this.mHighlightedCircle.startDrag();
+            }
+            this.mCircle.startDrag(false, function () { return _this.setShapeInBound(); });
+        };
+        //_________________________________________________
+        /**
+         * Stops dragging the circle object
+         *
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.stopDrag = function () {
+            this.mX = this.mCircle.x;
+            this.mY = this.mCircle.y;
+            this.mCircle.stopDrag();
+            if (this.mHighlightedCircle) {
+                this.mHighlightedCircle.stopDrag();
+            }
+            if (image.Globals.currentShapeDragAction && !image.Globals.currentShapeDragAction.isAdded) {
+                var aNewPositionArr = new Array();
+                var aPoint = new asBase.math.Point(this.mX, this.mY);
+                aNewPositionArr.push(aPoint);
+                image.Globals.currentShapeDragAction.newPosition = aNewPositionArr;
+                image.Globals.ActionManager.addAction(image.Globals.currentShapeDragAction);
+            }
+        };
+        //_____________________________________________________
+        /**
+         * Moves the circle object to a  given point
+         *
+         * @param {Array<asBase.math.Point>} pArr -Array of points to move circle to
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.moveShape = function (pArr) {
+            this.mCircle.x = pArr[0].x;
+            this.mCircle.y = pArr[0].y;
+        };
+        //_________________________________________________________
+        Circle.prototype.setShapeInBound = function () {
+            if (image.Globals.ImageDrawing.isOriginalRatio) {
+                this.setShapeInBoundOriginal();
+            }
+            else {
+                this.setShapeInBoundTransform();
+            }
+        };
+        //__________________________________
+        Circle.prototype.setShapeInBoundOriginal = function () {
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            var aShapeRect = this.mCircle.getBounds();
+            if ((aShapeRect.left < aImageRect.left || aShapeRect.right > aImageRect.right) && image.Globals.isDrawInBound) {
+                this.mCircle.x = this.mLastGoodX;
+                if (this.mHighlightedCircle) {
+                    this.mHighlightedCircle.x = this.mLastGoodX;
+                }
+            }
+            else {
+                this.mLastGoodX = this.mCircle.x;
+            }
+            if ((aShapeRect.top < aImageRect.top || aShapeRect.bottom > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                this.mCircle.y = this.mLastGoodY;
+                if (this.mHighlightedCircle) {
+                    this.mHighlightedCircle.y = this.mLastGoodY;
+                }
+            }
+            else {
+                this.mLastGoodY = this.mCircle.y;
+            }
+        };
+        //_____________________________________
+        Circle.prototype.setShapeInBoundTransform = function () {
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            var aShapeRect = this.mCircle.getBounds();
+            if ((aShapeRect.left < aImageRect.left || aShapeRect.right > aImageRect.right) && image.Globals.isDrawInBound) {
+                this.mCircle.y = this.mLastGoodY;
+                if (this.mHighlightedCircle) {
+                    this.mHighlightedCircle.y = this.mLastGoodY;
+                }
+            }
+            else {
+                this.mLastGoodY = this.mCircle.y;
+            }
+            if ((aShapeRect.top < aImageRect.top || aShapeRect.bottom > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                this.mCircle.x = this.mLastGoodX;
+                if (this.mHighlightedCircle) {
+                    this.mHighlightedCircle.x = this.mLastGoodX;
+                }
+            }
+            else {
+                this.mLastGoodX = this.mCircle.x;
+            }
+        };
+        //__________________________________
+        Circle.prototype.getGoodPoint = function (pMouseEvent, pPoint) {
+            this.mSprite.stage.onMouseMove(pMouseEvent);
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            if ((pMouseEvent.clientX < aImageRect.left || pMouseEvent.clientX > aImageRect.right || pMouseEvent.clientY < aImageRect.top || pMouseEvent.clientY > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                pPoint.x = this.mLastGoodMouseX;
+                pPoint.y = this.mLastGoodMouseY;
+            }
+            else {
+                this.mLastGoodMouseX = pPoint.x = this.mSprite.parent.mouseX;
+                this.mLastGoodMouseY = pPoint.y = this.mSprite.parent.mouseY;
+            }
+        };
+        //________________________________________
+        Circle.prototype.drawShapeInBound = function () {
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            var aCircleRect = this.mCircle.getBounds();
+            var aMouseX, aMouseY;
+            if ((aCircleRect.left < aImageRect.left || aCircleRect.right > aImageRect.right || aCircleRect.top < aImageRect.top || aCircleRect.bottom > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                console.log("out of bounds circle");
+                aMouseX = this.mLastGoodX;
+                aMouseY = this.mLastGoodY;
+                var aPoint = new asBase.math.Point(aMouseX, aMouseY);
+                var aDist = asBase.math.MathUtils.distance(this.mLastMouseDownPoint, aPoint);
+                this.mRadius = aDist;
+                if (aPoint.x < this.mLastMouseDownPoint.x) {
+                    this.mX = aPoint.x + this.mRadius / 2;
+                }
+                else {
+                    this.mX = this.mLastMouseDownPoint.x + this.mRadius / 2;
+                }
+                if (aPoint.y < this.mLastMouseDownPoint.y) {
+                    this.mY = aPoint.y + this.mRadius / 2;
+                }
+                else {
+                    this.mY = this.mLastMouseDownPoint.y + this.mRadius / 2;
+                }
+                this.mCircle.update(this.mX, this.mY, this.mRadius / 2);
+            }
+            else {
+                this.mLastGoodX = this.mSprite.parent.mouseX;
+                this.mLastGoodY = this.mSprite.parent.mouseY;
+            }
+        };
+        //_________________________________________________________
+        /**
+         * Deletes the circle object and removes it from the sprite
+         *
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.deleteShape = function () {
+            this.mCircle.destruct();
+            if (this.mHighlightedCircle) {
+                this.mHighlightedCircle.destruct();
+            }
+        };
+        //___________________________
+        /**
+         * Clones the circle object
+         *
+         * @returns {Circle} -the cloned circle
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.clone = function () {
+            var aShape = new Circle(null, this.mColor);
+            aShape.mWidth = this.mWidth;
+            aShape.mColor = this.mColor;
+            aShape.mCircle = this.element.clone();
+            aShape.myClassName = this.myClassName;
+            return aShape;
+        };
+        //_________________________________________________________
+        /**
+         * Adds the circle object to a given SVG sprite
+         *
+         * @param {asSvg.Sprite} pSprite -Sprite to add circle to
+         *
+         * @memberOf Circle
+         */
+        Circle.prototype.addToSprite = function (pSprite) {
+            var _this = this;
+            this.mSprite = pSprite;
+            this.mSprite.addChild(this.mCircle);
+            this.mCircle.addEventListener("click", function () { return _this.onSelect(); }, this);
+        };
+        Object.defineProperty(Circle.prototype, "element", {
+            //_________________________
+            /**
+             * Return the asSVG display object
+             *
+             * @readonly
+             *
+             * @memberOf Circle
+             */
+            get: function () {
+                return this.mCircle;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Circle.prototype, "myClassName", {
+            //_________________________
+            /**
+             * Returns the class name
+             *
+             * @readonly
+             * @type {string}
+             * @memberOf Circle
+             */
+            get: function () {
+                return this.mClassName;
+            },
+            //_______________________________
+            /**
+             * Sets the class name
+             *
+             *
+             * @memberOf Circle
+             */
+            set: function (pClassName) {
+                this.mClassName = pClassName;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return Circle;
+    }(shapes.Shape));
+    shapes.Circle = Circle;
+})(shapes || (shapes = {}));
+var shapes;
+(function (shapes) {
+    /**
+     * Class representing a scribble drawn by the user
+     *
+     * @export
+     * @class Scribble
+     * @extends {Shape}
+     */
+    var Scribble = (function (_super) {
+        __extends(Scribble, _super);
+        /**
+         * Creates an instance of Scribble.
+         * @param {asSvg.Sprite} pSprite -Sprite to add scribble object to
+         * @param {any} pColor -Color of scribble
+         * @param {number} pLineWidth -Line width of scribble
+         *
+         * @memberOf Scribble
+         */
+        function Scribble(pSprite, pColor, pLineWidth) {
+            var _this = _super.call(this) || this;
+            _this.mIsMouseDown = false;
+            _this.mClassName = "Scribble";
+            _this.mSprite = pSprite;
+            _this.mColor = pColor;
+            _this.mWidth = pLineWidth;
+            return _this;
+        }
+        //_______________________________
+        Scribble.prototype.onMouseDown = function (pMouseEvent) {
+            _super.prototype.onMouseDown.call(this, pMouseEvent);
+            this.getGoodPoint(pMouseEvent, this.mLastMouseDownPoint);
+        };
+        //________________________________
+        Scribble.prototype.onMouseMove = function (pMouseEvent) {
+            var aPoint = new asBase.math.Point(this.mSprite.parent.mouseX, this.mSprite.parent.mouseY);
+            this.getGoodPoint(pMouseEvent, aPoint);
+            if (this.mIsMouseDown) {
+                if (!this.mLastMouseDownPoint.x || !this.mLastMouseDownPoint.y) {
+                    this.mLastMouseDownPoint.x = aPoint.x;
+                    this.mLastMouseDownPoint.y = aPoint.y;
+                }
+                this.drawShape();
+            }
+        };
+        //________________________________
+        Scribble.prototype.drawShape = function () {
+            var _this = this;
+            if (this.mLastMouseDownPoint.x && this.mLastMouseDownPoint.y && this.mLastGoodX && this.mLastGoodY) {
+                if (!this.mShape) {
+                    this.mShape = new asSvg.Shape();
+                    this.mSprite.addChild(this.mShape);
+                    this.mShape.setFill(null);
+                    this.mShape.setLineStyle(image.ImageDrawing.LINE_WIDTH / this.scale, parseInt(this.mColor));
+                    this.mShape.addEventListener("click", function () { return _this.onSelect(); }, this);
+                    this.mShape.moveTo(this.mLastMouseDownPoint.x, this.mLastMouseDownPoint.y);
+                }
+                else {
+                    this.mShape.element.setAttribute("stroke", this.mColor);
+                    this.mShape.setLineStyle(this.mWidth / this.scale);
+                    this.mShape.lineTo(this.mLastGoodX, this.mLastGoodY);
+                }
+            }
+        };
+        //________________________________
+        Scribble.prototype.onMouseUp = function () {
+            _super.prototype.onMouseUp.call(this);
+            if (this.mShape) {
+                if (this.mShape.getBounds().width == 0 && this.mShape.getBounds().height == 0) {
+                    this.mShape.destruct();
+                    image.Globals.mCircles.splice(image.Globals.mCircles.indexOf(this), 1);
+                }
+            }
+            else {
+                image.Globals.mCircles.splice(image.Globals.mCircles.indexOf(this), 1);
+            }
+        };
+        //________________________________
+        Scribble.prototype.onSelect = function () {
+            if (!image.Globals.isItemSelected) {
+                _super.prototype.onSelect.call(this);
+                this.mHighlightedShape = this.mShape.clone();
+                this.mHighlightedShape.setLineStyle(this.mWidth * 4 / this.scale, null, 0.5);
+                this.mHighlightedShape.element.setAttribute("stroke", this.mColor);
+                this.mSprite.addChild(this.mHighlightedShape);
+                this.mSprite.addChild(this.mShape);
+                image.Globals.ImageDrawing.onSelectShape(this);
+            }
+        };
+        //________________________________
+        Scribble.prototype.onDeselect = function () {
+            _super.prototype.onDeselect.call(this);
+            this.mHighlightedShape.destruct();
+        };
+        //________________________________
+        /**
+         * Changes the color of the scribble object
+         *
+         * @param {any} pColor -color to set to -in hex code
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.changeShapeColor = function (pColor) {
+            this.mShape.element.setAttribute("stroke", pColor);
+            if (this.mHighlightedShape) {
+                this.mHighlightedShape.element.setAttribute("stroke", pColor);
+            }
+        };
+        Object.defineProperty(Scribble.prototype, "scale", {
+            //_________________________________
+            /**
+             * Returns the scale of the  SVG stage
+             *
+             * @readonly
+             * @type {number}
+             * @memberOf Scribble
+             */
+            get: function () {
+                return this.mSprite.parent.parent.scaleX;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        //_________________________________
+        /**
+         * Adds mouse event listeners to the scribble object
+         *
+         * @param {Function} pMouseDownCallBack - mousedown event callback
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.addMouseEvents = function (pMouseDownCallBack) {
+            this.mShape.addEventListener("mousedown", function (pEvent) { return pMouseDownCallBack(pEvent); }, this);
+            this.mMouseDownListener = pMouseDownCallBack;
+        };
+        //__________________________________
+        /**
+         * Starts dragging the scribble object according the mouse's position
+         *
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.startDrag = function () {
+            var _this = this;
+            this.mLastGoodX = this.mShape.x;
+            this.mLastGoodY = this.mShape.y;
+            var aOlDPositionArr = Array();
+            var aPoint = new asBase.math.Point(this.mShape.x, this.mShape.y);
+            aOlDPositionArr.push(aPoint);
+            image.Globals.currentShapeDragAction = new action.DragShapeAction(aOlDPositionArr, this);
+            if (this.mHighlightedShape) {
+                this.mHighlightedShape.startDrag();
+            }
+            this.mShape.startDrag(false, function () { return _this.setShapeInBound(); });
+        };
+        //__________________________________
+        /**
+         * Stops dragging the scribble onject
+         *
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.stopDrag = function () {
+            this.mShape.stopDrag();
+            if (this.mHighlightedShape) {
+                this.mHighlightedShape.stopDrag();
+            }
+            if (image.Globals.currentShapeDragAction && !image.Globals.currentShapeDragAction.isAdded) {
+                var aNewPositionArr = new Array();
+                var aPoint = new asBase.math.Point(this.mShape.x, this.mShape.y);
+                aNewPositionArr.push(aPoint);
+                image.Globals.currentShapeDragAction.newPosition = aNewPositionArr;
+                image.Globals.ActionManager.addAction(image.Globals.currentShapeDragAction);
+            }
+        };
+        //__________________________________
+        /**
+         * Deletes the scribble object and removes it from the sprite
+         *
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.deleteShape = function () {
+            this.mShape.destruct();
+            if (this.mHighlightedShape) {
+                this.mHighlightedShape.destruct();
+            }
+        };
+        //__________________________________
+        /**
+         * Moves the scribble object to a given point
+         *
+         * @param {Array<asBase.math.Point>} pArr -Array of one point to move scribble to
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.moveShape = function (pArr) {
+            this.mShape.x = pArr[0].x;
+            this.mShape.y = pArr[0].y;
+        };
+        //__________________________________
+        /**
+         * Adds the scribble object to a given sprite
+         *
+         * @param {asSvg.Sprite} pSprite -SVG sprite to add scribble to
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.addToSprite = function (pSprite) {
+            var _this = this;
+            this.mSprite = pSprite;
+            this.mSprite.addChild(this.mShape);
+            this.mShape.addEventListener("click", function () { return _this.onSelect(); }, this);
+        };
+        //__________________________________
+        /**
+         * Clones the scribble object
+         *
+         * @returns {Scribble} -cloned object
+         *
+         * @memberOf Scribble
+         */
+        Scribble.prototype.clone = function () {
+            var aShape = new Scribble(null, this.mColor, this.mWidth);
+            aShape.mWidth = this.mWidth;
+            aShape.mColor = this.mColor;
+            aShape.mShape = this.element.clone();
+            aShape.myClassName = this.myClassName;
+            return aShape;
+        };
+        //_________________________________
+        Scribble.prototype.setShapeInBound = function () {
+            if (image.Globals.ImageDrawing.isOriginalRatio) {
+                this.setShapeInBoundOriginal();
+            }
+            else {
+                this.setShapeInBoundTransform();
+            }
+        };
+        //__________________________________________
+        Scribble.prototype.setShapeInBoundOriginal = function () {
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            var aShapeRect = this.mShape.getBounds();
+            console.log("circle rect");
+            console.log("x   " + this.mShape.x + "    y " + this.mShape);
+            if ((aShapeRect.left < aImageRect.left || aShapeRect.right > aImageRect.right) && image.Globals.isDrawInBound) {
+                this.mShape.x = this.mLastGoodX;
+                if (this.mHighlightedShape) {
+                    this.mHighlightedShape.x = this.mLastGoodX;
+                }
+            }
+            else {
+                this.mLastGoodX = this.mShape.x;
+            }
+            if ((aShapeRect.top < aImageRect.top || aShapeRect.bottom > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                this.mShape.y = this.mLastGoodY;
+                if (this.mHighlightedShape) {
+                    this.mHighlightedShape.y = this.mLastGoodY;
+                }
+            }
+            else {
+                this.mLastGoodY = this.mShape.y;
+            }
+        };
+        //________________________________________
+        Scribble.prototype.setShapeInBoundTransform = function () {
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            var aShapeRect = this.mShape.getBounds();
+            console.log("circle rect");
+            console.log("x   " + this.mShape.x + "    y " + this.mShape);
+            if ((aShapeRect.left < aImageRect.left || aShapeRect.right > aImageRect.right) && image.Globals.isDrawInBound) {
+                this.mShape.y = this.mLastGoodY;
+                if (this.mHighlightedShape) {
+                    this.mHighlightedShape.y = this.mLastGoodY;
+                }
+            }
+            else {
+                this.mLastGoodY = this.mShape.y;
+            }
+            if ((aShapeRect.top < aImageRect.top || aShapeRect.bottom > aImageRect.bottom) && image.Globals.isDrawInBound) {
+                this.mShape.x = this.mLastGoodX;
+                if (this.mHighlightedShape) {
+                    this.mHighlightedShape.x = this.mLastGoodX;
+                }
+            }
+            else {
+                this.mLastGoodX = this.mShape.x;
+            }
+        };
+        //_________________________________________________________
+        Scribble.prototype.getGoodPoint = function (pMouseEvent, pPoint) {
+            this.mSprite.stage.onMouseMove(pMouseEvent);
+            var aImage = document.getElementById("image");
+            var aImageRect = aImage.getBoundingClientRect();
+            var aRect = new asBase.math.Rectangle(aImageRect);
+            if (!aRect.intersectsPoint(pMouseEvent.clientX, pMouseEvent.clientY) && image.Globals.isDrawInBound) {
+                pPoint.x = this.mLastGoodX;
+                pPoint.y = this.mLastGoodY;
+            }
+            else {
+                this.mLastGoodX = pPoint.x = this.mSprite.parent.mouseX;
+                this.mLastGoodY = pPoint.y = this.mSprite.parent.mouseY;
+            }
+        };
+        Object.defineProperty(Scribble.prototype, "element", {
+            //_________________________________
+            /**
+             * Returns the asSVG Display Object member
+             *
+             * @readonly
+             *
+             * @memberOf Scribble
+             */
+            get: function () {
+                return this.mShape;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Scribble.prototype, "myClassName", {
+            //______________________________________
+            /**
+             * Retutns the class nmae
+             *
+             *
+             * @memberOf Scribble
+             */
+            get: function () {
+                return this.mClassName;
+            },
+            //_______________________________
+            /**
+             * Sets the class name
+             *
+             *
+             * @memberOf Scribble
+             */
+            set: function (pClassName) {
+                this.mClassName = pClassName;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return Scribble;
+    }(shapes.Shape));
+    shapes.Scribble = Scribble;
+})(shapes || (shapes = {}));
 //# sourceMappingURL=code.js.map
